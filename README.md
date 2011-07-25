@@ -4,7 +4,7 @@ Boot to Gecko aims to create a complete, standalone operating system for the ope
 
 You can read more about B2G here:
 
-  http://wiki.mozilla.com/B2G
+  http://wiki.mozilla.org/B2G
 
 follow us on twitter: @Boot2Gecko
 
