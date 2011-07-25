@@ -1,4 +1,4 @@
-# Boot to Geck (B2G)
+# Boot to Gecko (B2G)
 
 Boot to Gecko aims to create a complete, standalone operating system for the open web.
 
