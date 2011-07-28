@@ -1,0 +1,3 @@
+[submodule "gecko"]
+	path = gecko
+	url = https://github.com/cgjones/mozilla-central
