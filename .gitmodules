@@ -1,3 +1,6 @@
 [submodule "gecko"]
 	path = gecko
 	url = https://github.com/cgjones/mozilla-central
+[submodule "boot/kernel-android-samsung"]
+	path = boot/kernel-android-samsung
+	url = git://github.com/cgjones/samsung-android-kernel.git
