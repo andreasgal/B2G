@@ -13,23 +13,32 @@ define GONK_CMD # $(call GONK_CMD,cmd)
 	$(1)
 endef
 
+# Developers can use this to define convenience rules and set global variabls
+# XXX for now, this is where to put ANDROID_SDK and ANDROID_NDK macros
+-include local.mk
+
 .PHONY: build
 build: kernel gonk gecko
 
-check-sdk:
-	@if [ -z "$$ANDROID_SDK" ]; then \
-		echo 'Sorry, you need to set ANDROID_SDK in your environment to point at the top-level of the SDK install.  For now.'; exit 1; \
-	fi
-	@if [ -z "$$ANDROID_NDK" ]; then \
-		echo 'Sorry, you need to set ANDROID_NDK in your environment to point at the top-level of the NDK install.  For now.'; exit 1; \
-	fi
+ifndef ANDROID_SDK
+$(error Sorry, you need to set ANDROID_SDK in your environment to point at the top-level of the SDK install.  For now.)
+endif
+
+ifndef ANDROID_NDK
+$(error Sorry, you need to set ANDROID_NDK in your environment to point at the top-level of the NDK install.  For now.)
+endif
 
 .PHONY: gecko
-gecko: check-sdk
-	@make -C gecko -f client.mk -s -j$(PARALLELISM)
+# XXX Hard-coded for prof-android target.  It would also be nice if
+# client.mk understood the |package| target.
+gecko:
+	@export ANDROID_SDK=$(ANDROID_SDK) && \
+	export ANDROID_NDK=$(ANDROID_NDK) && \
+	make -C gecko -f client.mk -s -j$(PARALLELISM) && \
+	make -C gecko/objdir-prof-android package
 
 .PHONY: gonk
-gonk: bootimg-hack
+gonk: bootimg-hack geckoapk-hack
 	@$(call GONK_CMD,make -j$(PARALLELISM))
 
 .PHONY: kernel
@@ -84,8 +93,33 @@ flash: image
 
 .PHONY: bootimg-hack
 bootimg-hack: kernel
-	cp boot/kernel-android-samsung/arch/arm/boot/zImage $(GONK)/device/samsung/crespo/kernel && \
-	cp boot/kernel-android-samsung/drivers/net/wireless/bcm4329/bcm4329.ko $(GONK)/device/samsung/crespo/bcm4329.ko
+	cp -p boot/kernel-android-samsung/arch/arm/boot/zImage $(GONK)/device/samsung/crespo/kernel && \
+	cp -p boot/kernel-android-samsung/drivers/net/wireless/bcm4329/bcm4329.ko $(GONK)/device/samsung/crespo/bcm4329.ko
+
+# XXX Hard-coded for nexuss4g target
+APP_OUT_DIR := $(GONK)/out/target/product/crespo4g/system/app
+
+$(APP_OUT_DIR):
+	mkdir -p $(APP_OUT_DIR)
+
+.PHONY: geckoapk-hack
+geckoapk-hack: gecko | $(APP_OUT_DIR)
+# XXX disabled for the moment because fennec can't load itself when
+# installed as a system app:
+#   FATAL EXCEPTION: Thread-10
+#   java.lang.UnsatisfiedLinkError: Couldn't load mozutils: findLibrary returned null
+#   	at java.lang.Runtime.loadLibrary(Runtime.java:429)
+#   	at java.lang.System.loadLibrary(System.java:554)
+#   	at org.mozilla.gecko.GeckoAppShell.loadGeckoLibs(GeckoAppShell.java:274#  )
+#   	at org.mozilla.gecko.GeckoApp$4.run(GeckoApp.java:249)
+#   	at java.lang.Thread.run(Thread.java:1019)
+#   Force finishing activity org.mozilla.fennec_unofficial/.App
+
+#	cp -p gecko/objdir-prof-android/dist/fennec-*.apk $(APP_OUT_DIR)/Fennec.apk
+
+.PHONY: install-gecko
+install-gecko: gecko
+	adb install -r gecko/objdir-prof-android/dist/fennec-*.apk
 
 .PHONY: image
 image: build
