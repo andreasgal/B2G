@@ -84,7 +84,8 @@ flash: image
 
 .PHONY: bootimg-hack
 bootimg-hack: kernel
-	cp boot/kernel-android-samsung/arch/arm/boot/zImage $(GONK)/device/samsung/crespo/kernel
+	cp boot/kernel-android-samsung/arch/arm/boot/zImage $(GONK)/device/samsung/crespo/kernel && \
+	cp boot/kernel-android-samsung/drivers/net/wireless/bcm4329/bcm4329.ko $(GONK)/device/samsung/crespo/bcm4329.ko
 
 .PHONY: image
 image: build
