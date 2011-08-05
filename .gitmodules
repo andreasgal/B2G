@@ -4,3 +4,477 @@
 [submodule "boot/kernel-android-samsung"]
 	path = boot/kernel-android-samsung
 	url = git://github.com/cgjones/samsung-android-kernel.git
+[submodule "glue/gonk/bionic"]
+	path = glue/gonk/bionic
+	url = git://android.git.kernel.org/platform/bionic.git
+[submodule "glue/gonk/external/esd"]
+	path = glue/gonk/external/esd
+	url = git://android.git.kernel.org/platform/external/esd.git
+[submodule "glue/gonk/external/astl"]
+	path = glue/gonk/external/astl
+	url = git://android.git.kernel.org/platform/external/astl.git
+[submodule "glue/gonk/external/bluetooth/hcidump"]
+	path = glue/gonk/external/bluetooth/hcidump
+	url = git://android.git.kernel.org/platform/external/bluetooth/hcidump.git
+[submodule "glue/gonk/external/bluetooth/bluez"]
+	path = glue/gonk/external/bluetooth/bluez
+	url = git://android.git.kernel.org/platform/external/bluetooth/bluez.git
+[submodule "glue/gonk/external/bluetooth/glib"]
+	path = glue/gonk/external/bluetooth/glib
+	url = git://android.git.kernel.org/platform/external/bluetooth/glib.git
+[submodule "glue/gonk/external/jdiff"]
+	path = glue/gonk/external/jdiff
+	url = git://android.git.kernel.org/platform/external/jdiff.git
+[submodule "glue/gonk/external/bouncycastle"]
+	path = glue/gonk/external/bouncycastle
+	url = git://android.git.kernel.org/platform/external/bouncycastle.git
+[submodule "glue/gonk/external/proguard"]
+	path = glue/gonk/external/proguard
+	url = git://android.git.kernel.org/platform/external/proguard.git
+[submodule "glue/gonk/external/embunit"]
+	path = glue/gonk/external/embunit
+	url = git://android.git.kernel.org/platform/external/embunit.git
+[submodule "glue/gonk/external/tremolo"]
+	path = glue/gonk/external/tremolo
+	url = git://android.git.kernel.org/platform/external/tremolo.git
+[submodule "glue/gonk/external/bison"]
+	path = glue/gonk/external/bison
+	url = git://android.git.kernel.org/platform/external/bison.git
+[submodule "glue/gonk/external/strace"]
+	path = glue/gonk/external/strace
+	url = git://android.git.kernel.org/platform/external/strace.git
+[submodule "glue/gonk/external/apache-http"]
+	path = glue/gonk/external/apache-http
+	url = git://android.git.kernel.org/platform/external/apache-http.git
+[submodule "glue/gonk/external/iproute2"]
+	path = glue/gonk/external/iproute2
+	url = git://android.git.kernel.org/platform/external/iproute2.git
+[submodule "glue/gonk/external/dropbear"]
+	path = glue/gonk/external/dropbear
+	url = git://android.git.kernel.org/platform/external/dropbear.git
+[submodule "glue/gonk/external/wpa_supplicant_6"]
+	path = glue/gonk/external/wpa_supplicant_6
+	url = git://android.git.kernel.org/platform/external/wpa_supplicant_6.git
+[submodule "glue/gonk/external/quake"]
+	path = glue/gonk/external/quake
+	url = git://android.git.kernel.org/platform/external/quake.git
+[submodule "glue/gonk/external/srec"]
+	path = glue/gonk/external/srec
+	url = git://android.git.kernel.org/platform/external/srec.git
+[submodule "glue/gonk/external/libgsm"]
+	path = glue/gonk/external/libgsm
+	url = git://android.git.kernel.org/platform/external/libgsm.git
+[submodule "glue/gonk/external/giflib"]
+	path = glue/gonk/external/giflib
+	url = git://android.git.kernel.org/platform/external/giflib.git
+[submodule "glue/gonk/external/svox"]
+	path = glue/gonk/external/svox
+	url = git://android.git.kernel.org/platform/external/svox.git
+[submodule "glue/gonk/external/iptables"]
+	path = glue/gonk/external/iptables
+	url = git://android.git.kernel.org/platform/external/iptables.git
+[submodule "glue/gonk/external/wpa_supplicant"]
+	path = glue/gonk/external/wpa_supplicant
+	url = git://android.git.kernel.org/platform/external/wpa_supplicant.git
+[submodule "glue/gonk/external/tinyxml"]
+	path = glue/gonk/external/tinyxml
+	url = git://android.git.kernel.org/platform/external/tinyxml.git
+[submodule "glue/gonk/external/bsdiff"]
+	path = glue/gonk/external/bsdiff
+	url = git://android.git.kernel.org/platform/external/bsdiff.git
+[submodule "glue/gonk/external/ping"]
+	path = glue/gonk/external/ping
+	url = git://android.git.kernel.org/platform/external/ping.git
+[submodule "glue/gonk/external/netcat"]
+	path = glue/gonk/external/netcat
+	url = git://android.git.kernel.org/platform/external/netcat.git
+[submodule "glue/gonk/external/tagsoup"]
+	path = glue/gonk/external/tagsoup
+	url = git://android.git.kernel.org/platform/external/tagsoup.git
+[submodule "glue/gonk/external/qemu"]
+	path = glue/gonk/external/qemu
+	url = git://android.git.kernel.org/platform/external/qemu.git
+[submodule "glue/gonk/external/libffi"]
+	path = glue/gonk/external/libffi
+	url = git://android.git.kernel.org/platform/external/libffi.git
+[submodule "glue/gonk/external/freetype"]
+	path = glue/gonk/external/freetype
+	url = git://android.git.kernel.org/platform/external/freetype.git
+[submodule "glue/gonk/external/chromium"]
+	path = glue/gonk/external/chromium
+	url = git://android.git.kernel.org/platform/external/chromium.git
+[submodule "glue/gonk/external/libnfc-nxp"]
+	path = glue/gonk/external/libnfc-nxp
+	url = git://android.git.kernel.org/platform/external/libnfc-nxp.git
+[submodule "glue/gonk/external/junit"]
+	path = glue/gonk/external/junit
+	url = git://android.git.kernel.org/platform/external/junit.git
+[submodule "glue/gonk/external/libpcap"]
+	path = glue/gonk/external/libpcap
+	url = git://android.git.kernel.org/platform/external/libpcap.git
+[submodule "glue/gonk/external/jsr305"]
+	path = glue/gonk/external/jsr305
+	url = git://android.git.kernel.org/platform/external/jsr305.git
+[submodule "glue/gonk/external/yaffs2"]
+	path = glue/gonk/external/yaffs2
+	url = git://android.git.kernel.org/platform/external/yaffs2.git
+[submodule "glue/gonk/external/xmlwriter"]
+	path = glue/gonk/external/xmlwriter
+	url = git://android.git.kernel.org/platform/external/xmlwriter.git
+[submodule "glue/gonk/external/blktrace"]
+	path = glue/gonk/external/blktrace
+	url = git://android.git.kernel.org/platform/external/blktrace.git
+[submodule "glue/gonk/external/e2fsprogs"]
+	path = glue/gonk/external/e2fsprogs
+	url = git://android.git.kernel.org/platform/external/e2fsprogs.git
+[submodule "glue/gonk/external/ppp"]
+	path = glue/gonk/external/ppp
+	url = git://android.git.kernel.org/platform/external/ppp.git
+[submodule "glue/gonk/external/guava"]
+	path = glue/gonk/external/guava
+	url = git://android.git.kernel.org/platform/external/guava.git
+[submodule "glue/gonk/external/grub"]
+	path = glue/gonk/external/grub
+	url = git://android.git.kernel.org/platform/external/grub.git
+[submodule "glue/gonk/external/kernel-headers"]
+	path = glue/gonk/external/kernel-headers
+	url = git://android.git.kernel.org/platform/external/kernel-headers.git
+[submodule "glue/gonk/external/oprofile"]
+	path = glue/gonk/external/oprofile
+	url = git://android.git.kernel.org/platform/external/oprofile.git
+[submodule "glue/gonk/external/speex"]
+	path = glue/gonk/external/speex
+	url = git://android.git.kernel.org/platform/external/speex.git
+[submodule "glue/gonk/external/libvpx"]
+	path = glue/gonk/external/libvpx
+	url = git://android.git.kernel.org/platform/external/libvpx.git
+[submodule "glue/gonk/external/expat"]
+	path = glue/gonk/external/expat
+	url = git://android.git.kernel.org/platform/external/expat.git
+[submodule "glue/gonk/external/dbus"]
+	path = glue/gonk/external/dbus
+	url = git://android.git.kernel.org/platform/external/dbus.git
+[submodule "glue/gonk/external/protobuf"]
+	path = glue/gonk/external/protobuf
+	url = git://android.git.kernel.org/platform/external/protobuf.git
+[submodule "glue/gonk/external/elfcopy"]
+	path = glue/gonk/external/elfcopy
+	url = git://android.git.kernel.org/platform/external/elfcopy.git
+[submodule "glue/gonk/external/genext2fs"]
+	path = glue/gonk/external/genext2fs
+	url = git://android.git.kernel.org/platform/external/genext2fs.git
+[submodule "glue/gonk/external/gtest"]
+	path = glue/gonk/external/gtest
+	url = git://android.git.kernel.org/platform/external/gtest.git
+[submodule "glue/gonk/external/elfutils"]
+	path = glue/gonk/external/elfutils
+	url = git://android.git.kernel.org/platform/external/elfutils.git
+[submodule "glue/gonk/external/oauth"]
+	path = glue/gonk/external/oauth
+	url = git://android.git.kernel.org/platform/external/oauth.git
+[submodule "glue/gonk/external/mtpd"]
+	path = glue/gonk/external/mtpd
+	url = git://android.git.kernel.org/platform/external/mtpd.git
+[submodule "glue/gonk/external/libxml2"]
+	path = glue/gonk/external/libxml2
+	url = git://android.git.kernel.org/platform/external/libxml2.git
+[submodule "glue/gonk/external/libpng"]
+	path = glue/gonk/external/libpng
+	url = git://android.git.kernel.org/platform/external/libpng.git
+[submodule "glue/gonk/external/neven"]
+	path = glue/gonk/external/neven
+	url = git://android.git.kernel.org/platform/external/neven.git
+[submodule "glue/gonk/external/dnsmasq"]
+	path = glue/gonk/external/dnsmasq
+	url = git://android.git.kernel.org/platform/external/dnsmasq.git
+[submodule "glue/gonk/external/tcpdump"]
+	path = glue/gonk/external/tcpdump
+	url = git://android.git.kernel.org/platform/external/tcpdump.git
+[submodule "glue/gonk/external/clearsilver"]
+	path = glue/gonk/external/clearsilver
+	url = git://android.git.kernel.org/platform/external/clearsilver.git
+[submodule "glue/gonk/external/jpeg"]
+	path = glue/gonk/external/jpeg
+	url = git://android.git.kernel.org/platform/external/jpeg.git
+[submodule "glue/gonk/external/zlib"]
+	path = glue/gonk/external/zlib
+	url = git://android.git.kernel.org/platform/external/zlib.git
+[submodule "glue/gonk/external/icu4c"]
+	path = glue/gonk/external/icu4c
+	url = git://android.git.kernel.org/platform/external/icu4c.git
+[submodule "glue/gonk/external/stlport"]
+	path = glue/gonk/external/stlport
+	url = git://android.git.kernel.org/platform/external/stlport.git
+[submodule "glue/gonk/external/dhcpcd"]
+	path = glue/gonk/external/dhcpcd
+	url = git://android.git.kernel.org/platform/external/dhcpcd.git
+[submodule "glue/gonk/external/ipsec-tools"]
+	path = glue/gonk/external/ipsec-tools
+	url = git://android.git.kernel.org/platform/external/ipsec-tools.git
+[submodule "glue/gonk/external/emma"]
+	path = glue/gonk/external/emma
+	url = git://android.git.kernel.org/platform/external/emma.git
+[submodule "glue/gonk/external/fsck_msdos"]
+	path = glue/gonk/external/fsck_msdos
+	url = git://android.git.kernel.org/platform/external/fsck_msdos.git
+[submodule "glue/gonk/external/sonivox"]
+	path = glue/gonk/external/sonivox
+	url = git://android.git.kernel.org/platform/external/sonivox.git
+[submodule "glue/gonk/external/fdlibm"]
+	path = glue/gonk/external/fdlibm
+	url = git://android.git.kernel.org/platform/external/fdlibm.git
+[submodule "glue/gonk/external/easymock"]
+	path = glue/gonk/external/easymock
+	url = git://android.git.kernel.org/platform/external/easymock.git
+[submodule "glue/gonk/external/jhead"]
+	path = glue/gonk/external/jhead
+	url = git://android.git.kernel.org/platform/external/jhead.git
+[submodule "glue/gonk/external/sqlite"]
+	path = glue/gonk/external/sqlite
+	url = git://android.git.kernel.org/platform/external/sqlite.git
+[submodule "glue/gonk/external/openssl"]
+	path = glue/gonk/external/openssl
+	url = git://android.git.kernel.org/platform/external/openssl.git
+[submodule "glue/gonk/external/nist-sip"]
+	path = glue/gonk/external/nist-sip
+	url = git://android.git.kernel.org/platform/external/nist-sip.git
+[submodule "glue/gonk/external/netperf"]
+	path = glue/gonk/external/netperf
+	url = git://android.git.kernel.org/platform/external/netperf.git
+[submodule "glue/gonk/external/bzip2"]
+	path = glue/gonk/external/bzip2
+	url = git://android.git.kernel.org/platform/external/bzip2.git
+[submodule "glue/gonk/external/safe-iop"]
+	path = glue/gonk/external/safe-iop
+	url = git://android.git.kernel.org/platform/external/safe-iop.git
+[submodule "glue/gonk/cts"]
+	path = glue/gonk/cts
+	url = git://android.git.kernel.org/platform/cts.git
+[submodule "glue/gonk/prebuilt"]
+	path = glue/gonk/prebuilt
+	url = git://android.git.kernel.org/platform/prebuilt.git
+[submodule "glue/gonk/dalvik"]
+	path = glue/gonk/dalvik
+	url = git://android.git.kernel.org/platform/dalvik.git
+[submodule "glue/gonk/packages/experimental"]
+	path = glue/gonk/packages/experimental
+	url = git://android.git.kernel.org/platform/packages/experimental.git
+[submodule "glue/gonk/packages/providers/CalendarProvider"]
+	path = glue/gonk/packages/providers/CalendarProvider
+	url = git://android.git.kernel.org/platform/packages/providers/CalendarProvider.git
+[submodule "glue/gonk/packages/providers/TelephonyProvider"]
+	path = glue/gonk/packages/providers/TelephonyProvider
+	url = git://android.git.kernel.org/platform/packages/providers/TelephonyProvider.git
+[submodule "glue/gonk/packages/providers/ContactsProvider"]
+	path = glue/gonk/packages/providers/ContactsProvider
+	url = git://android.git.kernel.org/platform/packages/providers/ContactsProvider.git
+[submodule "glue/gonk/packages/providers/MediaProvider"]
+	path = glue/gonk/packages/providers/MediaProvider
+	url = git://android.git.kernel.org/platform/packages/providers/MediaProvider.git
+[submodule "glue/gonk/packages/providers/DrmProvider"]
+	path = glue/gonk/packages/providers/DrmProvider
+	url = git://android.git.kernel.org/platform/packages/providers/DrmProvider.git
+[submodule "glue/gonk/packages/providers/GoogleContactsProvider"]
+	path = glue/gonk/packages/providers/GoogleContactsProvider
+	url = git://android.git.kernel.org/platform/packages/providers/GoogleContactsProvider.git
+[submodule "glue/gonk/packages/providers/UserDictionaryProvider"]
+	path = glue/gonk/packages/providers/UserDictionaryProvider
+	url = git://android.git.kernel.org/platform/packages/providers/UserDictionaryProvider.git
+[submodule "glue/gonk/packages/providers/DownloadProvider"]
+	path = glue/gonk/packages/providers/DownloadProvider
+	url = git://android.git.kernel.org/platform/packages/providers/DownloadProvider.git
+[submodule "glue/gonk/packages/providers/ApplicationsProvider"]
+	path = glue/gonk/packages/providers/ApplicationsProvider
+	url = git://android.git.kernel.org/platform/packages/providers/ApplicationsProvider.git
+[submodule "glue/gonk/packages/apps/SoundRecorder"]
+	path = glue/gonk/packages/apps/SoundRecorder
+	url = git://android.git.kernel.org/platform/packages/apps/SoundRecorder.git
+[submodule "glue/gonk/packages/apps/Stk"]
+	path = glue/gonk/packages/apps/Stk
+	url = git://android.git.kernel.org/platform/packages/apps/Stk.git
+[submodule "glue/gonk/packages/apps/Mms"]
+	path = glue/gonk/packages/apps/Mms
+	url = git://android.git.kernel.org/platform/packages/apps/Mms.git
+[submodule "glue/gonk/packages/apps/Provision"]
+	path = glue/gonk/packages/apps/Provision
+	url = git://android.git.kernel.org/platform/packages/apps/Provision.git
+[submodule "glue/gonk/packages/apps/Contacts"]
+	path = glue/gonk/packages/apps/Contacts
+	url = git://android.git.kernel.org/platform/packages/apps/Contacts.git
+[submodule "glue/gonk/packages/apps/VoiceDialer"]
+	path = glue/gonk/packages/apps/VoiceDialer
+	url = git://android.git.kernel.org/platform/packages/apps/VoiceDialer.git
+[submodule "glue/gonk/packages/apps/QuickSearchBox"]
+	path = glue/gonk/packages/apps/QuickSearchBox
+	url = git://android.git.kernel.org/platform/packages/apps/QuickSearchBox.git
+[submodule "glue/gonk/packages/apps/Calendar"]
+	path = glue/gonk/packages/apps/Calendar
+	url = git://android.git.kernel.org/platform/packages/apps/Calendar.git
+[submodule "glue/gonk/packages/apps/Calculator"]
+	path = glue/gonk/packages/apps/Calculator
+	url = git://android.git.kernel.org/platform/packages/apps/Calculator.git
+[submodule "glue/gonk/packages/apps/Music"]
+	path = glue/gonk/packages/apps/Music
+	url = git://android.git.kernel.org/platform/packages/apps/Music.git
+[submodule "glue/gonk/packages/apps/Camera"]
+	path = glue/gonk/packages/apps/Camera
+	url = git://android.git.kernel.org/platform/packages/apps/Camera.git
+[submodule "glue/gonk/packages/apps/CertInstaller"]
+	path = glue/gonk/packages/apps/CertInstaller
+	url = git://android.git.kernel.org/platform/packages/apps/CertInstaller.git
+[submodule "glue/gonk/packages/apps/Phone"]
+	path = glue/gonk/packages/apps/Phone
+	url = git://android.git.kernel.org/platform/packages/apps/Phone.git
+[submodule "glue/gonk/packages/apps/DeskClock"]
+	path = glue/gonk/packages/apps/DeskClock
+	url = git://android.git.kernel.org/platform/packages/apps/DeskClock.git
+[submodule "glue/gonk/packages/apps/CellBroadcastReceiver"]
+	path = glue/gonk/packages/apps/CellBroadcastReceiver
+	url = git://android.git.kernel.org/platform/packages/apps/CellBroadcastReceiver.git
+[submodule "glue/gonk/packages/apps/Gallery"]
+	path = glue/gonk/packages/apps/Gallery
+	url = git://android.git.kernel.org/platform/packages/apps/Gallery.git
+[submodule "glue/gonk/packages/apps/Gallery3D"]
+	path = glue/gonk/packages/apps/Gallery3D
+	url = git://android.git.kernel.org/platform/packages/apps/Gallery3D.git
+[submodule "glue/gonk/packages/apps/Bluetooth"]
+	path = glue/gonk/packages/apps/Bluetooth
+	url = git://android.git.kernel.org/platform/packages/apps/Bluetooth.git
+[submodule "glue/gonk/packages/apps/Tag"]
+	path = glue/gonk/packages/apps/Tag
+	url = git://android.git.kernel.org/platform/packages/apps/Tag.git
+[submodule "glue/gonk/packages/apps/Settings"]
+	path = glue/gonk/packages/apps/Settings
+	url = git://android.git.kernel.org/platform/packages/apps/Settings.git
+[submodule "glue/gonk/packages/apps/HTMLViewer"]
+	path = glue/gonk/packages/apps/HTMLViewer
+	url = git://android.git.kernel.org/platform/packages/apps/HTMLViewer.git
+[submodule "glue/gonk/packages/apps/Browser"]
+	path = glue/gonk/packages/apps/Browser
+	url = git://android.git.kernel.org/platform/packages/apps/Browser.git
+[submodule "glue/gonk/packages/apps/Launcher2"]
+	path = glue/gonk/packages/apps/Launcher2
+	url = git://android.git.kernel.org/platform/packages/apps/Launcher2.git
+[submodule "glue/gonk/packages/apps/SmartCardService"]
+	path = glue/gonk/packages/apps/SmartCardService
+	url = git://android.git.kernel.org/platform/packages/apps/SmartCardService.git
+[submodule "glue/gonk/packages/apps/Nfc"]
+	path = glue/gonk/packages/apps/Nfc
+	url = git://android.git.kernel.org/platform/packages/apps/Nfc.git
+[submodule "glue/gonk/packages/apps/AccountsAndSyncSettings"]
+	path = glue/gonk/packages/apps/AccountsAndSyncSettings
+	url = git://android.git.kernel.org/platform/packages/apps/AccountsAndSyncSettings.git
+[submodule "glue/gonk/packages/apps/Email"]
+	path = glue/gonk/packages/apps/Email
+	url = git://android.git.kernel.org/platform/packages/apps/Email.git
+[submodule "glue/gonk/packages/apps/Protips"]
+	path = glue/gonk/packages/apps/Protips
+	url = git://android.git.kernel.org/platform/packages/apps/Protips.git
+[submodule "glue/gonk/packages/apps/SpeechRecorder"]
+	path = glue/gonk/packages/apps/SpeechRecorder
+	url = git://android.git.kernel.org/platform/packages/apps/SpeechRecorder.git
+[submodule "glue/gonk/packages/apps/PackageInstaller"]
+	path = glue/gonk/packages/apps/PackageInstaller
+	url = git://android.git.kernel.org/platform/packages/apps/PackageInstaller.git
+[submodule "glue/gonk/packages/inputmethods/OpenWnn"]
+	path = glue/gonk/packages/inputmethods/OpenWnn
+	url = git://android.git.kernel.org/platform/packages/inputmethods/OpenWnn.git
+[submodule "glue/gonk/packages/inputmethods/LatinIME"]
+	path = glue/gonk/packages/inputmethods/LatinIME
+	url = git://android.git.kernel.org/platform/packages/inputmethods/LatinIME.git
+[submodule "glue/gonk/packages/inputmethods/PinyinIME"]
+	path = glue/gonk/packages/inputmethods/PinyinIME
+	url = git://android.git.kernel.org/platform/packages/inputmethods/PinyinIME.git
+[submodule "glue/gonk/packages/wallpapers/MagicSmoke"]
+	path = glue/gonk/packages/wallpapers/MagicSmoke
+	url = git://android.git.kernel.org/platform/packages/wallpapers/MagicSmoke.git
+[submodule "glue/gonk/packages/wallpapers/LivePicker"]
+	path = glue/gonk/packages/wallpapers/LivePicker
+	url = git://android.git.kernel.org/platform/packages/wallpapers/LivePicker.git
+[submodule "glue/gonk/packages/wallpapers/Basic"]
+	path = glue/gonk/packages/wallpapers/Basic
+	url = git://android.git.kernel.org/platform/packages/wallpapers/Basic.git
+[submodule "glue/gonk/packages/wallpapers/MusicVisualization"]
+	path = glue/gonk/packages/wallpapers/MusicVisualization
+	url = git://android.git.kernel.org/platform/packages/wallpapers/MusicVisualization.git
+[submodule "glue/gonk/system/bluetooth"]
+	path = glue/gonk/system/bluetooth
+	url = git://android.git.kernel.org/platform/system/bluetooth.git
+[submodule "glue/gonk/system/media"]
+	path = glue/gonk/system/media
+	url = git://android.git.kernel.org/platform/system/media.git
+[submodule "glue/gonk/system/netd"]
+	path = glue/gonk/system/netd
+	url = git://android.git.kernel.org/platform/system/netd.git
+[submodule "glue/gonk/system/vold"]
+	path = glue/gonk/system/vold
+	url = git://android.git.kernel.org/platform/system/vold.git
+[submodule "glue/gonk/system/core"]
+	path = glue/gonk/system/core
+	url = git://android.git.kernel.org/platform/system/core.git
+[submodule "glue/gonk/system/extras"]
+	path = glue/gonk/system/extras
+	url = git://android.git.kernel.org/platform/system/extras.git
+[submodule "glue/gonk/device/common"]
+	path = glue/gonk/device/common
+	url = git://android.git.kernel.org/device/common.git
+[submodule "glue/gonk/device/samsung/crespo4g"]
+	path = glue/gonk/device/samsung/crespo4g
+	url = git://android.git.kernel.org/device/samsung/crespo4g.git
+[submodule "glue/gonk/device/samsung/crespo"]
+	path = glue/gonk/device/samsung/crespo
+	url = git://android.git.kernel.org/device/samsung/crespo.git
+[submodule "glue/gonk/sdk"]
+	path = glue/gonk/sdk
+	url = git://android.git.kernel.org/platform/sdk.git
+[submodule "glue/gonk/frameworks/opt/emoji"]
+	path = glue/gonk/frameworks/opt/emoji
+	url = git://android.git.kernel.org/platform/frameworks/opt/emoji.git
+[submodule "glue/gonk/frameworks/ex"]
+	path = glue/gonk/frameworks/ex
+	url = git://android.git.kernel.org/platform/frameworks/ex.git
+[submodule "glue/gonk/frameworks/base"]
+	path = glue/gonk/frameworks/base
+	url = git://android.git.kernel.org/platform/frameworks/base.git
+[submodule "glue/gonk/hardware/libhardware_legacy"]
+	path = glue/gonk/hardware/libhardware_legacy
+	url = git://android.git.kernel.org/platform/hardware/libhardware_legacy.git
+[submodule "glue/gonk/hardware/libhardware"]
+	path = glue/gonk/hardware/libhardware
+	url = git://android.git.kernel.org/platform/hardware/libhardware.git
+[submodule "glue/gonk/hardware/broadcom/wlan"]
+	path = glue/gonk/hardware/broadcom/wlan
+	url = git://android.git.kernel.org/platform/hardware/broadcom/wlan.git
+[submodule "glue/gonk/hardware/ril"]
+	path = glue/gonk/hardware/ril
+	url = git://android.git.kernel.org/platform/hardware/ril.git
+[submodule "glue/gonk/development"]
+	path = glue/gonk/development
+	url = git://android.git.kernel.org/platform/development.git
+[submodule "glue/gonk/ndk"]
+	path = glue/gonk/ndk
+	url = git://android.git.kernel.org/platform/ndk.git
+[submodule "glue/gonk/bootable/diskinstaller"]
+	path = glue/gonk/bootable/diskinstaller
+	url = git://android.git.kernel.org/platform/bootable/diskinstaller.git
+[submodule "glue/gonk/bootable/bootloader/legacy"]
+	path = glue/gonk/bootable/bootloader/legacy
+	url = git://android.git.kernel.org/platform/bootable/bootloader/legacy.git
+[submodule "glue/gonk/bootable/recovery"]
+	path = glue/gonk/bootable/recovery
+	url = git://android.git.kernel.org/platform/bootable/recovery.git
+[submodule "glue/gonk/libcore"]
+	path = glue/gonk/libcore
+	url = git://android.git.kernel.org/platform/libcore.git
+[submodule "glue/gonk/external/webkit"]
+	path = glue/gonk/external/webkit
+	url = git@github.com:cgjones/android-webkit.git
+[submodule "glue/gonk/external/v8"]
+	path = glue/gonk/external/v8
+	url = git@github.com:cgjones/android-v8.git
+[submodule "glue/gonk/external/skia"]
+	path = glue/gonk/external/skia
+	url = git@github.com:cgjones/android-skia.git
+[submodule "glue/gonk/build"]
+	path = glue/gonk/build
+	url = git@github.com:cgjones/android-build.git
