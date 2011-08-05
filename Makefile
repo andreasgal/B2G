@@ -4,10 +4,10 @@ SHELL = bash
 .DEFAULT: build
 
 PARALLELISM = 16
-GONK = glue/gonk
+GONK = $(abspath glue/gonk)
 
 define GONK_CMD # $(call GONK_CMD,cmd)
-	@cd $(GONK) && \
+	cd $(GONK) && \
 	. build/envsetup.sh && \
 	lunch `cat .config` && \
 	$(1)
@@ -57,11 +57,25 @@ clean-kernel:
 config-gecko-gonk:
 	@cp -p config/gecko-prof-gonk gecko/.mozconfig
 
+
+define INSTALL_NEXUS_S_BLOB # $(call INSTALL_BLOB,vendor,id)
+	wget https://dl.google.com/dl/android/aosp/$(1)-crespo4g-grj90-$(2).tgz && \
+	tar zxvf $(1)-crespo4g-grj90-$(2).tgz && \
+	./extract-$(1)-crespo4g.sh && \
+	rm $(1)-crespo4g-grj90-$(2).tgz extract-$(1)-crespo4g.sh
+endef
+
 .PHONY: config-nexuss4g
 # XXX Hard-coded for nexuss4g target
 config-nexuss4g: config-gecko-gonk
 	@cp -p config/kernel-nexuss4g boot/kernel-android-samsung/.config && \
-	echo -n full_crespo4g-eng > $(GONK)/.config
+	cd $(GONK) && \
+	echo -n full_crespo4g-eng > .config && \
+	$(call INSTALL_NEXUS_S_BLOB,broadcom,c4ec9a38) && \
+	$(call INSTALL_NEXUS_S_BLOB,imgtec,a8e2ce86) && \
+	$(call INSTALL_NEXUS_S_BLOB,nxp,9abcae18) && \
+	$(call INSTALL_NEXUS_S_BLOB,samsung,9474e48f) && \
+	$(call GONK_CMD,make signapk && vendor/samsung/crespo4g/reassemble-apks.sh)
 
 .PHONY: flash
 # XXX Hard-coded for nexuss4g target
@@ -69,7 +83,7 @@ flash: image
 	@$(call GONK_CMD,adb reboot bootloader && fastboot flashall -w)
 
 .PHONY: bootimg-hack
-bootimg-hack:
+bootimg-hack: kernel
 	cp boot/kernel-android-samsung/arch/arm/boot/zImage $(GONK)/device/samsung/crespo/kernel
 
 .PHONY: image

@@ -478,3 +478,6 @@
 [submodule "glue/gonk/build"]
 	path = glue/gonk/build
 	url = git@github.com:cgjones/android-build.git
+[submodule "glue/gonk/device/sample"]
+	path = glue/gonk/device/sample
+	url = git://android.git.kernel.org/device/sample.git
