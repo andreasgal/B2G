@@ -1,4 +1,5 @@
 *~
+local.mk
 glue/gonk/.config
 glue/gonk/out
 glue/gonk/vendor
