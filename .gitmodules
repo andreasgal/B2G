@@ -468,16 +468,16 @@
 	url = git://android.git.kernel.org/platform/libcore.git
 [submodule "glue/gonk/external/webkit"]
 	path = glue/gonk/external/webkit
-	url = git@github.com:cgjones/android-webkit.git
+	url = git://github.com/cgjones/android-webkit.git
 [submodule "glue/gonk/external/v8"]
 	path = glue/gonk/external/v8
-	url = git@github.com:cgjones/android-v8.git
+	url = git://github.com/cgjones/android-v8.git
 [submodule "glue/gonk/external/skia"]
 	path = glue/gonk/external/skia
-	url = git@github.com:cgjones/android-skia.git
+	url = git://github.com/cgjones/android-skia.git
 [submodule "glue/gonk/build"]
 	path = glue/gonk/build
-	url = git@github.com:cgjones/android-build.git
+	url = git://github.com/cgjones/android-build.git
 [submodule "glue/gonk/device/sample"]
 	path = glue/gonk/device/sample
 	url = git://android.git.kernel.org/device/sample.git
