@@ -126,6 +126,10 @@ install-gecko: gecko
 image: build
 	@echo XXX stop overwriting the prebuilt nexuss4g kernel
 
+.PHONY: unlock-bootloader
+oem-unlock: gonk
+	@$(call GONK_CMD,adb reboot bootloader && fastboot oem unlock)
+
 .PHONY: sync
 sync:
 	@git submodule sync && \
