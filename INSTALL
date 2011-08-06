@@ -1,0 +1,138 @@
+This document assumes you've already cloned the b2g repo to the path
+$B2G.
+
+
+ Dependencies
+--------------
+
+Sadly, B2G currently depends on not only the android source, but also
+the android SDK and NDK.  These dependencies will be removed
+eventually, but for now you need to install both.  Follow the
+instructions at
+
+ http://developer.android.com/sdk/installing.html
+ http://developer.android.com/sdk/ndk/index.html
+
+From here on, this document assumes you installed the SDK to the path
+$ANDROID_SDK and the NDK to the path $ANDROID_NDK.
+
+Currently only the Nexus S 4G is supported by B2G's build system.
+This will change over time.
+
+You need to have adb set up to allow your machine to talk to your
+phone.  Follow the instructions at
+
+ http://developer.android.com/guide/developing/device.html
+
+
+ Quick start
+-------------
+
+This only works if your Nexus S's bootloader is unlocked.  If it's
+not, or you're not sure, follow the more detailed instructions below.
+
+$ cd $B2G
+$ make sync
+$ cat > local.mk << EOF
+ANDROID_SDK="$ANDROID_SDK"
+ANDROID_NDK="$ANDROID_NDK"
+EOF
+$ make config-nexuss4g
+$ make flash
+$ make install-gecko
+
+
+ Detailed instructions
+-----------------------
+
+These instructions assume you have followed the directions in the
+"Dependencies" section.
+
+ == Initialize repository ==
+
+The repository is organized as a top-level B2G module with many
+submodules for the kernel, gecko, and other userspace libraries.
+Before doing anything else, you need to synchronize all these
+submodules
+
+$ cd $B2G
+$ make sync
+
+This takes a *long* time, so be patient.  Whenever you want to pull
+from upstream again, just re-run |make sync|.
+
+ == [TEMPORARY] Configure local SDK and NDK paths ==
+
+We're using these currently for reasons not worth knowing.
+
+$ cat > local.mk << EOF
+ANDROID_SDK="$ANDROID_SDK"
+ANDROID_NDK="$ANDROID_NDK"
+EOF
+
+ == Configure repo for your device ==
+
+Currently only the Nexus S 4G is supported.  This will change over
+time, but the basic workflow will be the same.
+
+$ make config-nexuss4g
+
+This configures submodules appropriately for the given device, and for
+devices with proprietary libraries, will attempt to download and
+install the blobs.  The blobs may ask you to agree to an EULA before
+they will install.
+
+In the case of the Nexus S 4G at least, you don't *need* to install
+the proprietary blobs if you don't want to; if you don't, the device
+will function, only more slowly and without access to some sensors.
+
+ == Build the code ==
+
+This part is relatively simple
+
+$ make
+
+This step can take a long time.  Subsequent rebuilds will usually be
+much faster though.
+
+ == Unlock your device's bootloader ==
+
+The step above builds host tools as well as the device image.  We need
+the host tools to unlock the bootloader.
+
+WARNING: This next command deletes *ALL* your user data.  Make sure
+you back up beforehand.
+
+$ make unlock-bootloader
+
+If this works, you should see your device reboot into a
+terminal-looking black screen with a large android logo in the middle
+and some small text to the top-left and bottom-left.  Follow the
+on-screen instructions to confirm unlocking the bootloader.  After
+that, your device reboot.
+
+ == Flash device ==
+
+The "image" to be flashed comprises the custom-built kernel and all
+the userspace programs and libraries.
+
+WARNING: This next command deletes *ALL* your user data.  Make sure
+you back up beforehand.  If the image is bad, it can also *BRICK* your
+phone.  Flash at your own risk.
+
+$ make flash
+
+If all goes well, you'll see the phone reboot into the bootloader,
+then your host machine will report the progress of files it uploads
+and installs on the device.  After finishing, the device will reboot.
+
+ == [TEMPORARY] Install Gecko ==
+
+This is a separate step for reasons not worth knowing.
+
+$ make install-gecko
+
+After this finishes, it will reboot your phone into a Gecko home
+screen.
+
+Happy hacking.
