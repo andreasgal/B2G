@@ -5,6 +5,7 @@ SHELL = bash
 
 UNAME=$(shell uname)
 KERNEL=$(shell cat .selected-kernel)
+KERNEL_CONFIG=$(shell cat .selected-kernel-config)
 
 ifeq ($(UNAME),Darwin)
 TOOLCHAIN_HOST=darwin-x86
@@ -57,7 +58,7 @@ gonk: bootimg-hack geckoapk-hack
 # XXX Hard-coded for nexuss4g target
 # XXX Hard-coded for gonk tool support
 kernel:
-	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) -j$(PARALLELISM) ARCH=arm CROSS_COMPILE=arm-eabi-
+	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(KERNEL_CONFIG) && make -j$(PARALLELISM) ARCH=arm CROSS_COMPILE=arm-eabi-
 
 .PHONY: clean
 clean: clean-gecko clean-gonk clean-kernel
@@ -77,6 +78,7 @@ clean-kernel:
 .PHONY: config-galaxy-s2
 config-galaxy-s2:
 	@echo "galaxy-s2" > .selected-kernel
+	@echo "c1_rev02_defconfig" > .selected-kernel-config
 
 .PHONY: config-gecko-gonk
 config-gecko-gonk:
@@ -92,6 +94,8 @@ endef
 .PHONY: config-nexuss4g
 # XXX Hard-coded for nexuss4g target
 config-nexuss4g: config-gecko-gonk
+	@echo "samsung" > .selected-kernel
+	@echo "" > .selected-kernel-config
 	@cp -p config/kernel-nexuss4g boot/kernel-android-samsung/.config && \
 	cd $(GONK) && \
 	echo -n full_crespo4g-eng > .config && \
