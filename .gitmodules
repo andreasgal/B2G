@@ -481,3 +481,9 @@
 [submodule "glue/gonk/device/sample"]
 	path = glue/gonk/device/sample
 	url = git://android.git.kernel.org/device/sample.git
+[submodule "boot/kernel-android-qemu"]
+	path = boot/kernel-android-qemu
+	url = git://android.git.kernel.org/kernel/qemu.git
+[submodule "boot/kernel-android-galaxy-s2"]
+	path = boot/kernel-android-galaxy-s2
+	url = git://github.com/andreasgal/GT9100-kernel.git

@@ -3,6 +3,18 @@ SHELL = bash
 
 .DEFAULT: build
 
+UNAME=$(shell uname)
+KERNEL=$(shell cat .selected-kernel)
+
+ifeq ($(UNAME),Darwin)
+TOOLCHAIN_HOST=darwin-x86
+else
+TOOLCHAIN_HOST=linux-x86
+endif
+
+TOOLCHAIN_PATH="./glue/gonk/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3/bin"
+KERNEL_PATH="./boot/kernel-android-$(KERNEL)"
+
 PARALLELISM = 16
 GONK = $(abspath glue/gonk)
 
@@ -45,7 +57,7 @@ gonk: bootimg-hack geckoapk-hack
 # XXX Hard-coded for nexuss4g target
 # XXX Hard-coded for gonk tool support
 kernel:
-	@PATH="$$PATH:$(abspath ./glue/gonk/prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin)" make -C boot/kernel-android-samsung -j$(PARALLELISM) ARCH=arm CROSS_COMPILE=arm-eabi-
+	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) -j$(PARALLELISM) ARCH=arm CROSS_COMPILE=arm-eabi-
 
 .PHONY: clean
 clean: clean-gecko clean-gonk clean-kernel
@@ -60,12 +72,15 @@ clean-gonk:
 
 .PHONY: clean-kernel
 clean-kernel:
-	@PATH="$$PATH:$(abspath ./glue/gonk/prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin)" make -C boot/kernel-android-samsung ARCH=arm CROSS_COMPILE=arm-eabi- clean
+	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) ARCH=arm CROSS_COMPILE=arm-eabi- clean
+
+.PHONY: config-galaxy-s2
+config-galaxy-s2:
+	@echo "galaxy-s2" > .selected-kernel
 
 .PHONY: config-gecko-gonk
 config-gecko-gonk:
 	@cp -p config/gecko-prof-gonk gecko/.mozconfig
-
 
 define INSTALL_NEXUS_S_BLOB # $(call INSTALL_BLOB,vendor,id)
 	wget https://dl.google.com/dl/android/aosp/$(1)-crespo4g-grj90-$(2).tgz && \
