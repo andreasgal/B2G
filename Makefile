@@ -58,7 +58,7 @@ gonk: bootimg-hack geckoapk-hack
 # XXX Hard-coded for nexuss4g target
 # XXX Hard-coded for gonk tool support
 kernel:
-	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) -j$(PARALLELISM) ARCH=arm CROSS_COMPILE=arm-eabi-
+	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(KERNEL_CONFIG) && make -j$(PARALLELISM) ARCH=arm CROSS_COMPILE=arm-eabi-
 
 .PHONY: clean
 clean: clean-gecko clean-gonk clean-kernel
