@@ -6,20 +6,10 @@ SHELL = bash
 UNAME=$(shell uname)
 KERNEL=$(shell cat .selected-kernel)
 
-ifeq ($(UNAME),Darwin)
-TOOLCHAIN_HOST=darwin-x86
-else
 TOOLCHAIN_HOST=linux-x86
-endif
-
 TOOLCHAIN_PATH=./glue/gonk/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3/bin
 KERNEL_PATH=./boot/kernel-android-$(KERNEL)
-
-ifneq ($(UNAME),Darwin)
 MAKEFLAGS = -j16
-else
-MAKEFLAGS =
-endif
 
 GONK = $(abspath glue/gonk)
 
@@ -99,7 +89,6 @@ endef
 # XXX Hard-coded for nexuss4g target
 config-nexuss4g: config-gecko-gonk
 	@echo "samsung" > .selected-kernel
-	@echo "" > .selected-kernel-config
 	@cp -p config/kernel-nexuss4g boot/kernel-android-samsung/.config && \
 	cd $(GONK) && \
 	echo -n full_crespo4g-eng > .config && \
