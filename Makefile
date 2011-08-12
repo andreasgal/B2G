@@ -5,7 +5,6 @@ SHELL = bash
 
 UNAME=$(shell uname)
 KERNEL=$(shell cat .selected-kernel)
-KERNEL_CONFIG=$(shell cat .selected-kernel-config)
 
 ifeq ($(UNAME),Darwin)
 TOOLCHAIN_HOST=darwin-x86
@@ -13,10 +12,15 @@ else
 TOOLCHAIN_HOST=linux-x86
 endif
 
-TOOLCHAIN_PATH="./glue/gonk/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3/bin"
-KERNEL_PATH="./boot/kernel-android-$(KERNEL)"
+TOOLCHAIN_PATH=./glue/gonk/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3/bin
+KERNEL_PATH=./boot/kernel-android-$(KERNEL)
 
-PARALLELISM = 16
+ifneq ($(UNAME),Darwin)
+MAKEFLAGS = -j16
+else
+MAKEFLAGS =
+endif
+
 GONK = $(abspath glue/gonk)
 
 define GONK_CMD # $(call GONK_CMD,cmd)
@@ -47,18 +51,18 @@ endif
 gecko:
 	@export ANDROID_SDK=$(ANDROID_SDK) && \
 	export ANDROID_NDK=$(ANDROID_NDK) && \
-	make -C gecko -f client.mk -s -j$(PARALLELISM) && \
+	make -C gecko -f client.mk -s $(MAKEFLAGS) && \
 	make -C gecko/objdir-prof-android package
 
 .PHONY: gonk
 gonk: bootimg-hack geckoapk-hack
-	@$(call GONK_CMD,make -j$(PARALLELISM))
+	@$(call GONK_CMD,make $(MAKEFLAGS))
 
 .PHONY: kernel
 # XXX Hard-coded for nexuss4g target
 # XXX Hard-coded for gonk tool support
 kernel:
-	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(KERNEL_CONFIG) && make -j$(PARALLELISM) ARCH=arm CROSS_COMPILE=arm-eabi-
+	PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKEFLAGS) ARCH=arm CROSS_COMPILE=arm-eabi-
 
 .PHONY: clean
 clean: clean-gecko clean-gonk clean-kernel
@@ -78,7 +82,7 @@ clean-kernel:
 .PHONY: config-galaxy-s2
 config-galaxy-s2:
 	@echo "galaxy-s2" > .selected-kernel
-	@echo "c1_rev02_defconfig" > .selected-kernel-config
+	@cp -p config/kernel-galaxy-s2 boot/kernel-android-galaxy-s2/.config
 
 .PHONY: config-gecko-gonk
 config-gecko-gonk:
