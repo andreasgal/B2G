@@ -1,28 +1,28 @@
 # To support gonk's build/envsetup.sh
 SHELL = bash
 
+-include .config.mk
+
 .DEFAULT: build
 
-UNAME=$(shell uname)
-KERNEL=$(shell cat .selected-kernel)
-KERNEL_CONFIG=$(shell cat .selected-kernel-config)
-
+UNAME = $(shell uname)
 ifeq ($(UNAME),Darwin)
-TOOLCHAIN_HOST=darwin-x86
+TOOLCHAIN_HOST = darwin-x86
 else
-TOOLCHAIN_HOST=linux-x86
+TOOLCHAIN_HOST = linux-x86
 endif
 
-TOOLCHAIN_PATH="./glue/gonk/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3/bin"
-KERNEL_PATH="./boot/kernel-android-$(KERNEL)"
+TOOLCHAIN_PATH = ./glue/gonk/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3/bin
+KERNEL_PATH = ./boot/kernel-android-$(KERNEL)
 
 PARALLELISM = 16
-GONK = $(abspath glue/gonk)
+GONK_PATH = $(abspath glue/gonk)
+GONK_TARGET = full_$(GONK)-eng
 
 define GONK_CMD # $(call GONK_CMD,cmd)
-	cd $(GONK) && \
+	cd $(GONK_PATH) && \
 	. build/envsetup.sh && \
-	lunch `cat .config` && \
+	lunch $(GONK_TARGET) && \
 	$(1)
 endef
 
@@ -58,7 +58,7 @@ gonk: bootimg-hack geckoapk-hack
 # XXX Hard-coded for nexuss4g target
 # XXX Hard-coded for gonk tool support
 kernel:
-	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(KERNEL_CONFIG) && make -j$(PARALLELISM) ARCH=arm CROSS_COMPILE=arm-eabi-
+	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) -j$(PARALLELISM) ARCH=arm CROSS_COMPILE=arm-eabi-
 
 .PHONY: clean
 clean: clean-gecko clean-gonk clean-kernel
@@ -77,8 +77,8 @@ clean-kernel:
 
 .PHONY: config-galaxy-s2
 config-galaxy-s2:
-	@echo "galaxy-s2" > .selected-kernel
-	@echo "c1_rev02_defconfig" > .selected-kernel-config
+	@echo "KERNEL = galaxy-s2" > .config.mk
+	@cp config/kernel-galaxy-s2 boot/kernel-android-galaxy-s2/.config
 
 .PHONY: config-gecko-gonk
 config-gecko-gonk:
@@ -94,15 +94,18 @@ endef
 .PHONY: config-nexuss4g
 # XXX Hard-coded for nexuss4g target
 config-nexuss4g: config-gecko-gonk
-	@echo "samsung" > .selected-kernel
-	@echo "" > .selected-kernel-config
-	@cp -p config/kernel-nexuss4g boot/kernel-android-samsung/.config && \
-	cd $(GONK) && \
-	echo -n full_crespo4g-eng > .config && \
+	@echo "KERNEL = samsung" > .config.mk && \
+	echo "GONK = crespo4g" >> .config.mk && \
+	cp -p config/kernel-nexuss4g boot/kernel-android-samsung/.config && \
+	cd $(GONK_PATH) && \
 	$(call INSTALL_NEXUS_S_BLOB,broadcom,c4ec9a38) && \
 	$(call INSTALL_NEXUS_S_BLOB,imgtec,a8e2ce86) && \
 	$(call INSTALL_NEXUS_S_BLOB,nxp,9abcae18) && \
 	$(call INSTALL_NEXUS_S_BLOB,samsung,9474e48f) && \
+	make -C $(CURDIR) nexuss4g-postconfig
+
+.PHONY: nexuss4g-postconfig
+nexuss4g-postconfig:
 	$(call GONK_CMD,make signapk && vendor/samsung/crespo4g/reassemble-apks.sh)
 
 .PHONY: flash
@@ -112,11 +115,11 @@ flash: image
 
 .PHONY: bootimg-hack
 bootimg-hack: kernel
-	cp -p boot/kernel-android-samsung/arch/arm/boot/zImage $(GONK)/device/samsung/crespo/kernel && \
-	cp -p boot/kernel-android-samsung/drivers/net/wireless/bcm4329/bcm4329.ko $(GONK)/device/samsung/crespo/bcm4329.ko
+	cp -p boot/kernel-android-samsung/arch/arm/boot/zImage $(GONK_PATH)/device/samsung/crespo/kernel && \
+	cp -p boot/kernel-android-samsung/drivers/net/wireless/bcm4329/bcm4329.ko $(GONK_PATH)/device/samsung/crespo/bcm4329.ko
 
 # XXX Hard-coded for nexuss4g target
-APP_OUT_DIR := $(GONK)/out/target/product/crespo4g/system/app
+APP_OUT_DIR := $(GONK_PATH)/out/target/product/crespo4g/system/app
 
 $(APP_OUT_DIR):
 	mkdir -p $(APP_OUT_DIR)
