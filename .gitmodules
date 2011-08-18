@@ -487,3 +487,6 @@
 [submodule "boot/kernel-android-galaxy-s2"]
 	path = boot/kernel-android-galaxy-s2
 	url = git://github.com/andreasgal/GT9100-kernel.git
+[submodule "glue/gonk/device/samsung/galaxys2"]
+	path = glue/gonk/device/samsung/galaxys2
+	url = git://github.com/cgjones/android_device_samsung_galaxys2.git
