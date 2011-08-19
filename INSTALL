@@ -16,20 +16,26 @@ instructions at
 From here on, this document assumes you installed the SDK to the path
 $ANDROID_SDK and the NDK to the path $ANDROID_NDK.
 
-Currently only the Nexus S 4G is supported by B2G's build system.
-This will change over time.
-
 You need to have adb set up to allow your machine to talk to your
 phone.  Follow the instructions at
 
  http://developer.android.com/guide/developing/device.html
 
+If you're building for the Galaxy S II, you need to install "Heimdall"
+to be able to flash your phone with B2G.  Follow the instructions at
+
+  http://www.glassechidna.com.au/products/heimdall/
+
+(Even if you're not building for the Galaxy S II, it's not a bad idea
+to install Heimdall anyway.)
+
 
  Quick start
 -------------
 
-This only works if your Nexus S's bootloader is unlocked.  If it's
-not, or you're not sure, follow the more detailed instructions below.
+This only works if your bootloader is unlocked.  If it's not, or
+you're not sure, follow the more detailed instructions below.  Make
+sure to back up your phone before doing this.
 
 $ cd $B2G
 $ make sync
@@ -37,7 +43,7 @@ $ cat > local.mk << EOF
 ANDROID_SDK="$ANDROID_SDK"
 ANDROID_NDK="$ANDROID_NDK"
 EOF
-$ make config-nexuss4g
+$ make config-nexuss4g   # or, make config-galaxy-s2
 $ make flash
 $ make install-gecko
 
@@ -72,10 +78,11 @@ EOF
 
  == Configure repo for your device ==
 
-Currently only the Nexus S 4G is supported.  This will change over
-time, but the basic workflow will be the same.
-
+ Nexus S 4G: 
 $ make config-nexuss4g
+
+ Galaxy S II:
+$ make config-galaxy-s2
 
 This configures submodules appropriately for the given device, and for
 devices with proprietary libraries, will attempt to download and
@@ -97,6 +104,8 @@ much faster though.
 
  == Unlock your device's bootloader ==
 
+This is only needed for the Nexus S 4G.
+
 The step above builds host tools as well as the device image.  We need
 the host tools to unlock the bootloader.
 
@@ -111,6 +120,40 @@ and some small text to the top-left and bottom-left.  Follow the
 on-screen instructions to confirm unlocking the bootloader.  After
 that, your device reboot.
 
+ == Back up device ==
+
+WARNING: Only tested with the Galaxy S II.  Instructions will be
+different for other phones.  This backup process is absolutely
+essential for the Galaxy S II because the B2G image is very unstable
+there.
+
+These steps install the "ClockworkMod" recovery image.  Among other
+things, it lets you make full backups of the phone's partitions to the
+sdcard, and restore them.  This is extraordinarily useful.  To install
+ClockworkMod
+
+$ cd /tmp
+$ wget http://cmw.22aaf3.com/c1/recovery/recovery-clockwork-4.0.1.4-galaxys2.tar
+$ tar xvf recovery-clockwork-*.tar
+$ adb reboot download
+
+This puts your phone into "download mode", in which it's ready to be
+flashed using the "Odin" protocol.  Your phone should boot into a
+screen that says something like, "Downloading, Do not turn off!".  If
+not, something went wrong.  To actually flash ClockworkMod
+
+$ heimdall flash --kernel zImage
+
+When this finishes, your phone should reboot normally.  If not,
+something went wrong, get help.  Finally, let's back up your phone's
+current image
+
+$ adb reboot recovery
+
+This boots your phone into a screen that says "ClockworkMod Recovery"
+at the top-left.  Follow the on-screen instructions to make a backup
+image.
+
  == Flash device ==
 
 The "image" to be flashed comprises the custom-built kernel and all
@@ -119,6 +162,12 @@ the userspace programs and libraries.
 WARNING: This next command deletes *ALL* your user data.  Make sure
 you back up beforehand.  If the image is bad, it can also *BRICK* your
 phone.  Flash at your own risk.
+
+NOTE: For the Galaxy S II, you must first reboot into recovery mode
+(adb reboot recovery), then choose "wipe data/factory reset".  This
+will be fixed.  BE SURE you don't reboot your phone before running the
+following step.  That is, you should run "make flash" while your phone
+is still in recovery mode.
 
 $ make flash
 
