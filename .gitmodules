@@ -490,3 +490,6 @@
 [submodule "glue/gonk/device/samsung/galaxys2"]
 	path = glue/gonk/device/samsung/galaxys2
 	url = git://github.com/cgjones/android_device_samsung_galaxys2.git
+[submodule "glue/gonk/device/samsung/c1-common"]
+	path = glue/gonk/device/samsung/c1-common
+	url = git://github.com/cgjones/android_device_samsung_c1-common.git
