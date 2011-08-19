@@ -435,7 +435,7 @@
 	url = git://android.git.kernel.org/platform/frameworks/ex.git
 [submodule "glue/gonk/frameworks/base"]
 	path = glue/gonk/frameworks/base
-	url = git://android.git.kernel.org/platform/frameworks/base.git
+	url = git://github.com/cgjones/android-frameworks-base.git
 [submodule "glue/gonk/hardware/libhardware_legacy"]
 	path = glue/gonk/hardware/libhardware_legacy
 	url = git://android.git.kernel.org/platform/hardware/libhardware_legacy.git
