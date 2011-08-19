@@ -7,6 +7,7 @@ SHELL = bash
 
 MAKE_FLAGS = -j16
 
+HEIMDALL ?= heimdall
 TOOLCHAIN_HOST = linux-x86
 TOOLCHAIN_PATH = ./glue/gonk/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3/bin
 KERNEL_PATH = ./boot/kernel-android-$(KERNEL)
@@ -42,18 +43,18 @@ endif
 gecko:
 	@export ANDROID_SDK=$(ANDROID_SDK) && \
 	export ANDROID_NDK=$(ANDROID_NDK) && \
-	make -C gecko -f client.mk -s $(MAKEFLAGS) && \
+	make -C gecko -f client.mk -s $(MAKE_FLAGS) && \
 	make -C gecko/objdir-prof-android package
 
 .PHONY: gonk
 gonk: bootimg-hack geckoapk-hack
-	@$(call GONK_CMD,make $(MAKEFLAGS))
+	@$(call GONK_CMD,make $(MAKE_FLAGS))
 
 .PHONY: kernel
 # XXX Hard-coded for nexuss4g target
 # XXX Hard-coded for gonk tool support
 kernel:
-	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKEFLAGS) ARCH=arm CROSS_COMPILE=arm-eabi-
+	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE=arm-eabi-
 
 .PHONY: clean
 clean: clean-gecko clean-gonk clean-kernel
@@ -72,8 +73,13 @@ clean-kernel:
 
 .PHONY: config-galaxy-s2
 config-galaxy-s2:
-	@echo "KERNEL = galaxy-s2" > .config.mk
-	@cp -p config/kernel-galaxy-s2 boot/kernel-android-galaxy-s2/.config
+	@echo "KERNEL = galaxy-s2" > .config.mk && \
+	echo "GONK = galaxys2" >> .config.mk && \
+	cp -p config/kernel-galaxy-s2 boot/kernel-android-galaxy-s2/.config && \
+	cd $(GONK_PATH)/device/samsung/galaxys2/ && \
+	echo Extracting binary blobs from device, which should be plugged in! ... && \
+	./extract-files.sh && \
+	echo OK
 
 .PHONY: config-gecko-gonk
 config-gecko-gonk:
@@ -104,14 +110,27 @@ nexuss4g-postconfig:
 	$(call GONK_CMD,make signapk && vendor/samsung/crespo4g/reassemble-apks.sh)
 
 .PHONY: flash
-# XXX Hard-coded for nexuss4g target
-flash: image
+# XXX Using target-specific targets for the time being.  fastboot is
+# great, but the sgs2 doesn't support it.  Eventually we should find a
+# lowest-common-denominator solution.
+flash: flash-$(GONK)
+
+.PHONY: flash-crespo4g
+flash-crespo4g: image
 	@$(call GONK_CMD,adb reboot bootloader && fastboot flashall -w)
+
+.PHONY: flash-galaxys2
+flash-galaxys2: image
+	@adb reboot download && \
+	sleep 20 && \
+	$(HEIMDALL) flash --factoryfs $(GONK_PATH)/out/target/product/galaxys2/system.img
 
 .PHONY: bootimg-hack
 bootimg-hack: kernel
+ifeq (samsung,$(KERNEL))
 	cp -p boot/kernel-android-samsung/arch/arm/boot/zImage $(GONK_PATH)/device/samsung/crespo/kernel && \
 	cp -p boot/kernel-android-samsung/drivers/net/wireless/bcm4329/bcm4329.ko $(GONK_PATH)/device/samsung/crespo/bcm4329.ko
+endif
 
 # XXX Hard-coded for nexuss4g target
 APP_OUT_DIR := $(GONK_PATH)/out/target/product/crespo4g/system/app
