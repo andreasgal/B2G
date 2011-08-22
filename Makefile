@@ -155,7 +155,7 @@ geckoapk-hack: gecko | $(APP_OUT_DIR)
 
 .PHONY: install-gecko
 install-gecko: gecko
-	@adb install -r gecko/objdir-prof-android/dist/fennec-*.apk && \
+	@adb install -r gecko/objdir-prof-android/dist/b2g-*.apk && \
 	adb reboot
 
 .PHONY: image
