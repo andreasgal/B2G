@@ -72,7 +72,7 @@ clean-kernel:
 	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) ARCH=arm CROSS_COMPILE=arm-eabi- clean
 
 .PHONY: config-galaxy-s2
-config-galaxy-s2:
+config-galaxy-s2: config-gecko-gonk
 	@echo "KERNEL = galaxy-s2" > .config.mk && \
 	echo "GONK = galaxys2" >> .config.mk && \
 	cp -p config/kernel-galaxy-s2 boot/kernel-android-galaxy-s2/.config && \
