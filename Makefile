@@ -163,7 +163,7 @@ image: build
 	@echo XXX stop overwriting the prebuilt nexuss4g kernel
 
 .PHONY: unlock-bootloader
-oem-unlock: gonk
+unlock-bootloader:
 	@$(call GONK_CMD,adb reboot bootloader && fastboot oem unlock)
 
 .PHONY: sync
