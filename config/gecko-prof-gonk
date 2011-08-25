@@ -23,6 +23,3 @@ ac_add_options --disable-elf-hack
 ac_add_options --enable-debug-symbols
 ac_add_options --enable-profiling
 ac_add_options --with-ccache
-
-ac_add_options --disable-thumb2
-ac_add_options --with-thumb=no

@@ -423,7 +423,7 @@
 	url = git://android.git.kernel.org/device/samsung/crespo4g.git
 [submodule "glue/gonk/device/samsung/crespo"]
 	path = glue/gonk/device/samsung/crespo
-	url = git://android.git.kernel.org/device/samsung/crespo.git
+	url = git://github.com/cgjones/android-device-crespo.git
 [submodule "glue/gonk/sdk"]
 	path = glue/gonk/sdk
 	url = git://android.git.kernel.org/platform/sdk.git
