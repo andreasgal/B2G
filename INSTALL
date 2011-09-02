@@ -29,6 +29,16 @@ to be able to flash your phone with B2G.  Follow the instructions at
 (Even if you're not building for the Galaxy S II, it's not a bad idea
 to install Heimdall anyway.)
 
+There are a few other dependencies you may find necessary to install.
+These were found to be necessary when building on a ubuntu 64bit system.
+-- For Nexus S 4g --
+If you get a stubs-32.h not found error when running the nexus configure:
+# sudo apt-get install ia32-libs gcc-multilib g++-multilib
+
+Other packages that had to be installed on a fresh ubuntu 64 bit platform:
+* bison
+* flex
+* gperf
 
  Quick start
 -------------
@@ -183,5 +193,17 @@ $ make install-gecko
 
 After this finishes, it will reboot your phone into a Gecko home
 screen.
+
+NOTE: If you get a message at the end of the install-gecko process that says:
+# /sbin/sh pm not found
+Then this refers to the android package manager not working properly on the device.
+The reason it's not working is that it doesn't have permissions to write to /data/system.
+To fix:
+1. adb push gecko/objdir-prof-android/dist/b2g-9.0a1.en-US.android-arm.apk /data/local/tmp/b2g.apk
+2. adb shell
+3. chmod -R 777 /data  # You could probably get by with chmod'ing /data/system, 
+                       # but, you might as well go all out, right?
+4. sh /system/bin/pm install -r /data/local/tmp/b2g.apk
+5. reboot
 
 Happy hacking.
