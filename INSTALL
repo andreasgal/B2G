@@ -31,7 +31,10 @@ to install Heimdall anyway.)
 
 There are a few other dependencies you may find necessary to install.
 These were found to be necessary when building on a ubuntu 64bit system.
-# sudo apt-get install ia32-libs gcc-multilib g++-multilib bison flex gperf
+
+# sudo apt-get install ia32-libs gcc-multilib g++-multilib bison flex \
+  gperf lib32z1-dev lib32ncurses5-dev lib32ncursesw5-dev libidl-dev \
+  lib32gomp1
 
  Quick start
 -------------
