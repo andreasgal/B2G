@@ -158,6 +158,13 @@ install-gecko: gecko
 	@adb install -r gecko/objdir-prof-android/dist/b2g-*.apk && \
 	adb reboot
 
+# The sad hacks keep piling up...  We can't set this up to be
+# installed as part of the data partition because we can't flash that
+# on the sgs2.
+.PHONY: install-gaia
+install-gaia:
+	@for i in `ls gaia`; do adb push gaia/$$i /data/local/$$i; done
+
 .PHONY: image
 image: build
 	@echo XXX stop overwriting the prebuilt nexuss4g kernel

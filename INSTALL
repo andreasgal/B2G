@@ -52,6 +52,7 @@ EOF
 $ make config-nexuss4g   # or, make config-galaxy-s2
 $ make flash
 $ make install-gecko
+$ make install-gaia
 
 
  Detailed instructions
@@ -200,5 +201,18 @@ To fix:
 3. # chmod -R 777 /data/system                         
 4. # sh /system/bin/pm install -r /data/local/tmp/b2g.apk
 5. # reboot
+
+ == [TEMPORARY] Install Gaia ==
+
+This is a separate step for reasons not worth knowing.
+
+Gaia is the phone experience prototype being developed by Mozilla.  To
+install it on a flashed device, run
+
+$ make install-gaia
+
+If you press the "Home" button on device, the Gaia homescreen will
+reload.
+
 
 Happy hacking.
