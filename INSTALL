@@ -182,25 +182,8 @@ If all goes well, you'll see the phone reboot into the bootloader,
 then your host machine will report the progress of files it uploads
 and installs on the device.  After finishing, the device will reboot.
 
- == [TEMPORARY] Install Gecko ==
-
-This is a separate step for reasons not worth knowing.
-
-$ make install-gecko
-
-After this finishes, it will reboot your phone into a Gecko home
-screen.
-
-NOTE: If you get a message at the end of the install-gecko process that says:
-# /sbin/sh pm not found
-Then this refers to the android package manager not working properly on the device.
-The reason it's not working is that it doesn't have permissions to write to /data/system.
-To fix:
-1. $ adb push gecko/objdir-prof-android/dist/b2g-9.0a1.en-US.android-arm.apk /data/local/tmp/b2g.apk
-2. $ adb shell    
-3. # chmod -R 777 /data/system                         
-4. # sh /system/bin/pm install -r /data/local/tmp/b2g.apk
-5. # reboot
+After flashing, you may need to run
+adb shell chmod -R 777 /data/system
 
  == [TEMPORARY] Install Gaia ==
 
