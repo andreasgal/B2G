@@ -1,6 +1,6 @@
 [submodule "gecko"]
 	path = gecko
-	url = https://github.com/cgjones/mozilla-central
+	url = git://github.com/cgjones/mozilla-central.git
 [submodule "boot/kernel-android-samsung"]
 	path = boot/kernel-android-samsung
 	url = git://github.com/cgjones/samsung-android-kernel.git
@@ -493,3 +493,6 @@
 [submodule "glue/gonk/device/samsung/c1-common"]
 	path = glue/gonk/device/samsung/c1-common
 	url = git://github.com/cgjones/android_device_samsung_c1-common.git
+[submodule "gaia"]
+	path = gaia
+	url = git://github.com/andreasgal/gaia.git
