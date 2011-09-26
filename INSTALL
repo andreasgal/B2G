@@ -51,8 +51,10 @@ ANDROID_NDK="$ANDROID_NDK"
 EOF
 $ make config-nexuss4g   # or, make config-galaxy-s2
 $ make flash
-$ make install-gaia
 
+# temporary hack you may need
+
+$ adb shell chmod -R 777 /data/system
 
  Detailed instructions
 -----------------------
@@ -184,12 +186,11 @@ and installs on the device.  After finishing, the device will reboot.
 After flashing, you may need to run
 adb shell chmod -R 777 /data/system
 
- == [TEMPORARY] Install Gaia ==
+ == Install Gaia ==
 
-This is a separate step for reasons not worth knowing.
-
-Gaia is the phone experience prototype being developed by Mozilla.  To
-install it on a flashed device, run
+Gaia is the phone experience prototype being developed by Mozilla. It
+is built into the system image by default. To update gaia on a flashed
+device, run
 
 $ make install-gaia
 

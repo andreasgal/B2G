@@ -47,7 +47,7 @@ gecko:
 	make -C gecko/objdir-prof-android package
 
 .PHONY: gonk
-gonk: bootimg-hack geckoapk-hack
+gonk: bootimg-hack geckoapk-hack gaia-hack
 	@$(call GONK_CMD,make $(MAKE_FLAGS))
 
 .PHONY: kernel
@@ -144,6 +144,12 @@ geckoapk-hack: gecko
 	cp -p gecko/objdir-prof-android/dist/b2g-*.apk $(APP_OUT_DIR)/B2G.apk
 	unzip -jo gecko/objdir-prof-android/dist/b2g-*.apk lib/armeabi-v7a/libmozutils.so -d $(OUT_DIR)/lib
 	find glue/gonk/out -iname "*.img" | xargs rm
+
+.PHONY: gaia-hack
+gaia-hack: gaia
+	rm -rf $(OUT_DIR)/home
+	mkdir -p $(OUT_DIR)/home
+	cp -r gaia/* $(OUT_DIR)/home
 
 .PHONY: install-gecko
 install-gecko: gecko
