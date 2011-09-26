@@ -51,7 +51,6 @@ ANDROID_NDK="$ANDROID_NDK"
 EOF
 $ make config-nexuss4g   # or, make config-galaxy-s2
 $ make flash
-$ make install-gecko
 $ make install-gaia
 
 
