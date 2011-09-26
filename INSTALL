@@ -34,7 +34,7 @@ These were found to be necessary when building on a ubuntu 64bit system.
 
 # sudo apt-get install ia32-libs gcc-multilib g++-multilib bison flex \
   gperf lib32z1-dev lib32ncurses5-dev lib32ncursesw5-dev libidl-dev \
-  lib32gomp1
+  lib32gomp1 autoconf2.13 ccache libx11-dev
 
  Quick start
 -------------
@@ -51,9 +51,10 @@ ANDROID_NDK="$ANDROID_NDK"
 EOF
 $ make config-nexuss4g   # or, make config-galaxy-s2
 $ make flash
-$ make install-gecko
-$ make install-gaia
 
+# temporary hack you may need
+
+$ adb shell chmod -R 777 /data/system
 
  Detailed instructions
 -----------------------
@@ -182,32 +183,14 @@ If all goes well, you'll see the phone reboot into the bootloader,
 then your host machine will report the progress of files it uploads
 and installs on the device.  After finishing, the device will reboot.
 
- == [TEMPORARY] Install Gecko ==
+After flashing, you may need to run
+adb shell chmod -R 777 /data/system
 
-This is a separate step for reasons not worth knowing.
+ == Install Gaia ==
 
-$ make install-gecko
-
-After this finishes, it will reboot your phone into a Gecko home
-screen.
-
-NOTE: If you get a message at the end of the install-gecko process that says:
-# /sbin/sh pm not found
-Then this refers to the android package manager not working properly on the device.
-The reason it's not working is that it doesn't have permissions to write to /data/system.
-To fix:
-1. $ adb push gecko/objdir-prof-android/dist/b2g-9.0a1.en-US.android-arm.apk /data/local/tmp/b2g.apk
-2. $ adb shell    
-3. # chmod -R 777 /data/system                         
-4. # sh /system/bin/pm install -r /data/local/tmp/b2g.apk
-5. # reboot
-
- == [TEMPORARY] Install Gaia ==
-
-This is a separate step for reasons not worth knowing.
-
-Gaia is the phone experience prototype being developed by Mozilla.  To
-install it on a flashed device, run
+Gaia is the phone experience prototype being developed by Mozilla. It
+is built into the system image by default. To update gaia on a flashed
+device, run
 
 $ make install-gaia
 
