@@ -43,6 +43,7 @@ endif
 gecko:
 	@export ANDROID_SDK=$(ANDROID_SDK) && \
 	export ANDROID_NDK=$(ANDROID_NDK) && \
+	export ANDROID_VERSION_CODE=`date +%Y%m%d%H%M%S` && \
 	make -C gecko -f client.mk -s $(MAKE_FLAGS) && \
 	make -C gecko/objdir-prof-android package
 
