@@ -43,11 +43,12 @@ endif
 gecko:
 	@export ANDROID_SDK=$(ANDROID_SDK) && \
 	export ANDROID_NDK=$(ANDROID_NDK) && \
+	export ANDROID_VERSION_CODE=`date +%Y%m%d%H%M%S` && \
 	make -C gecko -f client.mk -s $(MAKE_FLAGS) && \
 	make -C gecko/objdir-prof-android package
 
 .PHONY: gonk
-gonk: bootimg-hack geckoapk-hack
+gonk: bootimg-hack geckoapk-hack gaia-hack
 	@$(call GONK_CMD,make $(MAKE_FLAGS))
 
 .PHONY: kernel
@@ -132,26 +133,24 @@ ifeq (samsung,$(KERNEL))
 	cp -p boot/kernel-android-samsung/drivers/net/wireless/bcm4329/bcm4329.ko $(GONK_PATH)/device/samsung/crespo/bcm4329.ko
 endif
 
-# XXX Hard-coded for nexuss4g target
-APP_OUT_DIR := $(GONK_PATH)/out/target/product/crespo4g/system/app
+OUT_DIR := $(GONK_PATH)/out/target/product/$(GONK)/system
+APP_OUT_DIR := $(OUT_DIR)/app
 
 $(APP_OUT_DIR):
 	mkdir -p $(APP_OUT_DIR)
 
 .PHONY: geckoapk-hack
-geckoapk-hack: gecko | $(APP_OUT_DIR)
-# XXX disabled for the moment because fennec can't load itself when
-# installed as a system app:
-#   FATAL EXCEPTION: Thread-10
-#   java.lang.UnsatisfiedLinkError: Couldn't load mozutils: findLibrary returned null
-#   	at java.lang.Runtime.loadLibrary(Runtime.java:429)
-#   	at java.lang.System.loadLibrary(System.java:554)
-#   	at org.mozilla.gecko.GeckoAppShell.loadGeckoLibs(GeckoAppShell.java:274#  )
-#   	at org.mozilla.gecko.GeckoApp$4.run(GeckoApp.java:249)
-#   	at java.lang.Thread.run(Thread.java:1019)
-#   Force finishing activity org.mozilla.fennec_unofficial/.App
+geckoapk-hack: gecko
+	mkdir -p $(APP_OUT_DIR)
+	cp -p gecko/objdir-prof-android/dist/b2g-*.apk $(APP_OUT_DIR)/B2G.apk
+	unzip -jo gecko/objdir-prof-android/dist/b2g-*.apk lib/armeabi-v7a/libmozutils.so -d $(OUT_DIR)/lib
+	find glue/gonk/out -iname "*.img" | xargs rm
 
-#	cp -p gecko/objdir-prof-android/dist/fennec-*.apk $(APP_OUT_DIR)/Fennec.apk
+.PHONY: gaia-hack
+gaia-hack: gaia
+	rm -rf $(OUT_DIR)/home
+	mkdir -p $(OUT_DIR)/home
+	cp -r gaia/* $(OUT_DIR)/home
 
 .PHONY: install-gecko
 install-gecko: gecko
