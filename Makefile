@@ -5,7 +5,7 @@ SHELL = bash
 
 .DEFAULT: build
 
-MAKE_FLAGS = -j16
+MAKE_FLAGS ?= -j16
 
 HEIMDALL ?= heimdall
 TOOLCHAIN_HOST = linux-x86
@@ -21,6 +21,8 @@ define GONK_CMD # $(call GONK_CMD,cmd)
 	lunch $(GONK_TARGET) && \
 	$(1)
 endef
+
+ANDROID_SDK_PLATFORM ?= android-13
 
 # Developers can use this to define convenience rules and set global variabls
 # XXX for now, this is where to put ANDROID_SDK and ANDROID_NDK macros
@@ -42,8 +44,10 @@ endif
 # client.mk understood the |package| target.
 gecko:
 	@export ANDROID_SDK=$(ANDROID_SDK) && \
+	export ANDROID_SDK_PLATFORM=$(ANDROID_SDK_PLATFORM) && \
 	export ANDROID_NDK=$(ANDROID_NDK) && \
 	export ANDROID_VERSION_CODE=`date +%Y%m%d%H%M%S` && \
+	export MAKE_FLAGS=$(MAKE_FLAGS) && \
 	make -C gecko -f client.mk -s $(MAKE_FLAGS) && \
 	make -C gecko/objdir-prof-android package
 
