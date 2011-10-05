@@ -23,6 +23,7 @@ define GONK_CMD # $(call GONK_CMD,cmd)
 endef
 
 ANDROID_SDK_PLATFORM ?= android-13
+GECKO_CONFIGURE_ARGS ?=
 
 # Developers can use this to define convenience rules and set global variabls
 # XXX for now, this is where to put ANDROID_SDK and ANDROID_NDK macros
@@ -48,6 +49,7 @@ gecko:
 	export ANDROID_NDK=$(ANDROID_NDK) && \
 	export ANDROID_VERSION_CODE=`date +%Y%m%d%H%M%S` && \
 	export MAKE_FLAGS=$(MAKE_FLAGS) && \
+	export CONFIGURE_ARGS="$(GECKO_CONFIGURE_ARGS)" && \
 	make -C gecko -f client.mk -s $(MAKE_FLAGS) && \
 	make -C gecko/objdir-prof-android package
 
@@ -114,6 +116,14 @@ config-nexuss4g: config-gecko-gonk
 nexuss4g-postconfig:
 	$(call GONK_CMD,make signapk && vendor/samsung/crespo4g/reassemble-apks.sh)
 
+.PHONY: config-qemu
+config-qemu: config-gecko-gonk
+	@echo "KERNEL = qemu" > .config.mk && \
+	echo "GONK = qemu" >> .config.mk && \
+	echo "GECKO_CONFIGURE_ARGS = --with-arch=armv5te --with-soft-float=yes" >> .config.mk && \
+	make -C boot/kernel-android-qemu ARCH=arm goldfish_defconfig && \
+	echo OK
+
 .PHONY: flash
 # XXX Using target-specific targets for the time being.  fastboot is
 # great, but the sgs2 doesn't support it.  Eventually we should find a
@@ -148,7 +158,8 @@ geckoapk-hack: gecko
 	mkdir -p $(APP_OUT_DIR)
 	cp -p gecko/objdir-prof-android/dist/b2g-*.apk $(APP_OUT_DIR)/B2G.apk
 	unzip -jo gecko/objdir-prof-android/dist/b2g-*.apk lib/armeabi-v7a/libmozutils.so -d $(OUT_DIR)/lib
-	find glue/gonk/out -iname "*.img" | xargs rm
+	touch rm-dummy
+	find glue/gonk/out -iname "*.img" | xargs rm rm-dummy
 
 .PHONY: gaia-hack
 gaia-hack: gaia
@@ -181,3 +192,5 @@ sync:
 	@git submodule sync && \
 	git submodule update --init && \
 	git pull
+	@cd boot/kernel-android-qemu && \
+	git checkout origin/android-goldfish-2.6.29
