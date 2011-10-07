@@ -13,7 +13,7 @@ TOOLCHAIN_PATH = ./glue/gonk/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3
 KERNEL_PATH = ./boot/kernel-android-$(KERNEL)
 
 GONK_PATH = $(abspath glue/gonk)
-GONK_TARGET = full_$(GONK)-eng
+GONK_TARGET ?= full_$(GONK)-eng
 
 define GONK_CMD # $(call GONK_CMD,cmd)
 	cd $(GONK_PATH) && \
@@ -119,8 +119,8 @@ nexuss4g-postconfig:
 .PHONY: config-qemu
 config-qemu: config-gecko-gonk
 	@echo "KERNEL = qemu" > .config.mk && \
-	echo "GONK = qemu" >> .config.mk && \
-	echo "GECKO_CONFIGURE_ARGS = --with-arch=armv5te --with-soft-float=yes" >> .config.mk && \
+	echo "GONK = generic" >> .config.mk && \
+	echo "GONK_TARGET = generic-eng" >> .config.mk && \
 	make -C boot/kernel-android-qemu ARCH=arm goldfish_defconfig && \
 	echo OK
 
