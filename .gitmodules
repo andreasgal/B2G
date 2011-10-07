@@ -496,6 +496,3 @@
 [submodule "gaia"]
 	path = gaia
 	url = git://github.com/andreasgal/gaia.git
-[submodule "boot/kernel-android-qemu1"]
-	path = boot/kernel-android-qemu1
-	url = git://android.git.linaro.org/kernel/qemu.git
