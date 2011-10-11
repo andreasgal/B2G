@@ -144,7 +144,7 @@ geckoapk-hack: gecko
 	mkdir -p $(APP_OUT_DIR)
 	cp -p gecko/objdir-prof-android/dist/b2g-*.apk $(APP_OUT_DIR)/B2G.apk
 	unzip -jo gecko/objdir-prof-android/dist/b2g-*.apk lib/armeabi-v7a/libmozutils.so -d $(OUT_DIR)/lib
-	find glue/gonk/out -iname "*.img" | xargs rm
+	find glue/gonk/out -iname "*.img" | xargs rm -f
 
 .PHONY: gaia-hack
 gaia-hack: gaia
