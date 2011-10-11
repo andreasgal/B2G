@@ -27,7 +27,7 @@ endef
 -include local.mk
 
 .PHONY: build
-build: kernel gonk gecko
+build: gonk gecko
 
 ifndef ANDROID_SDK
 $(error Sorry, you need to set ANDROID_SDK in your environment to point at the top-level of the SDK install.  For now.)
@@ -48,7 +48,7 @@ gecko:
 	make -C gecko/objdir-prof-android package
 
 .PHONY: gonk
-gonk: bootimg-hack geckoapk-hack gaia-hack
+gonk: geckoapk-hack gaia-hack
 	@$(call GONK_CMD,make $(MAKE_FLAGS))
 
 .PHONY: kernel
