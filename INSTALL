@@ -105,10 +105,13 @@ will function, only more slowly and without access to some sensors.
 
 This part is relatively simple
 
-$ make
+$ make -jN
+
+where N is slightly more than the number of cores you have in your
+machine.
 
 This step can take a long time.  Subsequent rebuilds will usually be
-much faster though.
+much faster, though.
 
  == Unlock your device's bootloader ==
 
