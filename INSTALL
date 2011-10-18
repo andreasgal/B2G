@@ -105,7 +105,7 @@ will function, only more slowly and without access to some sensors.
 
 This part is relatively simple
 
-$ make -jN
+$ make
 
 where N is slightly more than the number of cores you have in your
 machine.
