@@ -34,7 +34,7 @@ These were found to be necessary when building on a ubuntu 64bit system.
 
 # sudo apt-get install ia32-libs gcc-multilib g++-multilib bison flex \
   gperf lib32z1-dev lib32ncurses5-dev lib32ncursesw5-dev libidl-dev \
-  lib32gomp1 autoconf2.13 ccache libx11-dev
+  lib32gomp1 autoconf2.13 ccache libx11-dev lib32readline-gplv2-dev
 
  Quick start
 -------------
@@ -105,10 +105,13 @@ will function, only more slowly and without access to some sensors.
 
 This part is relatively simple
 
-$ make
+$ make -jN
+
+where N is slightly more than the number of cores you have in your
+machine.
 
 This step can take a long time.  Subsequent rebuilds will usually be
-much faster though.
+much faster, though.
 
  == Unlock your device's bootloader ==
 
