@@ -122,7 +122,7 @@ config-qemu: config-gecko-gonk
 	@echo "KERNEL = qemu" > .config.mk && \
 	echo "GONK = generic" >> .config.mk && \
 	echo "GONK_TARGET = generic-eng" >> .config.mk && \
-	echo "GONK_MAKE_FLAGS = TARGET_ARCH_VARIANT=armv5te-vfp" >> .config.mk && \
+	echo "GONK_MAKE_FLAGS = TARGET_ARCH_VARIANT=armv7-a" >> .config.mk && \
 	make -C boot/kernel-android-qemu ARCH=arm goldfish_armv7_defconfig && \
 	( [ -e $(GONK_PATH)/device/qemu ] || \
 		mkdir $(GONK_PATH)/device/qemu ) && \
