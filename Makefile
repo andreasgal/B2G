@@ -6,6 +6,7 @@ SHELL = bash
 .DEFAULT: build
 
 MAKE_FLAGS ?= -j16
+GONK_MAKE_FLAGS ?=
 
 HEIMDALL ?= heimdall
 TOOLCHAIN_HOST = linux-x86
@@ -55,7 +56,7 @@ gecko:
 
 .PHONY: gonk
 gonk: bootimg-hack geckoapk-hack gaia-hack
-	@$(call GONK_CMD,make $(MAKE_FLAGS))
+	@$(call GONK_CMD,make $(MAKE_FLAGS) $(GONK_MAKE_FLAGS))
 
 .PHONY: kernel
 # XXX Hard-coded for nexuss4g target
@@ -121,7 +122,10 @@ config-qemu: config-gecko-gonk
 	@echo "KERNEL = qemu" > .config.mk && \
 	echo "GONK = generic" >> .config.mk && \
 	echo "GONK_TARGET = generic-eng" >> .config.mk && \
-	make -C boot/kernel-android-qemu ARCH=arm goldfish_defconfig && \
+	echo "GONK_MAKE_FLAGS = TARGET_ARCH_VARIANT=armv5te-vfp" >> .config.mk && \
+	make -C boot/kernel-android-qemu ARCH=arm goldfish_armv7_defconfig && \
+	( [ -e $(GONK_PATH)/device/qemu ] || \
+		mkdir $(GONK_PATH)/device/qemu ) && \
 	echo OK
 
 .PHONY: flash
@@ -141,11 +145,20 @@ flash-galaxys2: image
 	$(HEIMDALL) flash --factoryfs $(GONK_PATH)/out/target/product/galaxys2/system.img
 
 .PHONY: bootimg-hack
-bootimg-hack: kernel
-ifeq (samsung,$(KERNEL))
+bootimg-hack: kernel-$(KERNEL)
+
+.PHONY: kernel-samsung
+kernel-samsung:
 	cp -p boot/kernel-android-samsung/arch/arm/boot/zImage $(GONK_PATH)/device/samsung/crespo/kernel && \
 	cp -p boot/kernel-android-samsung/drivers/net/wireless/bcm4329/bcm4329.ko $(GONK_PATH)/device/samsung/crespo/bcm4329.ko
-endif
+
+.PHONY: kernel-qemu
+kernel-qemu:
+	cp -p boot/kernel-android-qemu/arch/arm/boot/zImage \
+		$(GONK_PATH)/device/qemu/kernel
+
+kernel-%:
+	@
 
 OUT_DIR := $(GONK_PATH)/out/target/product/$(GONK)/system
 APP_OUT_DIR := $(OUT_DIR)/app
