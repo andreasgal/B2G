@@ -205,5 +205,3 @@ sync:
 	@git submodule sync && \
 	git submodule update --init && \
 	git pull
-	@cd boot/kernel-android-qemu && \
-	git checkout origin/android-goldfish-2.6.29
