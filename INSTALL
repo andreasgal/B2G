@@ -5,36 +5,48 @@ $B2G.
  Dependencies
 --------------
 
-Sadly, B2G currently depends on not only the android source, but also
-the android SDK and NDK.  These dependencies will be removed
-eventually, but for now you need to install both.  Follow the
-instructions at
+* Sadly, B2G currently depends on not only the android source, but
+  also the android SDK and NDK.  These dependencies will be removed
+  eventually, but for now you need to install both.  Follow the
+  instructions at
 
- http://developer.android.com/sdk/installing.html
- http://developer.android.com/sdk/ndk/index.html
+    http://developer.android.com/sdk/installing.html
+    http://developer.android.com/sdk/ndk/index.html
 
-From here on, this document assumes you installed the SDK to the path
-$ANDROID_SDK and the NDK to the path $ANDROID_NDK.
+  From here on, this document assumes you installed the SDK to the
+  path $ANDROID_SDK and the NDK to the path $ANDROID_NDK.
 
-You need to have adb set up to allow your machine to talk to your
-phone.  Follow the instructions at
+* You need to have adb set up to allow your machine to talk to your
+  phone.  Follow the instructions at
 
- http://developer.android.com/guide/developing/device.html
+    http://developer.android.com/guide/developing/device.html
 
-If you're building for the Galaxy S II, you need to install "Heimdall"
-to be able to flash your phone with B2G.  Follow the instructions at
+  Note when setting up udev, you need to specify the identifier for
+  your device's manufacturer in *lower case* hex.  That is,
 
-  http://www.glassechidna.com.au/products/heimdall/
+    ATTR{idVendor}=="0bb4"
 
-(Even if you're not building for the Galaxy S II, it's not a bad idea
-to install Heimdall anyway.)
+  not "0BB4".  If you use upper-case hex, the USB permissions will not
+  be set up correctly and heimdall will only work if you give it
+  superuser powers.
 
-There are a few other dependencies you may find necessary to install.
-These were found to be necessary when building on a ubuntu 64bit system.
+* If you're building for the Galaxy S II, you need to install
+  "Heimdall" to be able to flash your phone with B2G.  Follow the
+  instructions at
 
-# sudo apt-get install ia32-libs gcc-multilib g++-multilib bison flex \
-  gperf lib32z1-dev lib32ncurses5-dev lib32ncursesw5-dev libidl-dev \
-  lib32gomp1 autoconf2.13 ccache libx11-dev lib32readline-gplv2-dev
+    http://www.glassechidna.com.au/products/heimdall/
+
+  (Even if you're not building for the Galaxy S II, it's not a bad
+  idea to install Heimdall anyway.)
+
+* There are a few other dependencies you may find necessary to
+  install.  These were found to be necessary when building on a ubuntu
+  64bit system.
+
+    # sudo apt-get install ia32-libs gcc-multilib g++-multilib bison \
+      flex gperf lib32z1-dev lib32ncurses5-dev lib32ncursesw5-dev \
+      libidl-dev lib32gomp1 autoconf2.13 ccache libx11-dev \
+      lib32readline-gplv2-dev
 
  Quick start
 -------------
