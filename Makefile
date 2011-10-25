@@ -174,6 +174,6 @@ unlock-bootloader:
 
 .PHONY: sync
 sync:
-	@git submodule sync && \
-	git submodule update --init && \
 	git pull
+	git submodule sync
+	git submodule update --init
