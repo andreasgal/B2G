@@ -16,6 +16,7 @@ ac_add_options --with-android-toolchain="$ANDROID_NDK/toolchains/arm-linux-andro
 ac_add_options --with-android-platform="$ANDROID_NDK/platforms/android-5/arch-arm"
 ac_add_options --target=arm-linux-androideabi
 ac_add_options --with-endian=little
+ac_add_options --enable-raw
 
 ac_add_options --enable-application=b2g
 ac_add_options --disable-elf-hack
