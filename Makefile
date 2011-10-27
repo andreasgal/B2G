@@ -31,7 +31,7 @@ GECKO_CONFIGURE_ARGS ?=
 -include local.mk
 
 .PHONY: build
-build: kernel gonk gecko
+build: gonk gecko
 
 ifndef ANDROID_SDK
 $(error Sorry, you need to set ANDROID_SDK in your environment to point at the top-level of the SDK install.  For now.)
@@ -55,7 +55,7 @@ gecko:
 	make -C gecko/objdir-prof-android package
 
 .PHONY: gonk
-gonk: bootimg-hack geckoapk-hack gaia-hack
+gonk: geckoapk-hack gaia-hack
 	@$(call GONK_CMD,make $(MAKE_FLAGS) $(GONK_MAKE_FLAGS))
 
 .PHONY: kernel
@@ -171,8 +171,7 @@ geckoapk-hack: gecko
 	mkdir -p $(APP_OUT_DIR)
 	cp -p gecko/objdir-prof-android/dist/b2g-*.apk $(APP_OUT_DIR)/B2G.apk
 	unzip -jo gecko/objdir-prof-android/dist/b2g-*.apk lib/armeabi-v7a/libmozutils.so -d $(OUT_DIR)/lib
-	touch rm-dummy
-	find glue/gonk/out -iname "*.img" | xargs rm rm-dummy
+	find glue/gonk/out -iname "*.img" | xargs rm -f
 
 .PHONY: gaia-hack
 gaia-hack: gaia
