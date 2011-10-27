@@ -5,17 +5,6 @@ $B2G.
  Dependencies
 --------------
 
-* Sadly, B2G currently depends on not only the android source, but
-  also the android SDK and NDK.  These dependencies will be removed
-  eventually, but for now you need to install both.  Follow the
-  instructions at
-
-    http://developer.android.com/sdk/installing.html
-    http://developer.android.com/sdk/ndk/index.html
-
-  From here on, this document assumes you installed the SDK to the
-  path $ANDROID_SDK and the NDK to the path $ANDROID_NDK.
-
 * You need to have adb set up to allow your machine to talk to your
   phone.  Follow the instructions at
 
@@ -47,6 +36,20 @@ $B2G.
       flex gperf lib32z1-dev lib32ncurses5-dev lib32ncursesw5-dev \
       libidl-dev lib32gomp1 autoconf2.13 ccache libx11-dev \
       lib32readline-gplv2-dev
+
+ Additional dependencies when building android backend
+-------------------------------------------------------
+
+* Sadly, B2G currently depends on not only the android source, but
+  also the android SDK and NDK.  These dependencies will be removed
+  eventually, but for now you need to install both.  Follow the
+  instructions at
+
+    http://developer.android.com/sdk/installing.html
+    http://developer.android.com/sdk/ndk/index.html
+
+  From here on, this document assumes you installed the SDK to the
+  path $ANDROID_SDK and the NDK to the path $ANDROID_NDK.
 
  Quick start
 -------------
@@ -91,9 +94,17 @@ from upstream again, just re-run |make sync|.
 
 We're using these currently for reasons not worth knowing.
 
+# for android backend
+
 $ cat > local.mk << EOF
 ANDROID_SDK="$ANDROID_SDK"
 ANDROID_NDK="$ANDROID_NDK"
+EOF
+
+# for b2g backend
+
+$ cat > local.mk << EOF
+WIDGET_BACKEND=b2g
 EOF
 
  == Configure repo for your device ==
@@ -198,8 +209,27 @@ If all goes well, you'll see the phone reboot into the bootloader,
 then your host machine will report the progress of files it uploads
 and installs on the device.  After finishing, the device will reboot.
 
-After flashing, you may need to run
-adb shell chmod -R 777 /data/system
+# temporary hack you may need on the android backend
+
+$ adb shell chmod -R 777 /data/system
+
+# temporary hack you may need on the b2g backend
+
+$ adb shell chmod 755 /system/b2g/b2g && \
+  adb shell "cat /system/b2g/libmozutils.so > /system/lib/libmozutils.so"
+
+ == Kernel flashing ==
+
+The kernel should also be flashed when using the B2G backend on a SII.
+It only needs to be done once when switching to the B2G backend.
+This will overwrite ClockworkMod.
+
+GET A DOWNLOAD MODE JIG BEFORE ATTEMPTING THIS!
+The flashing process is known to fail.
+
+$ make kernel
+$ adb reboot download
+$ heimdall flash --kernel boot/kernel-android-galaxy-s2/arch/arm/boot/zImage
 
  == Install Gaia ==
 
