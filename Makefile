@@ -5,7 +5,8 @@ SHELL = bash
 
 .DEFAULT: build
 
-MAKE_FLAGS = -j16
+MAKE_FLAGS ?= -j16
+GONK_MAKE_FLAGS ?=
 
 HEIMDALL ?= heimdall
 TOOLCHAIN_HOST = linux-x86
@@ -13,7 +14,7 @@ TOOLCHAIN_PATH = ./glue/gonk/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3
 KERNEL_PATH = ./boot/kernel-android-$(KERNEL)
 
 GONK_PATH = $(abspath glue/gonk)
-GONK_TARGET = full_$(GONK)-eng
+GONK_TARGET ?= full_$(GONK)-eng
 
 define GONK_CMD # $(call GONK_CMD,cmd)
 	cd $(GONK_PATH) && \
@@ -21,6 +22,9 @@ define GONK_CMD # $(call GONK_CMD,cmd)
 	lunch $(GONK_TARGET) && \
 	$(1)
 endef
+
+ANDROID_SDK_PLATFORM ?= android-13
+GECKO_CONFIGURE_ARGS ?=
 
 # Developers can use this to define convenience rules and set global variabls
 # XXX for now, this is where to put ANDROID_SDK and ANDROID_NDK macros
@@ -42,14 +46,17 @@ endif
 # client.mk understood the |package| target.
 gecko:
 	@export ANDROID_SDK=$(ANDROID_SDK) && \
+	export ANDROID_SDK_PLATFORM=$(ANDROID_SDK_PLATFORM) && \
 	export ANDROID_NDK=$(ANDROID_NDK) && \
 	export ANDROID_VERSION_CODE=`date +%Y%m%d%H%M%S` && \
+	export MAKE_FLAGS=$(MAKE_FLAGS) && \
+	export CONFIGURE_ARGS="$(GECKO_CONFIGURE_ARGS)" && \
 	make -C gecko -f client.mk -s $(MAKE_FLAGS) && \
 	make -C gecko/objdir-prof-android package
 
 .PHONY: gonk
 gonk: geckoapk-hack gaia-hack
-	@$(call GONK_CMD,make $(MAKE_FLAGS))
+	@$(call GONK_CMD,make $(MAKE_FLAGS) $(GONK_MAKE_FLAGS))
 
 .PHONY: kernel
 # XXX Hard-coded for nexuss4g target
@@ -110,6 +117,17 @@ config-nexuss4g: config-gecko-gonk
 nexuss4g-postconfig:
 	$(call GONK_CMD,make signapk && vendor/samsung/crespo4g/reassemble-apks.sh)
 
+.PHONY: config-qemu
+config-qemu: config-gecko-gonk
+	@echo "KERNEL = qemu" > .config.mk && \
+	echo "GONK = generic" >> .config.mk && \
+	echo "GONK_TARGET = generic-eng" >> .config.mk && \
+	echo "GONK_MAKE_FLAGS = TARGET_ARCH_VARIANT=armv7-a" >> .config.mk && \
+	make -C boot/kernel-android-qemu ARCH=arm goldfish_armv7_defconfig && \
+	( [ -e $(GONK_PATH)/device/qemu ] || \
+		mkdir $(GONK_PATH)/device/qemu ) && \
+	echo OK
+
 .PHONY: flash
 # XXX Using target-specific targets for the time being.  fastboot is
 # great, but the sgs2 doesn't support it.  Eventually we should find a
@@ -127,11 +145,20 @@ flash-galaxys2: image
 	$(HEIMDALL) flash --factoryfs $(GONK_PATH)/out/target/product/galaxys2/system.img
 
 .PHONY: bootimg-hack
-bootimg-hack: kernel
-ifeq (samsung,$(KERNEL))
+bootimg-hack: kernel-$(KERNEL)
+
+.PHONY: kernel-samsung
+kernel-samsung:
 	cp -p boot/kernel-android-samsung/arch/arm/boot/zImage $(GONK_PATH)/device/samsung/crespo/kernel && \
 	cp -p boot/kernel-android-samsung/drivers/net/wireless/bcm4329/bcm4329.ko $(GONK_PATH)/device/samsung/crespo/bcm4329.ko
-endif
+
+.PHONY: kernel-qemu
+kernel-qemu:
+	cp -p boot/kernel-android-qemu/arch/arm/boot/zImage \
+		$(GONK_PATH)/device/qemu/kernel
+
+kernel-%:
+	@
 
 OUT_DIR := $(GONK_PATH)/out/target/product/$(GONK)/system
 APP_OUT_DIR := $(OUT_DIR)/app
