@@ -93,7 +93,7 @@
 	url = git://android.git.linaro.org/platform/external/tagsoup.git
 [submodule "glue/gonk/external/qemu"]
 	path = glue/gonk/external/qemu
-	url = git://github.com/cgjones/android-external-qemu.git
+	url = git://android.git.linaro.org/platform/external/qemu.git
 [submodule "glue/gonk/external/libffi"]
 	path = glue/gonk/external/libffi
 	url = git://android.git.linaro.org/platform/external/libffi.git
