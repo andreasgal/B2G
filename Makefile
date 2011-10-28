@@ -34,6 +34,10 @@ WIDGET_BACKEND ?= android
 .PHONY: build
 build: gonk gecko
 
+ifeq (qemu,$(KERNEL))
+build: kernel bootimg-hack
+endif
+
 ifeq (android,$(WIDGET_BACKEND))
 ifndef ANDROID_SDK
 $(error Sorry, you need to set ANDROID_SDK in your environment to point at the top-level of the SDK install.  For now.)
@@ -125,7 +129,7 @@ nexuss4g-postconfig:
 	$(call GONK_CMD,make signapk && vendor/samsung/crespo4g/reassemble-apks.sh)
 
 .PHONY: config-qemu
-config-qemu: config-gecko-gonk
+config-qemu: config-gecko-android
 	@echo "KERNEL = qemu" > .config.mk && \
 	echo "GONK = generic" >> .config.mk && \
 	echo "GONK_TARGET = generic-eng" >> .config.mk && \
