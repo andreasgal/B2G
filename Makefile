@@ -99,11 +99,11 @@ config-galaxy-s2: config-gecko-$(WIDGET_BACKEND)
 
 .PHONY: config-gecko-android
 config-gecko-android:
-	@cp -p config/gecko-prof-android gecko/mozconfig
+	@ln -sf ../config/gecko-prof-android gecko/mozconfig
 
 .PHONY: config-gecko-gonk
 config-gecko-gonk:
-	@cp -p config/gecko-prof-gonk gecko/mozconfig
+	@ln -sf ../config/gecko-prof-gonk gecko/mozconfig
 
 define INSTALL_NEXUS_S_BLOB # $(call INSTALL_BLOB,vendor,id)
 	wget https://dl.google.com/dl/android/aosp/$(1)-crespo4g-grj90-$(2).tgz && \
