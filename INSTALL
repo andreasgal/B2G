@@ -101,10 +101,10 @@ ANDROID_SDK="$ANDROID_SDK"
 ANDROID_NDK="$ANDROID_NDK"
 EOF
 
-# for b2g backend
+# for gonk backend
 
 $ cat > local.mk << EOF
-WIDGET_BACKEND=b2g
+WIDGET_BACKEND=gonk
 EOF
 
  == Configure repo for your device ==
@@ -213,15 +213,14 @@ and installs on the device.  After finishing, the device will reboot.
 
 $ adb shell chmod -R 777 /data/system
 
-# temporary hack you may need on the b2g backend
+# temporary hack you may need on the gonk backend
 
-$ adb shell chmod 755 /system/b2g/b2g && \
-  adb shell "cat /system/b2g/libmozutils.so > /system/lib/libmozutils.so"
+$ adb shell chmod 755 /system/b2g/b2g
 
  == Kernel flashing ==
 
-The kernel should also be flashed when using the B2G backend on a SII.
-It only needs to be done once when switching to the B2G backend.
+The kernel should also be flashed when using the gonk backend on a SII.
+It only needs to be done once when switching to the gonk backend.
 This will overwrite ClockworkMod.
 
 GET A DOWNLOAD MODE JIG BEFORE ATTEMPTING THIS!

@@ -101,9 +101,9 @@ config-galaxy-s2: config-gecko-$(WIDGET_BACKEND)
 config-gecko-android:
 	@cp -p config/gecko-prof-android gecko/mozconfig
 
-.PHONY: config-gecko-b2g
-config-gecko-b2g:
-	@cp -p config/gecko-prof-b2g gecko/mozconfig
+.PHONY: config-gecko-gonk
+config-gecko-gonk:
+	@cp -p config/gecko-prof-gonk gecko/mozconfig
 
 define INSTALL_NEXUS_S_BLOB # $(call INSTALL_BLOB,vendor,id)
 	wget https://dl.google.com/dl/android/aosp/$(1)-crespo4g-grj90-$(2).tgz && \
@@ -185,8 +185,8 @@ gecko-android-hack: gecko
 	unzip -jo gecko/objdir-prof-android/dist/b2g-*.apk lib/armeabi-v7a/libmozutils.so -d $(OUT_DIR)/lib
 	find glue/gonk/out -iname "*.img" | xargs rm -f
 
-.PHONY: gecko-b2g-hack
-gecko-b2g-hack: gecko
+.PHONY: gecko-gonk-hack
+gecko-gonk-hack: gecko
 	rm -rf $(OUT_DIR)/b2g
 	( cd $(OUT_DIR) && \
 	  tar xvfz $(PWD)/gecko/objdir-prof-android/dist/b2g-*.tar.gz )
