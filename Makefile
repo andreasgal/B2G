@@ -186,7 +186,7 @@ gecko-android-hack: gecko
 	find glue/gonk/out -iname "*.img" | xargs rm -f
 
 .PHONY: gecko-gonk-hack
-gecko-gonk-hack:
+gecko-gonk-hack: gecko
 	rm -rf $(OUT_DIR)/b2g
 	# Extract the newest tarball in the gecko objdir.
 	( cd $(OUT_DIR) && \
