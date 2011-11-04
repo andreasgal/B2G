@@ -54,6 +54,8 @@ $B2G.
  Quick start
 -------------
 
+ == Samsung Galaxy SII / Nexus 4G ==
+
 This only works if your bootloader is unlocked.  If it's not, or
 you're not sure, follow the more detailed instructions below.  Make
 sure to back up your phone before doing this.
@@ -70,6 +72,14 @@ $ make flash
 # temporary hack you may need
 
 $ adb shell chmod -R 777 /data/system
+
+ == Android Emulator ==
+
+$ cd $B2G
+$ make sync
+$ make config-qemu
+$ make
+$ ./emu.sh
 
  Detailed instructions
 -----------------------
@@ -115,6 +125,9 @@ $ make config-nexuss4g
  Galaxy S II:
 $ make config-galaxy-s2
 
+ Android Emulator:
+$ make config-qemu
+
 This configures submodules appropriately for the given device, and for
 devices with proprietary libraries, will attempt to download and
 install the blobs.  The blobs may ask you to agree to an EULA before
@@ -135,6 +148,11 @@ machine.
 
 This step can take a long time.  Subsequent rebuilds will usually be
 much faster, though.
+
+At this stage, if you're building from the Android emulator, you just
+need to run the provided script and you're done.
+
+$ ./emu.sh
 
  == Unlock your device's bootloader ==
 
@@ -213,7 +231,8 @@ and installs on the device.  After finishing, the device will reboot.
 
 $ adb shell chmod -R 777 /data/system
 
-# temporary hack you may need on the gonk backend
+# temporary hack you may need on the gonk backend, although the Makefile tries
+# to do it for you.
 
 $ adb shell chmod 755 /system/b2g/b2g
 

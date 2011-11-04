@@ -9,7 +9,7 @@ topdir="`pwd`/../.."
 gonk="$topdir/glue/gonk"
 sys=`uname -s | tr "[[:upper:]]" "[[:lower:]]"`
 
-ac_add_options --target=arm-linux-androidb2g
+ac_add_options --target=arm-android-eabi
 ac_add_options --with-gonk="$gonk"
 ac_add_options --with-endian=little
 

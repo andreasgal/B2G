@@ -58,6 +58,7 @@ gecko:
 	export ANDROID_VERSION_CODE=`date +%Y%m%d%H%M%S` && \
 	export MAKE_FLAGS=$(MAKE_FLAGS) && \
 	export CONFIGURE_ARGS="$(GECKO_CONFIGURE_ARGS)" && \
+	export GONK_PRODUCT="$(GONK)" && \
 	ulimit -n 4096 && \
 	make -C gecko -f client.mk -s $(MAKE_FLAGS) && \
 	make -C gecko/objdir-prof-android package
@@ -146,15 +147,43 @@ config-qemu: config-gecko-android
 # lowest-common-denominator solution.
 flash: flash-$(GONK)
 
+# flash-only targets are the same as flash targets, except that they don't
+# depend on building the image.
+
+.PHONY: flash-only
+flash-only: flash-only-$(GONK)
+
 .PHONY: flash-crespo4g
 flash-crespo4g: image
 	@$(call GONK_CMD,adb reboot bootloader && fastboot flashall -w)
 
+.PHONY: flash-only-crespo4g
+flash-only-crespo4g:
+	@$(call GONK_CMD,adb reboot bootloader && fastboot flashall -w)
+
+# When we're building with gonk, we need to chmod /system/b2g/b2g.  Isn't this
+# fantastic?
+ifeq (gonk,$(WIDGET_BACKEND))
+  define FLASH_GALAXYS2_CMD_CHMOD_HACK
+    adb wait-for-device
+    adb shell chmod 755 /system/b2g/b2g
+  endef
+endif
+
+define FLASH_GALAXYS2_CMD
+adb reboot download 
+sleep 20
+$(HEIMDALL) flash --factoryfs $(GONK_PATH)/out/target/product/galaxys2/system.img
+$(FLASH_GALAXYS2_CMD_CHMOD_HACK)
+endef
+
 .PHONY: flash-galaxys2
 flash-galaxys2: image
-	@adb reboot download && \
-	sleep 20 && \
-	$(HEIMDALL) flash --factoryfs $(GONK_PATH)/out/target/product/galaxys2/system.img
+	$(FLASH_GALAXYS2_CMD)
+
+.PHONY: flash-only-galaxys2
+flash-only-galaxys2:
+	$(FLASH_GALAXYS2_CMD)
 
 .PHONY: bootimg-hack
 bootimg-hack: kernel-$(KERNEL)
@@ -219,6 +248,11 @@ image: build
 .PHONY: unlock-bootloader
 unlock-bootloader:
 	@$(call GONK_CMD,adb reboot bootloader && fastboot oem unlock)
+
+# Kill the b2g process on the device.
+.PHONY: kill-b2g
+kill-b2g:
+	adb shell kill `adb shell ps | grep b2g | sed -e 's/ \+/ /g' | cut -f 2 -d ' '`
 
 .PHONY: sync
 sync:
