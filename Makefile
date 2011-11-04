@@ -5,7 +5,8 @@ SHELL = bash
 
 .DEFAULT: build
 
-MAKE_FLAGS = -j16
+MAKE_FLAGS ?= -j16
+GONK_MAKE_FLAGS ?=
 
 HEIMDALL ?= heimdall
 TOOLCHAIN_HOST = linux-x86
@@ -13,7 +14,7 @@ TOOLCHAIN_PATH = ./glue/gonk/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3
 KERNEL_PATH = ./boot/kernel-android-$(KERNEL)
 
 GONK_PATH = $(abspath glue/gonk)
-GONK_TARGET = full_$(GONK)-eng
+GONK_TARGET ?= full_$(GONK)-eng
 
 define GONK_CMD # $(call GONK_CMD,cmd)
 	cd $(GONK_PATH) && \
@@ -22,6 +23,10 @@ define GONK_CMD # $(call GONK_CMD,cmd)
 	$(1)
 endef
 
+ANDROID_SDK_PLATFORM ?= android-13
+GECKO_CONFIGURE_ARGS ?=
+WIDGET_BACKEND ?= android
+
 # Developers can use this to define convenience rules and set global variabls
 # XXX for now, this is where to put ANDROID_SDK and ANDROID_NDK macros
 -include local.mk
@@ -29,6 +34,11 @@ endef
 .PHONY: build
 build: gonk gecko
 
+ifeq (qemu,$(KERNEL))
+build: kernel bootimg-hack
+endif
+
+ifeq (android,$(WIDGET_BACKEND))
 ifndef ANDROID_SDK
 $(error Sorry, you need to set ANDROID_SDK in your environment to point at the top-level of the SDK install.  For now.)
 endif
@@ -36,20 +46,25 @@ endif
 ifndef ANDROID_NDK
 $(error Sorry, you need to set ANDROID_NDK in your environment to point at the top-level of the NDK install.  For now.)
 endif
+endif
 
 .PHONY: gecko
 # XXX Hard-coded for prof-android target.  It would also be nice if
 # client.mk understood the |package| target.
 gecko:
 	@export ANDROID_SDK=$(ANDROID_SDK) && \
+	export ANDROID_SDK_PLATFORM=$(ANDROID_SDK_PLATFORM) && \
 	export ANDROID_NDK=$(ANDROID_NDK) && \
 	export ANDROID_VERSION_CODE=`date +%Y%m%d%H%M%S` && \
+	export MAKE_FLAGS=$(MAKE_FLAGS) && \
+	export CONFIGURE_ARGS="$(GECKO_CONFIGURE_ARGS)" && \
+	ulimit -n 4096 && \
 	make -C gecko -f client.mk -s $(MAKE_FLAGS) && \
 	make -C gecko/objdir-prof-android package
 
 .PHONY: gonk
-gonk: geckoapk-hack gaia-hack
-	@$(call GONK_CMD,make $(MAKE_FLAGS))
+gonk: gecko-$(WIDGET_BACKEND)-hack gaia-hack
+	@$(call GONK_CMD,make $(MAKE_FLAGS) $(GONK_MAKE_FLAGS))
 
 .PHONY: kernel
 # XXX Hard-coded for nexuss4g target
@@ -73,7 +88,7 @@ clean-kernel:
 	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) ARCH=arm CROSS_COMPILE=arm-eabi- clean
 
 .PHONY: config-galaxy-s2
-config-galaxy-s2: config-gecko-gonk
+config-galaxy-s2: config-gecko-$(WIDGET_BACKEND)
 	@echo "KERNEL = galaxy-s2" > .config.mk && \
 	echo "GONK = galaxys2" >> .config.mk && \
 	cp -p config/kernel-galaxy-s2 boot/kernel-android-galaxy-s2/.config && \
@@ -82,9 +97,13 @@ config-galaxy-s2: config-gecko-gonk
 	./extract-files.sh && \
 	echo OK
 
+.PHONY: config-gecko-android
+config-gecko-android:
+	@ln -sf ../config/gecko-prof-android gecko/mozconfig
+
 .PHONY: config-gecko-gonk
 config-gecko-gonk:
-	@cp -p config/gecko-prof-gonk gecko/.mozconfig
+	@ln -sf ../config/gecko-prof-gonk gecko/mozconfig
 
 define INSTALL_NEXUS_S_BLOB # $(call INSTALL_BLOB,vendor,id)
 	wget https://dl.google.com/dl/android/aosp/$(1)-crespo4g-grj90-$(2).tgz && \
@@ -95,7 +114,7 @@ endef
 
 .PHONY: config-nexuss4g
 # XXX Hard-coded for nexuss4g target
-config-nexuss4g: config-gecko-gonk
+config-nexuss4g: config-gecko-android
 	@echo "KERNEL = samsung" > .config.mk && \
 	echo "GONK = crespo4g" >> .config.mk && \
 	cp -p config/kernel-nexuss4g boot/kernel-android-samsung/.config && \
@@ -109,6 +128,17 @@ config-nexuss4g: config-gecko-gonk
 .PHONY: nexuss4g-postconfig
 nexuss4g-postconfig:
 	$(call GONK_CMD,make signapk && vendor/samsung/crespo4g/reassemble-apks.sh)
+
+.PHONY: config-qemu
+config-qemu: config-gecko-android
+	@echo "KERNEL = qemu" > .config.mk && \
+	echo "GONK = generic" >> .config.mk && \
+	echo "GONK_TARGET = generic-eng" >> .config.mk && \
+	echo "GONK_MAKE_FLAGS = TARGET_ARCH_VARIANT=armv7-a" >> .config.mk && \
+	make -C boot/kernel-android-qemu ARCH=arm goldfish_armv7_defconfig && \
+	( [ -e $(GONK_PATH)/device/qemu ] || \
+		mkdir $(GONK_PATH)/device/qemu ) && \
+	echo OK
 
 .PHONY: flash
 # XXX Using target-specific targets for the time being.  fastboot is
@@ -127,11 +157,20 @@ flash-galaxys2: image
 	$(HEIMDALL) flash --factoryfs $(GONK_PATH)/out/target/product/galaxys2/system.img
 
 .PHONY: bootimg-hack
-bootimg-hack: kernel
-ifeq (samsung,$(KERNEL))
+bootimg-hack: kernel-$(KERNEL)
+
+.PHONY: kernel-samsung
+kernel-samsung:
 	cp -p boot/kernel-android-samsung/arch/arm/boot/zImage $(GONK_PATH)/device/samsung/crespo/kernel && \
 	cp -p boot/kernel-android-samsung/drivers/net/wireless/bcm4329/bcm4329.ko $(GONK_PATH)/device/samsung/crespo/bcm4329.ko
-endif
+
+.PHONY: kernel-qemu
+kernel-qemu:
+	cp -p boot/kernel-android-qemu/arch/arm/boot/zImage \
+		$(GONK_PATH)/device/qemu/kernel
+
+kernel-%:
+	@
 
 OUT_DIR := $(GONK_PATH)/out/target/product/$(GONK)/system
 APP_OUT_DIR := $(OUT_DIR)/app
@@ -139,12 +178,20 @@ APP_OUT_DIR := $(OUT_DIR)/app
 $(APP_OUT_DIR):
 	mkdir -p $(APP_OUT_DIR)
 
-.PHONY: geckoapk-hack
-geckoapk-hack: gecko
+.PHONY: gecko-android-hack
+gecko-android-hack: gecko
 	mkdir -p $(APP_OUT_DIR)
 	cp -p gecko/objdir-prof-android/dist/b2g-*.apk $(APP_OUT_DIR)/B2G.apk
 	unzip -jo gecko/objdir-prof-android/dist/b2g-*.apk lib/armeabi-v7a/libmozutils.so -d $(OUT_DIR)/lib
 	find glue/gonk/out -iname "*.img" | xargs rm -f
+
+.PHONY: gecko-gonk-hack
+gecko-gonk-hack: gecko
+	rm -rf $(OUT_DIR)/b2g
+	( cd $(OUT_DIR) && \
+	  tar xvfz $(PWD)/gecko/objdir-prof-android/dist/b2g-*.tar.gz )
+	find glue/gonk/out -iname "*.img" | xargs rm -f
+
 
 .PHONY: gaia-hack
 gaia-hack: gaia
@@ -174,6 +221,6 @@ unlock-bootloader:
 
 .PHONY: sync
 sync:
-	@git submodule sync && \
-	git submodule update --init && \
 	git pull
+	git submodule sync
+	git submodule update --init
