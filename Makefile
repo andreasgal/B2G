@@ -58,6 +58,7 @@ gecko:
 	export ANDROID_VERSION_CODE=`date +%Y%m%d%H%M%S` && \
 	export MAKE_FLAGS=$(MAKE_FLAGS) && \
 	export CONFIGURE_ARGS="$(GECKO_CONFIGURE_ARGS)" && \
+	export GONK_PRODUCT="$(GONK)" && \
 	ulimit -n 4096 && \
 	make -C gecko -f client.mk -s $(MAKE_FLAGS) && \
 	make -C gecko/objdir-prof-android package
