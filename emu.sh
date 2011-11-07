@@ -1,3 +1,4 @@
+#!/bin/sh
 B2G_HOME=$(pwd)
 
 DBG_CMD=""
