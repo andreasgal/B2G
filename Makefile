@@ -249,6 +249,11 @@ image: build
 unlock-bootloader:
 	@$(call GONK_CMD,adb reboot bootloader && fastboot oem unlock)
 
+# Kill the b2g process on the device.
+.PHONY: kill-b2g
+kill-b2g:
+	adb shell kill `adb shell ps | grep b2g | sed -e 's/ \+/ /g' | cut -f 2 -d ' '`
+
 .PHONY: sync
 sync:
 	git pull
