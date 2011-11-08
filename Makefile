@@ -147,15 +147,43 @@ config-qemu: config-gecko-android
 # lowest-common-denominator solution.
 flash: flash-$(GONK)
 
+# flash-only targets are the same as flash targets, except that they don't
+# depend on building the image.
+
+.PHONY: flash-only
+flash-only: flash-only-$(GONK)
+
 .PHONY: flash-crespo4g
 flash-crespo4g: image
 	@$(call GONK_CMD,adb reboot bootloader && fastboot flashall -w)
 
+.PHONY: flash-only-crespo4g
+flash-only-crespo4g:
+	@$(call GONK_CMD,adb reboot bootloader && fastboot flashall -w)
+
+# When we're building with gonk, we need to chmod /system/b2g/b2g.  Isn't this
+# fantastic?
+ifeq (gonk,$(WIDGET_BACKEND))
+  define FLASH_GALAXYS2_CMD_CHMOD_HACK
+    adb wait-for-device
+    adb shell chmod 755 /system/b2g/b2g
+  endef
+endif
+
+define FLASH_GALAXYS2_CMD
+adb reboot download 
+sleep 20
+$(HEIMDALL) flash --factoryfs $(GONK_PATH)/out/target/product/galaxys2/system.img
+$(FLASH_GALAXYS2_CMD_CHMOD_HACK)
+endef
+
 .PHONY: flash-galaxys2
 flash-galaxys2: image
-	@adb reboot download && \
-	sleep 20 && \
-	$(HEIMDALL) flash --factoryfs $(GONK_PATH)/out/target/product/galaxys2/system.img
+	$(FLASH_GALAXYS2_CMD)
+
+.PHONY: flash-only-galaxys2
+flash-only-galaxys2:
+	$(FLASH_GALAXYS2_CMD)
 
 .PHONY: bootimg-hack
 bootimg-hack: kernel-$(KERNEL)
