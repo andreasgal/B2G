@@ -24,3 +24,8 @@ ac_add_options --disable-elf-hack
 ac_add_options --enable-debug-symbols
 ac_add_options --enable-profiling
 ac_add_options --with-ccache
+
+# Enable dump() from JS.
+
+export CXXFLAGS=-DMOZ_ENABLE_JS_DUMP
+
