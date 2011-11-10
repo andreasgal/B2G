@@ -411,7 +411,7 @@
 	url = git://android.git.linaro.org/platform/system/vold.git
 [submodule "glue/gonk/system/core"]
 	path = glue/gonk/system/core
-	url = git://android.git.linaro.org/platform/system/core.git
+	url = git://github.com/cgjones/android-system-core.git
 [submodule "glue/gonk/system/extras"]
 	path = glue/gonk/system/extras
 	url = git://android.git.linaro.org/platform/system/extras.git
