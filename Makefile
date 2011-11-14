@@ -32,7 +32,7 @@ WIDGET_BACKEND ?= android
 -include local.mk
 
 .PHONY: build
-build: gonk gecko
+build: gecko gecko-$(WIDGET_BACKEND)-hack gonk
 
 ifeq (qemu,$(KERNEL))
 build: kernel bootimg-hack
@@ -64,7 +64,7 @@ gecko:
 	make -C gecko/objdir-prof-android package
 
 .PHONY: gonk
-gonk: gecko-$(WIDGET_BACKEND)-hack gaia-hack
+gonk: gaia-hack
 	@$(call GONK_CMD,make $(MAKE_FLAGS) $(GONK_MAKE_FLAGS))
 
 .PHONY: kernel
@@ -217,9 +217,11 @@ gecko-android-hack: gecko
 .PHONY: gecko-gonk-hack
 gecko-gonk-hack: gecko
 	rm -rf $(OUT_DIR)/b2g
+	mkdir -p $(OUT_DIR)/lib
 	# Extract the newest tarball in the gecko objdir.
 	( cd $(OUT_DIR) && \
 	  tar xvfz `ls -t $(PWD)/gecko/objdir-prof-android/dist/b2g-*.tar.gz | head -n1` )
+	cp $(OUT_DIR)/b2g/libmozutils.so $(OUT_DIR)/lib
 	find glue/gonk/out -iname "*.img" | xargs rm -f
 
 
