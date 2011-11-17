@@ -411,7 +411,7 @@
 	url = git://android.git.linaro.org/platform/system/vold.git
 [submodule "glue/gonk/system/core"]
 	path = glue/gonk/system/core
-	url = git://android.git.linaro.org/platform/system/core.git
+	url = git://github.com/cgjones/android-system-core.git
 [submodule "glue/gonk/system/extras"]
 	path = glue/gonk/system/extras
 	url = git://android.git.linaro.org/platform/system/extras.git
@@ -496,3 +496,6 @@
 [submodule "gaia"]
 	path = gaia
 	url = git://github.com/andreasgal/gaia.git
+[submodule "glue/gonk/b2g-dialer-daemon"]
+	path = glue/gonk/b2g-dialer-daemon
+	url = git://github.com/kmachulis-mozilla/b2g-dialer-daemon
