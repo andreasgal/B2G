@@ -85,7 +85,7 @@ CONFIG_RT_GROUP_SCHED=y
 # CONFIG_RELAY is not set
 # CONFIG_NAMESPACES is not set
 CONFIG_BLK_DEV_INITRD=y
-CONFIG_INITRAMFS_SOURCE=""
+CONFIG_INITRAMFS_SOURCE="../../glue/gonk/out/target/product/galaxys2/root"
 CONFIG_RD_GZIP=y
 # CONFIG_RD_BZIP2 is not set
 # CONFIG_RD_LZMA is not set

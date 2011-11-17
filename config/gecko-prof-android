@@ -2,16 +2,21 @@ mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/objdir-prof-android
 
 # XXX our build system doesn't seem to respect toplevel -j ...
 # hard-coding this sucks
-mk_add_options MOZ_MAKE_FLAGS="-s -j16"
+mk_add_options MOZ_MAKE_FLAGS="-s $MAKE_FLAGS"
 
 # XXX need a plan for toolchain and multi-dev-platform support
 topdir="`pwd`/../.."
 gonk="$topdir/glue/gonk"
 sys=`uname -s | tr "[[:upper:]]" "[[:lower:]]"`
 
-ac_add_options --target=arm-android-eabi
-ac_add_options --with-gonk="$gonk"
+# XXX need to figure out how to deal with SDKs ... this sucks.
+ac_add_options --with-android-sdk="$ANDROID_SDK/platforms/$ANDROID_SDK_PLATFORM"
+ac_add_options --with-android-ndk="$ANDROID_NDK"
+ac_add_options --with-android-toolchain="$ANDROID_NDK/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86"
+ac_add_options --with-android-platform="$ANDROID_NDK/platforms/android-5/arch-arm"
+ac_add_options --target=arm-linux-androideabi
 ac_add_options --with-endian=little
+ac_add_options --enable-raw
 
 ac_add_options --enable-application=b2g
 ac_add_options --disable-elf-hack
@@ -19,6 +24,3 @@ ac_add_options --disable-elf-hack
 ac_add_options --enable-debug-symbols
 ac_add_options --enable-profiling
 ac_add_options --with-ccache
-
-# Enable dump() from JS.
-export CXXFLAGS=-DMOZ_ENABLE_JS_DUMP
