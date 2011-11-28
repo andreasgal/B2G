@@ -32,7 +32,7 @@ WIDGET_BACKEND ?= android
 -include local.mk
 
 .PHONY: build
-build: gecko gecko-$(WIDGET_BACKEND)-hack gonk
+build: gecko gecko-$(WIDGET_BACKEND)-hack busybox-$(WIDGET_BACKEND)-hack gonk
 
 ifeq (qemu,$(KERNEL))
 build: kernel bootimg-hack
@@ -170,12 +170,17 @@ flash-crespo4g: image
 flash-only-crespo4g:
 	@$(call GONK_CMD,adb reboot bootloader && fastboot flashall -w)
 
-# When we're building with gonk, we need to chmod /system/b2g/b2g.  Isn't this
-# fantastic?
+# When we're building with gonk, we need to chmod /system/b2g/b2g and
+# /system/busybox/*.  Since the built-in chmod doesn't support |-R|, we need to
+# use busybox's chmod.
 ifeq (gonk,$(WIDGET_BACKEND))
   define FLASH_GALAXYS2_CMD_CHMOD_HACK
     adb wait-for-device
-    adb shell chmod 755 /system/b2g/b2g
+    adb shell "chmod 755 /system/busybox/busybox && \
+               /system/busybox/busybox chmod -R 755 /system/busybox && \
+	       /system/busybox/chmod 755 /system/b2g/b2g && \
+	       /system/busybox/chmod 755 /system/bin/start-busybox && \
+	       /system/busybox/ln -sf /system/bin/sh /system/busybox/ash"
   endef
 endif
 
@@ -233,6 +238,17 @@ gecko-gonk-hack: gecko
 	cp $(OUT_DIR)/b2g/libmozutils.so $(OUT_DIR)/lib
 	find glue/gonk/out -iname "*.img" | xargs rm -f
 
+.PHONY: busybox-gonk-hack
+busybox-gonk-hack:
+	rm -rf $(OUT_DIR)/busybox
+	mkdir -p $(OUT_DIR)/busybox
+	cp busybox/busybox $(OUT_DIR)/busybox/busybox
+	cp busybox/start-busybox $(OUT_DIR)/bin/start-busybox
+	# Make symlinks to all of busybox's tools.
+	cat busybox/list | xargs -I{} -n1 ln -s busybox $(OUT_DIR)/busybox/{}
+
+busybox-android-hack:
+	# The hack is: Don't install busybox.  :)
 
 .PHONY: gaia-hack
 gaia-hack: gaia
