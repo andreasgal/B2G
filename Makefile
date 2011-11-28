@@ -267,6 +267,6 @@ kill-b2g:
 
 .PHONY: sync
 sync:
-	git pull
+	git pull origin
 	git submodule sync
 	git submodule update --init
