@@ -58,7 +58,7 @@ endif
 .PHONY: gecko
 # XXX Hard-coded for prof-android target.  It would also be nice if
 # client.mk understood the |package| target.
-gecko:
+gecko: gonk
 	@export ANDROID_SDK=$(ANDROID_SDK) && \
 	export ANDROID_SDK_PLATFORM=$(ANDROID_SDK_PLATFORM) && \
 	export ANDROID_NDK=$(ANDROID_NDK) && \
@@ -222,6 +222,7 @@ gecko-android-hack: gecko
 	cp -p gecko/objdir-prof-android/dist/b2g-*.apk $(APP_OUT_DIR)/B2G.apk
 	unzip -jo gecko/objdir-prof-android/dist/b2g-*.apk lib/armeabi-v7a/libmozutils.so -d $(OUT_DIR)/lib
 	find glue/gonk/out -iname "*.img" | xargs rm -f
+	@$(call GONK_CMD,make $(MAKE_FLAGS) $(GONK_MAKE_FLAGS) systemimage-nodeps)
 
 .PHONY: gecko-gonk-hack
 gecko-gonk-hack: gecko
@@ -232,6 +233,7 @@ gecko-gonk-hack: gecko
 	  tar xvfz `ls -t $(PWD)/gecko/objdir-prof-android/dist/b2g-*.tar.gz | head -n1` )
 	cp $(OUT_DIR)/b2g/libmozutils.so $(OUT_DIR)/lib
 	find glue/gonk/out -iname "*.img" | xargs rm -f
+	@$(call GONK_CMD,make $(MAKE_FLAGS) $(GONK_MAKE_FLAGS) systemimage-nodeps)
 
 
 .PHONY: gaia-hack
