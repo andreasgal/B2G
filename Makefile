@@ -38,6 +38,13 @@ ifeq (qemu,$(KERNEL))
 build: kernel bootimg-hack
 endif
 
+# someone rename the galaxys2 kernel dir plz
+ifeq (galaxys2,$(KERNEL))
+KERNEL_DIR=boot/kernel-android-galaxy-s2
+else
+KERNEL_DIR=boot/kernel-android-$(KERNEL)
+endif
+
 ifeq (android,$(WIDGET_BACKEND))
 ifndef ANDROID_SDK
 $(error Sorry, you need to set ANDROID_SDK in your environment to point at the top-level of the SDK install.  For now.)
@@ -72,6 +79,8 @@ gonk: gaia-hack
 # XXX Hard-coded for gonk tool support
 kernel:
 	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE=arm-eabi-
+	-find "$(KERNEL_DIR)" -name "*.ko" | xargs -I MOD cp MOD "$(GONK_PATH)/out/target/product/$(GONK)/root/lib/modules"
+	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE=arm-eabi- zImage
 
 .PHONY: clean
 clean: clean-gecko clean-gonk clean-kernel
@@ -258,6 +267,6 @@ kill-b2g:
 
 .PHONY: sync
 sync:
-	git pull
+	git pull origin
 	git submodule sync
 	git submodule update --init
