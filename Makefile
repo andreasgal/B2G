@@ -28,6 +28,8 @@ ANDROID_SDK_PLATFORM ?= android-13
 GECKO_CONFIGURE_ARGS ?=
 WIDGET_BACKEND ?= android
 
+CCACHE ?= $(shell which ccache)
+
 # Developers can use this to define convenience rules and set global variabls
 # XXX for now, this is where to put ANDROID_SDK and ANDROID_NDK macros
 -include local.mk
@@ -79,9 +81,9 @@ gonk: gaia-hack
 # XXX Hard-coded for nexuss4g target
 # XXX Hard-coded for gonk tool support
 kernel:
-	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE="ccache arm-eabi-"
+	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE="$(CCACHE) arm-eabi-"
 	-find "$(KERNEL_DIR)" -name "*.ko" | xargs -I MOD cp MOD "$(GONK_PATH)/out/target/product/$(GONK)/root/lib/modules"
-	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE="ccache arm-eabi-" zImage
+	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE="$(CCACHE) arm-eabi-" zImage
 
 .PHONY: clean
 clean: clean-gecko clean-gonk clean-kernel
