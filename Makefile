@@ -20,6 +20,7 @@ define GONK_CMD # $(call GONK_CMD,cmd)
 	cd $(GONK_PATH) && \
 	. build/envsetup.sh && \
 	lunch $(GONK_TARGET) && \
+	export USE_CCACHE="yes" && \
 	$(1)
 endef
 
@@ -78,9 +79,9 @@ gonk: gaia-hack
 # XXX Hard-coded for nexuss4g target
 # XXX Hard-coded for gonk tool support
 kernel:
-	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE=arm-eabi-
+	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE="ccache arm-eabi-"
 	-find "$(KERNEL_DIR)" -name "*.ko" | xargs -I MOD cp MOD "$(GONK_PATH)/out/target/product/$(GONK)/root/lib/modules"
-	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE=arm-eabi- zImage
+	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE="ccache arm-eabi-" zImage
 
 .PHONY: clean
 clean: clean-gecko clean-gonk clean-kernel
