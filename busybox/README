@@ -1,0 +1,9 @@
+The |busybox| binary in this folder was obtained from 
+
+  http://busybox.net/downloads/binaries/1.19.0/busybox-armv6l
+
+It might be cleaner to build busybox from source as part of B2G's overall
+build, but boy, is that hard.
+
+The |list| file was created by pushing the busybox binary to an ARM device and
+running ./busybox --list.
