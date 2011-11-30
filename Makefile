@@ -275,10 +275,11 @@ sync:
 .PHONY: package
 package:
 	rm -rf $(PKG_DIR)
-	mkdir -p $(PKG_DIR)/source
-	cp glue/gonk/out/host/linux-x86/bin/emulator $(PKG_DIR)/source
-	cp glue/gonk/out/host/linux-x86/bin/adb $(PKG_DIR)/source
-	cp boot/kernel-android-qemu/arch/arm/boot/zImage $(PKG_DIR)/source
-	cp -R glue/gonk/out/target/product/generic $(PKG_DIR)/source
-	cd $(PKG_DIR)/source && tar -czvf ../package.tar.gz .
+	mkdir -p $(PKG_DIR)/qemu/bin
+	cp glue/gonk/out/host/linux-x86/bin/emulator $(PKG_DIR)/qemu/bin
+	cp glue/gonk/out/host/linux-x86/bin/emulator-arm $(PKG_DIR)/qemu/bin
+	cp glue/gonk/out/host/linux-x86/bin/adb $(PKG_DIR)/qemu/bin
+	cp boot/kernel-android-qemu/arch/arm/boot/zImage $(PKG_DIR)/qemu
+	cp -R glue/gonk/out/target/product/generic $(PKG_DIR)/qemu
+	cd $(PKG_DIR) && tar -czvf qemu_package.tar.gz qemu
 
