@@ -212,6 +212,7 @@ kernel-%:
 
 OUT_DIR := $(GONK_PATH)/out/target/product/$(GONK)/system
 APP_OUT_DIR := $(OUT_DIR)/app
+PKG_DIR := package
 
 $(APP_OUT_DIR):
 	mkdir -p $(APP_OUT_DIR)
@@ -270,3 +271,14 @@ sync:
 	git pull origin master
 	git submodule sync
 	git submodule update --init
+
+.PHONY: package
+package:
+	rm -rf $(PKG_DIR)
+	mkdir -p $(PKG_DIR)/source
+	cp glue/gonk/out/host/linux-x86/bin/emulator $(PKG_DIR)/source
+	cp glue/gonk/out/host/linux-x86/bin/adb $(PKG_DIR)/source
+	cp boot/kernel-android-qemu/arch/arm/boot/zImage $(PKG_DIR)/source
+	cp -R glue/gonk/out/target/product/generic $(PKG_DIR)/source
+	cd $(PKG_DIR)/source && tar -czvf ../package.tar.gz .
+
