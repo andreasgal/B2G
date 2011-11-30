@@ -55,10 +55,7 @@ $(error Sorry, you need to set ANDROID_NDK in your environment to point at the t
 endif
 endif
 
-.PHONY: gecko
-# XXX Hard-coded for prof-android target.  It would also be nice if
-# client.mk understood the |package| target.
-gecko: gonk
+define GECKO_BUILD_CMD
 	@export ANDROID_SDK=$(ANDROID_SDK) && \
 	export ANDROID_SDK_PLATFORM=$(ANDROID_SDK_PLATFORM) && \
 	export ANDROID_NDK=$(ANDROID_NDK) && \
@@ -69,6 +66,17 @@ gecko: gonk
 	ulimit -n 4096 && \
 	make -C gecko -f client.mk -s $(MAKE_FLAGS) && \
 	make -C gecko/objdir-prof-android package
+endef
+
+.PHONY: gecko
+# XXX Hard-coded for prof-android target.  It would also be nice if
+# client.mk understood the |package| target.
+gecko: gonk
+	$(call GECKO_BUILD_CMD)
+
+.PHONY: gecko-only
+gecko-only:
+	$(call GECKO_BUILD_CMD)
 
 .PHONY: gonk
 gonk: gaia-hack
