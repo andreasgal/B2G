@@ -27,6 +27,42 @@ ANDROID_SDK_PLATFORM ?= android-13
 GECKO_CONFIGURE_ARGS ?=
 WIDGET_BACKEND ?= android
 
+# Generate hash code for timestamp and filename of source files
+#
+# $(1): the name of subdirectory that you want to hash for.
+#
+define DEP_HASH
+	_pwd=$$PWD; \
+	for sdir in $$(git submodule|grep $1|awk -- '{print $$2;}'); do \
+		cd $$sdir; \
+		git ls-files | xargs -d '\n' stat -c '%Y:%n' --; \
+		cd $$_pwd; \
+	done 2> /dev/null | md5sum | awk -- '{print $$1;}'
+endef
+
+# Check hash code of sourc files and run commands for necessary.
+#
+# $(1): stamp file (where hash code is kept)
+# $(2): sub-directory where the module is
+# $(3): commands that you want to run if any of source files is updated.
+#
+define DEP_CHECK
+	echo -n "Checking dependency for $2 ..."; \
+	if [ -e "$1" ]; then \
+		LAST_HASH="`cat $1`"; \
+		CUR_HASH=$$($(call DEP_HASH,$2)); \
+		if [ "$$LAST_HASH" = "$$CUR_HASH" ]; then \
+			echo " (skip)"; \
+			exit 0; \
+		fi; \
+	fi; \
+	echo; \
+	_dep_check_pwd=$$PWD; \
+	$3; \
+	cd $$_dep_check_pwd; \
+	$(call DEP_HASH,$2) > $1
+endef
+
 # Developers can use this to define convenience rules and set global variabls
 # XXX for now, this is where to put ANDROID_SDK and ANDROID_NDK macros
 -include local.mk
@@ -72,7 +108,9 @@ endef
 # XXX Hard-coded for prof-android target.  It would also be nice if
 # client.mk understood the |package| target.
 gecko: gonk
-	$(call GECKO_BUILD_CMD)
+	@$(call DEP_CHECK,gecko/objdir-prof-android/.b2g-build-done,gecko,\
+	$(call GECKO_BUILD_CMD) \
+	)
 
 .PHONY: gecko-only
 gecko-only:
@@ -80,15 +118,19 @@ gecko-only:
 
 .PHONY: gonk
 gonk: gaia-hack
-	@$(call GONK_CMD,make $(MAKE_FLAGS) $(GONK_MAKE_FLAGS))
+	@$(call DEP_CHECK,glue/gonk/out/.b2g-build-done,gonk, \
+	@$(call GONK_CMD,make $(MAKE_FLAGS) $(GONK_MAKE_FLAGS)) \
+	)
 
 .PHONY: kernel
 # XXX Hard-coded for nexuss4g target
 # XXX Hard-coded for gonk tool support
 kernel:
-	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE=arm-eabi-
-	-find "$(KERNEL_DIR)" -name "*.ko" | xargs -I MOD cp MOD "$(GONK_PATH)/out/target/product/$(GONK)/root/lib/modules"
-	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE=arm-eabi- zImage
+	@$(call DEP_CHECK,$(KERNEL_PATH)/.b2g-build-done,$(KERNEL_PATH),\
+	PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE="ccache arm-eabi-"; \
+	find "$(KERNEL_DIR)" -name "*.ko" | xargs -I MOD cp MOD "$(GONK_PATH)/out/target/product/$(GONK)/root/lib/modules"; \
+	PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE="ccache arm-eabi-" zImage \
+	)
 
 .PHONY: clean
 clean: clean-gecko clean-gonk clean-kernel
@@ -104,6 +146,7 @@ clean-gonk:
 .PHONY: clean-kernel
 clean-kernel:
 	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) ARCH=arm CROSS_COMPILE=arm-eabi- clean
+	@rm $(KERNEL_PATH)/.b2g-build-done
 
 .PHONY: config-galaxy-s2
 config-galaxy-s2: config-gecko-$(WIDGET_BACKEND)
