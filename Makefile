@@ -40,6 +40,8 @@ define DEP_HASH
 	for sdir in $$($$($(SUBMODULES))|grep $1|awk -- '{print $$2;}'); do \
 		cd $$sdir; \
 		git ls-files | xargs -d '\n' stat -c '%n:%Y' --; \
+		git ls-files -o -X .gitignore | \
+			xargs -d '\n' stat -c '%n:%Y' --; \
 		cd $$_pwd; \
 	done 2> /dev/null | sort | md5sum | awk -- '{print $$1;}'
 endef
