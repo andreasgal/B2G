@@ -173,15 +173,14 @@ flash-crespo4g: image
 flash-only-crespo4g:
 	@$(call GONK_CMD,adb reboot bootloader && fastboot flashall -w)
 
-# When we're building with gonk, we need to chmod /system/b2g/b2g and
-# /system/busybox/*.  Since the built-in chmod doesn't support |-R|, we need to
+# When we're building with gonk, we need to chmod /system/busybox/*.
+# Since the built-in chmod doesn't support |-R|, we need to
 # use busybox's chmod.
 ifeq (gonk,$(WIDGET_BACKEND))
   define FLASH_GALAXYS2_CMD_CHMOD_HACK
     adb wait-for-device
     adb shell "chmod 755 /system/busybox/busybox && \
                /system/busybox/busybox chmod -R 755 /system/busybox && \
-	       /system/busybox/chmod 755 /system/b2g/b2g && \
 	       /system/busybox/chmod 755 /system/bin/start-busybox && \
 	       /system/busybox/ln -sf /system/bin/sh /system/busybox/ash"
   endef
