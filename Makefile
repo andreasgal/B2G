@@ -27,13 +27,17 @@ ANDROID_SDK_PLATFORM ?= android-13
 GECKO_CONFIGURE_ARGS ?=
 WIDGET_BACKEND ?= android
 
+define SUBMODULES
+	cat .gitmodules |grep path|awk -- '{print $3;}'
+endef
+
 # Generate hash code for timestamp and filename of source files
 #
 # $(1): the name of subdirectory that you want to hash for.
 #
 define DEP_HASH
 	_pwd=$$PWD; \
-	for sdir in $$(git submodule|grep $1|awk -- '{print $$2;}'); do \
+	for sdir in $$($$($(SUBMODULES))|grep $1|awk -- '{print $$2;}'); do \
 		cd $$sdir; \
 		git ls-files | xargs -d '\n' stat -c '%Y:%n' --; \
 		cd $$_pwd; \
