@@ -39,9 +39,9 @@ define DEP_HASH
 	_pwd=$$PWD; \
 	for sdir in $$($$($(SUBMODULES))|grep $1|awk -- '{print $$2;}'); do \
 		cd $$sdir; \
-		git ls-files | xargs -d '\n' stat -c '%Y:%n' --; \
+		git ls-files | xargs -d '\n' stat -c '%n:%Y' --; \
 		cd $$_pwd; \
-	done 2> /dev/null | md5sum | awk -- '{print $$1;}'
+	done 2> /dev/null | sort | md5sum | awk -- '{print $$1;}'
 endef
 
 # Check hash code of sourc files and run commands for necessary.
