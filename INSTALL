@@ -234,11 +234,6 @@ and installs on the device.  After finishing, the device will reboot.
 
 $ adb shell chmod -R 777 /data/system
 
-# temporary hack you may need on the gonk backend, although the Makefile tries
-# to do it for you.
-
-$ adb shell chmod 755 /system/b2g/b2g
-
  == Kernel flashing ==
 
 The kernel should also be flashed when using the gonk backend on a SII.
