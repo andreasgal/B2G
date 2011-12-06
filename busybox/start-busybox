@@ -1,4 +1,0 @@
-#!/system/bin/sh
-
-# For some reason, starting ash as /system/busybox/ash doesn't work.
-PATH=$PATH:/system/busybox /system/busybox/busybox ash

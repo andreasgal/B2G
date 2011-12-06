@@ -245,7 +245,7 @@ $ adb shell chmod -R 777 /data/system
 
 The kernel should also be flashed when using the gonk backend on a SII.
 It only needs to be done once when switching to the gonk backend.
-This will overwrite ClockworkMod.
+This kernel comes with a clockwork mod variant.
 
 GET A DOWNLOAD MODE JIG BEFORE ATTEMPTING THIS!
 The flashing process is known to fail.
