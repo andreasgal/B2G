@@ -118,24 +118,27 @@ config-gecko-android:
 config-gecko-gonk:
 	@ln -sf ../config/gecko-prof-gonk gecko/mozconfig
 
-define INSTALL_NEXUS_S_BLOB # $(call INSTALL_BLOB,vendor,id)
-	wget https://dl.google.com/dl/android/aosp/$(1)-crespo4g-grj90-$(2).tgz && \
-	tar zxvf $(1)-crespo4g-grj90-$(2).tgz && \
-	./extract-$(1)-crespo4g.sh && \
-	rm $(1)-crespo4g-grj90-$(2).tgz extract-$(1)-crespo4g.sh
-endef
+%.tgz:
+	wget https://dl.google.com/dl/android/aosp/$@
+
+NEXUS_S_BUILD = grj90
+extract-broadcom-crespo4g.sh: broadcom-crespo4g-$(NEXUS_S_BUILD)-c4ec9a38.tgz
+	tar zxvf $< && ./$@
+extract-imgtec-crespo4g.sh: imgtec-crespo4g-$(NEXUS_S_BUILD)-a8e2ce86.tgz
+	tar zxvf $< && ./$@
+extract-nxp-crespo4g.sh: nxp-crespo4g-$(NEXUS_S_BUILD)-9abcae18.tgz
+	tar zxvf $< && ./$@
+extract-samsung-crespo4g.sh: samsung-crespo4g-$(NEXUS_S_BUILD)-9474e48f.tgz
+	tar zxvf $< && ./$@
+
+.PHONY: blobs-nexuss4g
+blobs-nexuss4g: extract-broadcom-crespo4g.sh extract-imgtec-crespo4g.sh extract-nxp-crespo4g.sh extract-samsung-crespo4g.sh
 
 .PHONY: config-nexuss4g
-# XXX Hard-coded for nexuss4g target
-config-nexuss4g: config-gecko-android
+config-nexuss4g: blobs-nexuss4g config-gecko-android
 	@echo "KERNEL = samsung" > .config.mk && \
 	echo "GONK = crespo4g" >> .config.mk && \
 	cp -p config/kernel-nexuss4g boot/kernel-android-samsung/.config && \
-	cd $(GONK_PATH) && \
-	$(call INSTALL_NEXUS_S_BLOB,broadcom,c4ec9a38) && \
-	$(call INSTALL_NEXUS_S_BLOB,imgtec,a8e2ce86) && \
-	$(call INSTALL_NEXUS_S_BLOB,nxp,9abcae18) && \
-	$(call INSTALL_NEXUS_S_BLOB,samsung,9474e48f) && \
 	make -C $(CURDIR) nexuss4g-postconfig
 
 .PHONY: nexuss4g-postconfig
