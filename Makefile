@@ -35,18 +35,13 @@ CCACHE ?= $(shell which ccache)
 -include local.mk
 
 .PHONY: build
-build: gecko gecko-$(WIDGET_BACKEND)-hack busybox-$(WIDGET_BACKEND)-hack gonk
+build: gecko gecko-$(WIDGET_BACKEND)-hack gonk
 
 ifeq (qemu,$(KERNEL))
 build: kernel bootimg-hack
 endif
 
-# someone rename the galaxys2 kernel dir plz
-ifeq (galaxys2,$(KERNEL))
-KERNEL_DIR=boot/kernel-android-galaxy-s2
-else
 KERNEL_DIR=boot/kernel-android-$(KERNEL)
-endif
 
 ifeq (android,$(WIDGET_BACKEND))
 ifndef ANDROID_SDK
@@ -76,14 +71,20 @@ gecko:
 .PHONY: gonk
 gonk: gaia-hack
 	@$(call GONK_CMD,make $(MAKE_FLAGS) $(GONK_MAKE_FLAGS))
+ifeq (qemu,$(KERNEL))
+	@cp glue/gonk/system/core/rootdir/init.rc.gonk $(GONK_PATH)/out/target/product/$(GONK)/root/init.rc
+endif
 
 .PHONY: kernel
 # XXX Hard-coded for nexuss4g target
 # XXX Hard-coded for gonk tool support
 kernel:
+ifeq (galaxy-s2,$(KERNEL))
+	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE="$(CCACHE) arm-eabi-" modules
+	(rm -rf boot/initramfs && cd boot/clockworkmod_galaxys2_initramfs && git checkout-index -a -f --prefix ../initramfs/)
+	find "$(KERNEL_DIR)" -name "*.ko" | xargs -I MOD cp MOD "$(PWD)/boot/initramfs/lib/modules"
+endif
 	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE="$(CCACHE) arm-eabi-"
-	-find "$(KERNEL_DIR)" -name "*.ko" | xargs -I MOD cp MOD "$(GONK_PATH)/out/target/product/$(GONK)/root/lib/modules"
-	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE="$(CCACHE) arm-eabi-" zImage
 
 .PHONY: clean
 clean: clean-gecko clean-gonk clean-kernel
@@ -118,24 +119,27 @@ config-gecko-android:
 config-gecko-gonk:
 	@ln -sf ../config/gecko-prof-gonk gecko/mozconfig
 
-define INSTALL_NEXUS_S_BLOB # $(call INSTALL_BLOB,vendor,id)
-	wget https://dl.google.com/dl/android/aosp/$(1)-crespo4g-grj90-$(2).tgz && \
-	tar zxvf $(1)-crespo4g-grj90-$(2).tgz && \
-	./extract-$(1)-crespo4g.sh && \
-	rm $(1)-crespo4g-grj90-$(2).tgz extract-$(1)-crespo4g.sh
-endef
+%.tgz:
+	wget https://dl.google.com/dl/android/aosp/$@
+
+NEXUS_S_BUILD = grj90
+extract-broadcom-crespo4g.sh: broadcom-crespo4g-$(NEXUS_S_BUILD)-c4ec9a38.tgz
+	tar zxvf $< && ./$@
+extract-imgtec-crespo4g.sh: imgtec-crespo4g-$(NEXUS_S_BUILD)-a8e2ce86.tgz
+	tar zxvf $< && ./$@
+extract-nxp-crespo4g.sh: nxp-crespo4g-$(NEXUS_S_BUILD)-9abcae18.tgz
+	tar zxvf $< && ./$@
+extract-samsung-crespo4g.sh: samsung-crespo4g-$(NEXUS_S_BUILD)-9474e48f.tgz
+	tar zxvf $< && ./$@
+
+.PHONY: blobs-nexuss4g
+blobs-nexuss4g: extract-broadcom-crespo4g.sh extract-imgtec-crespo4g.sh extract-nxp-crespo4g.sh extract-samsung-crespo4g.sh
 
 .PHONY: config-nexuss4g
-# XXX Hard-coded for nexuss4g target
-config-nexuss4g: config-gecko-android
+config-nexuss4g: blobs-nexuss4g config-gecko-android
 	@echo "KERNEL = samsung" > .config.mk && \
 	echo "GONK = crespo4g" >> .config.mk && \
 	cp -p config/kernel-nexuss4g boot/kernel-android-samsung/.config && \
-	cd $(GONK_PATH) && \
-	$(call INSTALL_NEXUS_S_BLOB,broadcom,c4ec9a38) && \
-	$(call INSTALL_NEXUS_S_BLOB,imgtec,a8e2ce86) && \
-	$(call INSTALL_NEXUS_S_BLOB,nxp,9abcae18) && \
-	$(call INSTALL_NEXUS_S_BLOB,samsung,9474e48f) && \
 	make -C $(CURDIR) nexuss4g-postconfig
 
 .PHONY: nexuss4g-postconfig
@@ -143,7 +147,7 @@ nexuss4g-postconfig:
 	$(call GONK_CMD,make signapk && vendor/samsung/crespo4g/reassemble-apks.sh)
 
 .PHONY: config-qemu
-config-qemu: config-gecko-android
+config-qemu: config-gecko-$(WIDGET_BACKEND)
 	@echo "KERNEL = qemu" > .config.mk && \
 	echo "GONK = generic" >> .config.mk && \
 	echo "GONK_TARGET = generic-eng" >> .config.mk && \
@@ -172,19 +176,6 @@ flash-crespo4g: image
 .PHONY: flash-only-crespo4g
 flash-only-crespo4g:
 	@$(call GONK_CMD,adb reboot bootloader && fastboot flashall -w)
-
-# When we're building with gonk, we need to chmod /system/busybox/*.
-# Since the built-in chmod doesn't support |-R|, we need to
-# use busybox's chmod.
-ifeq (gonk,$(WIDGET_BACKEND))
-  define FLASH_GALAXYS2_CMD_CHMOD_HACK
-    adb wait-for-device
-    adb shell "chmod 755 /system/busybox/busybox && \
-               /system/busybox/busybox chmod -R 755 /system/busybox && \
-	       /system/busybox/chmod 755 /system/bin/start-busybox && \
-	       /system/busybox/ln -sf /system/bin/sh /system/busybox/ash"
-  endef
-endif
 
 define FLASH_GALAXYS2_CMD
 adb reboot download 
@@ -239,18 +230,6 @@ gecko-gonk-hack: gecko
 	  tar xvfz `ls -t $(PWD)/gecko/objdir-prof-android/dist/b2g-*.tar.gz | head -n1` )
 	cp $(OUT_DIR)/b2g/libmozutils.so $(OUT_DIR)/lib
 	find glue/gonk/out -iname "*.img" | xargs rm -f
-
-.PHONY: busybox-gonk-hack
-busybox-gonk-hack:
-	rm -rf $(OUT_DIR)/busybox
-	mkdir -p $(OUT_DIR)/busybox
-	cp busybox/busybox $(OUT_DIR)/busybox/busybox
-	cp busybox/start-busybox $(OUT_DIR)/bin/start-busybox
-	# Make symlinks to all of busybox's tools.
-	cat busybox/list | xargs -I{} -n1 ln -s busybox $(OUT_DIR)/busybox/{}
-
-busybox-android-hack:
-	# The hack is: Don't install busybox.  :)
 
 .PHONY: gaia-hack
 gaia-hack: gaia

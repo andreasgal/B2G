@@ -117,6 +117,8 @@ EOF
 # for gonk backend
 
 $ cat > local.mk << EOF
+ANDROID_SDK="$ANDROID_SDK"
+ANDROID_NDK="$ANDROID_NDK"
 WIDGET_BACKEND=gonk
 EOF
 
@@ -142,17 +144,20 @@ will function, only more slowly and without access to some sensors.
 
  == Build the code ==
 
-This part is relatively simple
+When building with the gonk back end for the first time, first run:
 
-$ make -jN
+$ make gonk
 
-where N is slightly more than the number of cores you have in your
-machine.
+For both gonk and Android back ends, you then simply run:
+
+$ make
 
 This step can take a long time.  Subsequent rebuilds will usually be
 much faster, though.
 
-At this stage, if you're building from the Android emulator, you just
+ == Running on the Android Emulator ==
+
+At this stage, if you're building for the Android emulator, you just
 need to run the provided script and you're done.
 
 $ ./emu.sh
@@ -224,7 +229,9 @@ will be fixed.  BE SURE you don't reboot your phone before running the
 following step.  That is, you should run "make flash" while your phone
 is still in recovery mode.
 
-$ make flash
+NOTE: When flashing with the gonk back end for the first time, flash the kernel first (see "Kernel Flashing" below).
+
+$ make flash-only
 
 If all goes well, you'll see the phone reboot into the bootloader,
 then your host machine will report the progress of files it uploads
@@ -234,11 +241,11 @@ and installs on the device.  After finishing, the device will reboot.
 
 $ adb shell chmod -R 777 /data/system
 
- == Kernel flashing ==
+ == Kernel Flashing ==
 
 The kernel should also be flashed when using the gonk backend on a SII.
 It only needs to be done once when switching to the gonk backend.
-This will overwrite ClockworkMod.
+This kernel comes with a clockwork mod variant.
 
 GET A DOWNLOAD MODE JIG BEFORE ATTEMPTING THIS!
 The flashing process is known to fail.
@@ -246,6 +253,8 @@ The flashing process is known to fail.
 $ make kernel
 $ adb reboot download
 $ heimdall flash --kernel boot/kernel-android-galaxy-s2/arch/arm/boot/zImage
+
+Note: If during "make kernel" the process seems to stop and shows a colon for user input, it's probably asking you a question. Try hitting enter to continue.
 
  == Install Gaia ==
 
