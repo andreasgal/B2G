@@ -76,6 +76,9 @@ gecko:
 .PHONY: gonk
 gonk: gaia-hack
 	@$(call GONK_CMD,make $(MAKE_FLAGS) $(GONK_MAKE_FLAGS))
+ifeq (qemu,$(KERNEL))
+	@cp glue/gonk/system/core/rootdir/init.rc.gonk $(GONK_PATH)/out/target/product/$(GONK)/root/init.rc
+endif
 
 .PHONY: kernel
 # XXX Hard-coded for nexuss4g target
@@ -146,7 +149,7 @@ nexuss4g-postconfig:
 	$(call GONK_CMD,make signapk && vendor/samsung/crespo4g/reassemble-apks.sh)
 
 .PHONY: config-qemu
-config-qemu: config-gecko-android
+config-qemu: config-gecko-$(WIDGET_BACKEND)
 	@echo "KERNEL = qemu" > .config.mk && \
 	echo "GONK = generic" >> .config.mk && \
 	echo "GONK_TARGET = generic-eng" >> .config.mk && \
