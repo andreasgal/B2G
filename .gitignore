@@ -1,5 +1,6 @@
 *~
 .config.mk
 local.mk
+boot/initramfs/
 glue/gonk/out
 glue/gonk/vendor

@@ -41,12 +41,7 @@ ifeq (qemu,$(KERNEL))
 build: kernel bootimg-hack
 endif
 
-# someone rename the galaxys2 kernel dir plz
-ifeq (galaxys2,$(KERNEL))
-KERNEL_DIR=boot/kernel-android-galaxy-s2
-else
 KERNEL_DIR=boot/kernel-android-$(KERNEL)
-endif
 
 ifeq (android,$(WIDGET_BACKEND))
 ifndef ANDROID_SDK
@@ -84,9 +79,12 @@ endif
 # XXX Hard-coded for nexuss4g target
 # XXX Hard-coded for gonk tool support
 kernel:
+ifeq (galaxy-s2,$(KERNEL))
+	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE="$(CCACHE) arm-eabi-" modules
+	(rm -rf boot/initramfs && cd boot/clockworkmod_galaxys2_initramfs && git checkout-index -a -f --prefix ../initramfs/)
+	find "$(KERNEL_DIR)" -name "*.ko" | xargs -I MOD cp MOD "$(PWD)/boot/initramfs/lib/modules"
+endif
 	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE="$(CCACHE) arm-eabi-"
-	-find "$(KERNEL_DIR)" -name "*.ko" | xargs -I MOD cp MOD "$(GONK_PATH)/out/target/product/$(GONK)/root/lib/modules"
-	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE="$(CCACHE) arm-eabi-" zImage
 
 .PHONY: clean
 clean: clean-gecko clean-gonk clean-kernel
