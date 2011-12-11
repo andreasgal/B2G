@@ -426,7 +426,7 @@
 	url = git://github.com/cgjones/android-device-crespo.git
 [submodule "glue/gonk/sdk"]
 	path = glue/gonk/sdk
-	url = git://android.git.linaro.org/platform/sdk.git
+	url = git://github.com/shianyow/android-sdk.git
 [submodule "glue/gonk/frameworks/opt/emoji"]
 	path = glue/gonk/frameworks/opt/emoji
 	url = git://android.git.linaro.org/platform/frameworks/opt/emoji.git
