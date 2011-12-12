@@ -499,3 +499,6 @@
 [submodule "boot/clockworkmod_galaxys2_initramfs"]
 	path = boot/clockworkmod_galaxys2_initramfs
 	url = git://github.com/michaelwu/clockworkmod_galaxys2_initramfs.git
+[submodule "glue/gonk/rilproxy"]
+	path = glue/gonk/rilproxy
+	url = git://github.com/qdot/rilproxy
