@@ -496,9 +496,6 @@
 [submodule "gaia"]
 	path = gaia
 	url = git://github.com/andreasgal/gaia.git
-[submodule "glue/gonk/b2g-dialer-daemon"]
-	path = glue/gonk/b2g-dialer-daemon
-	url = git://github.com/qdot/b2g-dialer-daemon
 [submodule "boot/clockworkmod_galaxys2_initramfs"]
 	path = boot/clockworkmod_galaxys2_initramfs
 	url = git://github.com/michaelwu/clockworkmod_galaxys2_initramfs.git
