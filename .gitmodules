@@ -502,3 +502,6 @@
 [submodule "glue/gonk/rilproxy"]
 	path = glue/gonk/rilproxy
 	url = git://github.com/mozilla-b2g/rilproxy
+[submodule "boot/msm"]
+	path = boot/msm
+	url = git://codeaurora.org/quic/qrd-android/kernel/msm.git
