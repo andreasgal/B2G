@@ -117,8 +117,6 @@ EOF
 # for gonk backend
 
 $ cat > local.mk << EOF
-ANDROID_SDK="$ANDROID_SDK"
-ANDROID_NDK="$ANDROID_NDK"
 WIDGET_BACKEND=gonk
 EOF
 
