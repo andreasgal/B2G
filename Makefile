@@ -11,7 +11,6 @@ GONK_MAKE_FLAGS ?=
 HEIMDALL ?= heimdall
 TOOLCHAIN_HOST = linux-x86
 TOOLCHAIN_PATH = ./glue/gonk/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3/bin
-KERNEL_PATH = ./boot/kernel-android-$(KERNEL)
 
 GONK_PATH = $(abspath glue/gonk)
 GONK_TARGET ?= full_$(GONK)-eng
@@ -26,7 +25,7 @@ endef
 
 ANDROID_SDK_PLATFORM ?= android-13
 GECKO_CONFIGURE_ARGS ?=
-WIDGET_BACKEND ?= android
+WIDGET_BACKEND ?= gonk
 
 CCACHE ?= $(shell which ccache)
 
@@ -84,7 +83,6 @@ ifeq (galaxy-s2,$(KERNEL))
 	(rm -rf boot/initramfs && cd boot/clockworkmod_galaxys2_initramfs && git checkout-index -a -f --prefix ../initramfs/)
 	find "$(KERNEL_DIR)" -name "*.ko" | xargs -I MOD cp MOD "$(PWD)/boot/initramfs/lib/modules"
 endif
-	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE="$(CCACHE) arm-eabi-"
 
 .PHONY: clean
 clean: clean-gecko clean-gonk clean-kernel
@@ -104,9 +102,21 @@ clean-kernel:
 .PHONY: config-galaxy-s2
 config-galaxy-s2: config-gecko-$(WIDGET_BACKEND)
 	@echo "KERNEL = galaxy-s2" > .config.mk && \
+        echo "KERNEL_PATH = ./boot/kernel-android-galaxy-s2" >> .config.mk && \
 	echo "GONK = galaxys2" >> .config.mk && \
 	cp -p config/kernel-galaxy-s2 boot/kernel-android-galaxy-s2/.config && \
 	cd $(GONK_PATH)/device/samsung/galaxys2/ && \
+	echo Extracting binary blobs from device, which should be plugged in! ... && \
+	./extract-files.sh && \
+	echo OK
+
+.PHONY: config-maguro
+config-maguro: config-gecko-$(WIDGET_BACKEND)
+	@echo "KERNEL = msm" > .config.mk && \
+        echo "KERNEL_PATH = ./boot/msm" >> .config.mk && \
+	echo "GONK = maguro" >> .config.mk && \
+	cp -p config/msm7627a_sku1-perf_defconfig boot/msm/.config && \
+	cd $(GONK_PATH)/device/toro/maguro && \
 	echo Extracting binary blobs from device, which should be plugged in! ... && \
 	./extract-files.sh && \
 	echo OK
@@ -138,6 +148,7 @@ blobs-nexuss4g: extract-broadcom-crespo4g.sh extract-imgtec-crespo4g.sh extract-
 .PHONY: config-nexuss4g
 config-nexuss4g: blobs-nexuss4g config-gecko-android
 	@echo "KERNEL = samsung" > .config.mk && \
+        echo "KERNEL_PATH = ./boot/kernel-android-samsung" >> .config.mk && \
 	echo "GONK = crespo4g" >> .config.mk && \
 	cp -p config/kernel-nexuss4g boot/kernel-android-samsung/.config && \
 	make -C $(CURDIR) nexuss4g-postconfig
@@ -149,6 +160,7 @@ nexuss4g-postconfig:
 .PHONY: config-qemu
 config-qemu: config-gecko-$(WIDGET_BACKEND)
 	@echo "KERNEL = qemu" > .config.mk && \
+        echo "KERNEL_PATH = ./boot/kernel-android-qemu" >> .config.mk && \
 	echo "GONK = generic" >> .config.mk && \
 	echo "GONK_TARGET = generic-eng" >> .config.mk && \
 	echo "GONK_MAKE_FLAGS = TARGET_ARCH_VARIANT=armv7-a" >> .config.mk && \
