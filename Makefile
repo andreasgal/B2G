@@ -238,9 +238,18 @@ gaia-hack: gaia
 	cp -r gaia/* $(OUT_DIR)/home
 
 .PHONY: install-gecko
-install-gecko: gecko
+install-gecko: install-gecko-$(WIDGET_BACKEND)
+
+.PHONY: install-gecko-android
+install-gecko-android: gecko
 	@adb install -r gecko/objdir-prof-android/dist/b2g-*.apk && \
 	adb reboot
+
+.PHONY: install-gecko-gonk
+install-gecko-gonk: gecko-gonk-hack
+	@adb shell mount -o remount,rw /system && \
+	adb push $(OUT_DIR)/b2g /system/b2g && \
+	adb push $(OUT_DIR)/lib/libmozutils.so /system/lib/libmozutils.so
 
 # The sad hacks keep piling up...  We can't set this up to be
 # installed as part of the data partition because we can't flash that
