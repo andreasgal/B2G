@@ -25,7 +25,7 @@ endef
 
 ANDROID_SDK_PLATFORM ?= android-13
 GECKO_CONFIGURE_ARGS ?=
-WIDGET_BACKEND ?= android
+WIDGET_BACKEND ?= gonk
 
 CCACHE ?= $(shell which ccache)
 
