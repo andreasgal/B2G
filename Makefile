@@ -116,7 +116,7 @@ config-maguro: config-gecko-$(WIDGET_BACKEND)
         echo "KERNEL_PATH = ./boot/msm" >> .config.mk && \
 	echo "GONK = maguro" >> .config.mk && \
 	cp -p config/msm7627a_sku1-perf_defconfig boot/msm/.config && \
-	cd $(GONK_PATH)/device/turo/maguro && \
+	cd $(GONK_PATH)/device/toro/maguro && \
 	echo Extracting binary blobs from device, which should be plugged in! ... && \
 	./extract-files.sh && \
 	echo OK
