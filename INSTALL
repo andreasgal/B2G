@@ -4,6 +4,10 @@ $B2G.
 
  Dependencies
 --------------
+* IMPORTANT!!: When building on a VM, be sure to give your VM enough
+  RAM, swap disk space, and general disk space before beginning.
+  Optimally, your VM should have 4GB RAM, 4GB+ swap partition and
+  40GB+ virtual hard disk.
 
 * You need to have adb set up to allow your machine to talk to your
   phone.  Follow the instructions at
