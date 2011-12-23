@@ -85,10 +85,14 @@ COMMON_BLOBS_LIST=../../../vendor/$MANUFACTURER/$COMMON/vendor-blobs.mk
 PRODUCT_COPY_FILES := \\
     vendor/__MANUFACTURER__/__COMMON__/proprietary/libcamera.so:obj/lib/libcamera.so \\
     vendor/__MANUFACTURER__/__COMMON__/proprietary/libril.so:obj/lib/libril.so \\
-    vendor/__MANUFACTURER__/__COMMON__/proprietary/libsecril-client.so:obj/lib/libsecril-client.so \\
     vendor/__MANUFACTURER__/__COMMON__/proprietary/audio/libaudio.so:obj/lib/libaudio.so \\
-    vendor/__MANUFACTURER__/__COMMON__/proprietary/audio/libmediayamahaservice.so:obj/lib/libmediayamahaservice.so \\
     vendor/__MANUFACTURER__/__COMMON__/proprietary/audio/libaudiopolicy.so:obj/lib/libaudiopolicy.so
+
+# TODO: The build system seems to want libaudio.so and libaudiopolicy.so in two
+# locations.  Need to resolve this properly.
+PRODUCT_COPY_FILES += \\
+    vendor/__MANUFACTURER__/__COMMON__/proprietary/audio/libaudio.so:system/lib/libaudio.so \\
+    vendor/__MANUFACTURER__/__COMMON__/proprietary/audio/libaudiopolicy.so:system/lib/libaudiopolicy.so
 
 # All the blobs necessary for galaxys2 devices
 PRODUCT_COPY_FILES += \\
@@ -107,10 +111,10 @@ copy_files()
         echo Pulling \"$NAME\"
         if adb pull /$2/$NAME $PROPRIETARY_COMMON_DIR/$3/$NAME
 	then
-            echo   $BASE_PROPRIETARY_COMMON_DIR/$3/$NAME:$2/$NAME \\\\ >> $COMMON_BLOBS_LIST
+            echo   $BASE_PROPRIETARY_COMMON_DIR/$3/$NAME:$2/$NAME \\ >> $COMMON_BLOBS_LIST
         else
             echo Failed to pull $NAME. Giving up.
-            exit -1
+            #exit -1
         fi
     done
 }

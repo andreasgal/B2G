@@ -71,7 +71,7 @@ TARGET_USES_UNCOMPRESSED_KERNEL := true
 
 BOARD_KERNEL_CMDLINE := console=ttyMSM0,115200,n8 androidboot.hardware=qcom
 ARCH_ARM_HAVE_TLS_REGISTER := true
-BOARD_EGL_CFG := device/qcom/$(TARGET_PRODUCT)/egl.cfg
+BOARD_EGL_CFG := vendor/toro/common/proprietary/egl/egl.cfg
 
 BOARD_NO_SPEAKER := true # msm7627a doesn't have speaker
 BOARD_NO_TOUCHSCREEN := false
@@ -87,7 +87,7 @@ BOARD_CACHEIMAGE_PARTITION_SIZE := 104857600
 BOARD_PERSISTIMAGE_PARTITION_SIZE := 10485760
 BOARD_FLASH_BLOCK_SIZE := 131072 # (BOARD_KERNEL_PAGESIZE * 64)
 #Atheros ++++
-BOARD_USES_ATH_WIFI ?= true
+#BOARD_USES_ATH_WIFI ?= true
 BOARD_USES_AR6002 := false
 BOARD_USES_AR6003 := true
 ifeq ($(BOARD_USES_ATH_WIFI),true)
@@ -104,4 +104,4 @@ ifeq ($(BOARD_USES_ATH_WIFI),true)
 endif
 # Atheros ---
 
-TARGET_RECOVERY_UPDATER_LIBS += librecovery_updater_qcom
+#TARGET_RECOVERY_UPDATER_LIBS += librecovery_updater_qcom
