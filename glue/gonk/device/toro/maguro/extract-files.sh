@@ -18,14 +18,16 @@ DEVICE=maguro
 COMMON=common
 MANUFACTURER=toro
 
-DEVICE_BUILD_ID=`adb shell cat /system/build.prop | grep ro.build.display.id | sed -e 's/ro.build.display.id=//' | tr -d '\r'`
-case "$DEVICE_BUILD_ID" in
-"msm7627a_sku1-eng 2.3.5 GRJ90 eng.fsheng.20110915.182729 test-keys")
-  FIRMWARE=20110915.182729 ;;
-*)
-  echo Warning, your device has unknown firmware $DEVICE_BUILD_ID >&2
-  FIRMWARE=unknown ;;
-esac
+if [[ -z "${ANDROIDFS_DIR}" ]]; then
+   DEVICE_BUILD_ID=`adb shell cat /system/build.prop | grep ro.build.display.id | sed -e 's/ro.build.display.id=//' | tr -d '\r'`
+   case "$DEVICE_BUILD_ID" in
+   "msm7627a_sku1-eng 2.3.5 GRJ90 eng.fsheng.20110915.182729 test-keys")
+     FIRMWARE=20110915.182729 ;;
+   *)
+     echo Warning, your device has unknown firmware $DEVICE_BUILD_ID >&2
+     FIRMWARE=unknown ;;
+   esac
+fi 
 
 BASE_PROPRIETARY_COMMON_DIR=vendor/$MANUFACTURER/$COMMON/proprietary
 PROPRIETARY_DEVICE_DIR=../../../vendor/$MANUFACTURER/$DEVICE/proprietary
@@ -109,12 +111,20 @@ copy_files()
     for NAME in $1
     do
         echo Pulling \"$NAME\"
-        if adb pull /$2/$NAME $PROPRIETARY_COMMON_DIR/$3/$NAME
-	then
-            echo   $BASE_PROPRIETARY_COMMON_DIR/$3/$NAME:$2/$NAME \\ >> $COMMON_BLOBS_LIST
+        if [[ -z "${ANDROIDFS_DIR}" ]]; then
+           adb pull /$2/$NAME $PROPRIETARY_COMMON_DIR/$3/$NAME
         else
-            echo Failed to pull $NAME. Giving up.
-            #exit -1
+           # Hint: Uncomment the next line to populate a fresh ANDROIDFS_DIR
+           #       (TODO: Make this a command-line option or something.)
+           # adb pull /$2/$NAME ${ANDROIDFS_DIR}/$2/$NAME
+           cp ${ANDROIDFS_DIR}/$2/$NAME $PROPRIETARY_COMMON_DIR/$3/$NAME
+        fi
+
+        if [[ -f $PROPRIETARY_COMMON_DIR/$3/$NAME ]]; then
+           echo   $BASE_PROPRIETARY_COMMON_DIR/$3/$NAME:$2/$NAME \\ >> $COMMON_BLOBS_LIST
+        else
+           echo Failed to pull $NAME.
+#           exit -1
         fi
     done
 }
