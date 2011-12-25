@@ -44,19 +44,6 @@ $B2G.
   lib32readline-gplv2-dev is available for Ubuntu 11.10. For Ubuntu 10.10
   lib32readline5-dev seems to work fine.
 
- Additional dependencies when building android backend
--------------------------------------------------------
-
-* Sadly, B2G currently depends on not only the android source, but
-  also the android SDK and NDK.  These dependencies will be removed
-  eventually, but for now you need to install both.  Follow the
-  instructions at
-
-    http://developer.android.com/sdk/installing.html
-    http://developer.android.com/sdk/ndk/index.html
-
-  From here on, this document assumes you installed the SDK to the
-  path $ANDROID_SDK and the NDK to the path $ANDROID_NDK.
 
  Quick start
 -------------
@@ -69,10 +56,6 @@ sure to back up your phone before doing this.
 
 $ cd $B2G
 $ make sync
-$ cat > local.mk << EOF
-ANDROID_SDK="$ANDROID_SDK"
-ANDROID_NDK="$ANDROID_NDK"
-EOF
 $ make config-nexuss4g   # or, make config-galaxy-s2
 $ make flash
 
@@ -107,23 +90,6 @@ $ make sync
 This takes a *long* time, so be patient.  Whenever you want to pull
 from upstream again, just re-run |make sync|.
 
- == [TEMPORARY] Configure local SDK and NDK paths ==
-
-We're using these currently for reasons not worth knowing.
-
-# for android backend
-
-$ cat > local.mk << EOF
-ANDROID_SDK="$ANDROID_SDK"
-ANDROID_NDK="$ANDROID_NDK"
-EOF
-
-# for gonk backend
-
-$ cat > local.mk << EOF
-WIDGET_BACKEND=gonk
-EOF
-
  == Configure repo for your device ==
 
  Nexus S 4G: 
@@ -146,11 +112,11 @@ will function, only more slowly and without access to some sensors.
 
  == Build the code ==
 
-When building with the gonk back end for the first time, first run:
+When building for the first time, first run:
 
 $ make gonk
 
-For both gonk and Android back ends, you then simply run:
+Then simply run:
 
 $ make
 
@@ -269,17 +235,5 @@ $ make install-gaia
 If you press the "Home" button on device, the Gaia homescreen will
 reload.
 
-== Troubleshooting ==
-
-If you get a message at the end of the install-gecko process that says:
-# /sbin/sh pm not found
-Then this refers to the android package manager not working properly on the device.
-The reason it's not working is that it doesn't have permissions to write to /data/system.
-To fix:
-1. $ adb push gecko/objdir-prof-android/dist/b2g-9.0a1.en-US.android-arm.apk /data/local/tmp/b2g.apk
-2. $ adb shell
-3. # chmod -R 777 /data/system
-4. # sh /system/bin/pm install -r /data/local/tmp/b2g.apk
-5. # reboot
 
 Happy hacking.

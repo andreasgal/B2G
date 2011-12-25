@@ -25,47 +25,29 @@ endef
 
 ANDROID_SDK_PLATFORM ?= android-13
 GECKO_CONFIGURE_ARGS ?=
-WIDGET_BACKEND ?= gonk
 
 CCACHE ?= $(shell which ccache)
 
-# Developers can use this to define convenience rules and set global variabls
-# XXX for now, this is where to put ANDROID_SDK and ANDROID_NDK macros
--include local.mk
-
 .PHONY: build
-build: gecko gecko-$(WIDGET_BACKEND)-hack gonk
+build: gecko gecko-install-hack gonk
 
 ifeq (qemu,$(KERNEL))
 build: kernel bootimg-hack
 endif
 
-KERNEL_DIR=boot/kernel-android-$(KERNEL)
-
-ifeq (android,$(WIDGET_BACKEND))
-ifndef ANDROID_SDK
-$(error Sorry, you need to set ANDROID_SDK in your environment to point at the top-level of the SDK install.  For now.)
-endif
-
-ifndef ANDROID_NDK
-$(error Sorry, you need to set ANDROID_NDK in your environment to point at the top-level of the NDK install.  For now.)
-endif
-endif
+KERNEL_DIR = boot/kernel-android-$(KERNEL)
+GECKO_OBJDIR = gecko/objdir-prof-gonk
 
 .PHONY: gecko
 # XXX Hard-coded for prof-android target.  It would also be nice if
 # client.mk understood the |package| target.
 gecko:
-	@export ANDROID_SDK=$(ANDROID_SDK) && \
-	export ANDROID_SDK_PLATFORM=$(ANDROID_SDK_PLATFORM) && \
-	export ANDROID_NDK=$(ANDROID_NDK) && \
-	export ANDROID_VERSION_CODE=`date +%Y%m%d%H%M%S` && \
-	export MAKE_FLAGS=$(MAKE_FLAGS) && \
+	@export MAKE_FLAGS=$(MAKE_FLAGS) && \
 	export CONFIGURE_ARGS="$(GECKO_CONFIGURE_ARGS)" && \
 	export GONK_PRODUCT="$(GONK)" && \
 	ulimit -n 4096 && \
 	make -C gecko -f client.mk -s $(MAKE_FLAGS) && \
-	make -C gecko/objdir-prof-android package
+	make -C $(GECKO_OBJDIR) package
 
 .PHONY: gonk
 gonk: gaia-hack
@@ -90,7 +72,7 @@ clean: clean-gecko clean-gonk clean-kernel
 
 .PHONY: clean-gecko
 clean-gecko:
-	rm -rf gecko/objdir-prof-android
+	rm -rf $(GECKO_OBJDIR)
 
 .PHONY: clean-gonk
 clean-gonk:
@@ -101,7 +83,7 @@ clean-kernel:
 	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) ARCH=arm CROSS_COMPILE=arm-eabi- clean
 
 .PHONY: config-galaxy-s2
-config-galaxy-s2: config-gecko-$(WIDGET_BACKEND)
+config-galaxy-s2: config-gecko
 	@echo "KERNEL = galaxy-s2" > .config.mk && \
         echo "KERNEL_PATH = ./boot/kernel-android-galaxy-s2" >> .config.mk && \
 	echo "GONK = galaxys2" >> .config.mk && \
@@ -112,7 +94,7 @@ config-galaxy-s2: config-gecko-$(WIDGET_BACKEND)
 	echo OK
 
 .PHONY: config-maguro
-config-maguro: config-gecko-$(WIDGET_BACKEND)
+config-maguro: config-gecko
 	@echo "KERNEL = msm" > .config.mk && \
         echo "KERNEL_PATH = ./boot/msm" >> .config.mk && \
 	echo "GONK = maguro" >> .config.mk && \
@@ -121,12 +103,8 @@ config-maguro: config-gecko-$(WIDGET_BACKEND)
 	./extract-files.sh && \
 	echo OK
 
-.PHONY: config-gecko-android
-config-gecko-android:
-	@ln -sf ../config/gecko-prof-android gecko/mozconfig
-
-.PHONY: config-gecko-gonk
-config-gecko-gonk:
+.PHONY: config-gecko
+config-gecko:
 	@ln -sf ../config/gecko-prof-gonk gecko/mozconfig
 
 %.tgz:
@@ -146,7 +124,7 @@ extract-samsung-crespo4g.sh: samsung-crespo4g-$(NEXUS_S_BUILD)-9474e48f.tgz
 blobs-nexuss4g: extract-broadcom-crespo4g.sh extract-imgtec-crespo4g.sh extract-nxp-crespo4g.sh extract-samsung-crespo4g.sh
 
 .PHONY: config-nexuss4g
-config-nexuss4g: blobs-nexuss4g config-gecko-android
+config-nexuss4g: blobs-nexuss4g config-gecko
 	@echo "KERNEL = samsung" > .config.mk && \
         echo "KERNEL_PATH = ./boot/kernel-android-samsung" >> .config.mk && \
 	echo "GONK = crespo4g" >> .config.mk && \
@@ -158,7 +136,7 @@ nexuss4g-postconfig:
 	$(call GONK_CMD,make signapk && vendor/samsung/crespo4g/reassemble-apks.sh)
 
 .PHONY: config-qemu
-config-qemu: config-gecko-$(WIDGET_BACKEND)
+config-qemu: config-gecko
 	@echo "KERNEL = qemu" > .config.mk && \
         echo "KERNEL_PATH = ./boot/kernel-android-qemu" >> .config.mk && \
 	echo "GONK = generic" >> .config.mk && \
@@ -226,20 +204,13 @@ APP_OUT_DIR := $(OUT_DIR)/app
 $(APP_OUT_DIR):
 	mkdir -p $(APP_OUT_DIR)
 
-.PHONY: gecko-android-hack
-gecko-android-hack: gecko
-	mkdir -p $(APP_OUT_DIR)
-	cp -p gecko/objdir-prof-android/dist/b2g-*.apk $(APP_OUT_DIR)/B2G.apk
-	unzip -jo gecko/objdir-prof-android/dist/b2g-*.apk lib/armeabi-v7a/libmozutils.so -d $(OUT_DIR)/lib
-	find glue/gonk/out -iname "*.img" | xargs rm -f
-
-.PHONY: gecko-gonk-hack
-gecko-gonk-hack: gecko
+.PHONY: gecko-install-hack
+gecko-install-hack: gecko
 	rm -rf $(OUT_DIR)/b2g
 	mkdir -p $(OUT_DIR)/lib
 	# Extract the newest tarball in the gecko objdir.
 	( cd $(OUT_DIR) && \
-	  tar xvfz `ls -t $(PWD)/gecko/objdir-prof-android/dist/b2g-*.tar.gz | head -n1` )
+	  tar xvfz `ls -t $(PWD)/$(GECKO_OBJDIR)/dist/b2g-*.tar.gz | head -n1` )
 	cp $(OUT_DIR)/b2g/libmozutils.so $(OUT_DIR)/lib
 	find glue/gonk/out -iname "*.img" | xargs rm -f
 
@@ -250,15 +221,6 @@ gaia-hack: gaia
 	cp -r gaia/* $(OUT_DIR)/home
 
 .PHONY: install-gecko
-install-gecko: install-gecko-$(WIDGET_BACKEND)
-
-.PHONY: install-gecko-android
-install-gecko-android: gecko
-	@adb install -r gecko/objdir-prof-android/dist/b2g-*.apk && \
-	adb reboot
-
-.PHONY: install-gecko-gonk
-install-gecko-gonk: gecko-gonk-hack
 	@adb shell mount -o remount,rw /system && \
 	adb push $(OUT_DIR)/b2g /system/b2g && \
 	adb push $(OUT_DIR)/lib/libmozutils.so /system/lib/libmozutils.so
