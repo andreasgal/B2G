@@ -286,15 +286,6 @@
 [submodule "glue/gonk/packages/providers/ApplicationsProvider"]
 	path = glue/gonk/packages/providers/ApplicationsProvider
 	url = git://android.git.linaro.org/platform/packages/providers/ApplicationsProvider.git
-[submodule "glue/gonk/packages/inputmethods/OpenWnn"]
-	path = glue/gonk/packages/inputmethods/OpenWnn
-	url = git://android.git.linaro.org/platform/packages/inputmethods/OpenWnn.git
-[submodule "glue/gonk/packages/inputmethods/LatinIME"]
-	path = glue/gonk/packages/inputmethods/LatinIME
-	url = git://android.git.linaro.org/platform/packages/inputmethods/LatinIME.git
-[submodule "glue/gonk/packages/inputmethods/PinyinIME"]
-	path = glue/gonk/packages/inputmethods/PinyinIME
-	url = git://android.git.linaro.org/platform/packages/inputmethods/PinyinIME.git
 [submodule "glue/gonk/packages/wallpapers/MagicSmoke"]
 	path = glue/gonk/packages/wallpapers/MagicSmoke
 	url = git://android.git.linaro.org/platform/packages/wallpapers/MagicSmoke.git
