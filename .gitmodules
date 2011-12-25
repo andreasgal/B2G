@@ -256,9 +256,6 @@
 [submodule "glue/gonk/dalvik"]
 	path = glue/gonk/dalvik
 	url = git://android.git.linaro.org/platform/dalvik.git
-[submodule "glue/gonk/packages/experimental"]
-	path = glue/gonk/packages/experimental
-	url = git://android.git.linaro.org/platform/packages/experimental.git
 [submodule "glue/gonk/packages/providers/CalendarProvider"]
 	path = glue/gonk/packages/providers/CalendarProvider
 	url = git://android.git.linaro.org/platform/packages/providers/CalendarProvider.git
