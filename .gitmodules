@@ -256,33 +256,6 @@
 [submodule "glue/gonk/dalvik"]
 	path = glue/gonk/dalvik
 	url = git://android.git.linaro.org/platform/dalvik.git
-[submodule "glue/gonk/packages/providers/CalendarProvider"]
-	path = glue/gonk/packages/providers/CalendarProvider
-	url = git://android.git.linaro.org/platform/packages/providers/CalendarProvider.git
-[submodule "glue/gonk/packages/providers/TelephonyProvider"]
-	path = glue/gonk/packages/providers/TelephonyProvider
-	url = git://android.git.linaro.org/platform/packages/providers/TelephonyProvider.git
-[submodule "glue/gonk/packages/providers/ContactsProvider"]
-	path = glue/gonk/packages/providers/ContactsProvider
-	url = git://android.git.linaro.org/platform/packages/providers/ContactsProvider.git
-[submodule "glue/gonk/packages/providers/MediaProvider"]
-	path = glue/gonk/packages/providers/MediaProvider
-	url = git://android.git.linaro.org/platform/packages/providers/MediaProvider.git
-[submodule "glue/gonk/packages/providers/DrmProvider"]
-	path = glue/gonk/packages/providers/DrmProvider
-	url = git://android.git.linaro.org/platform/packages/providers/DrmProvider.git
-[submodule "glue/gonk/packages/providers/GoogleContactsProvider"]
-	path = glue/gonk/packages/providers/GoogleContactsProvider
-	url = git://android.git.linaro.org/platform/packages/providers/GoogleContactsProvider.git
-[submodule "glue/gonk/packages/providers/UserDictionaryProvider"]
-	path = glue/gonk/packages/providers/UserDictionaryProvider
-	url = git://android.git.linaro.org/platform/packages/providers/UserDictionaryProvider.git
-[submodule "glue/gonk/packages/providers/DownloadProvider"]
-	path = glue/gonk/packages/providers/DownloadProvider
-	url = git://android.git.linaro.org/platform/packages/providers/DownloadProvider.git
-[submodule "glue/gonk/packages/providers/ApplicationsProvider"]
-	path = glue/gonk/packages/providers/ApplicationsProvider
-	url = git://android.git.linaro.org/platform/packages/providers/ApplicationsProvider.git
 [submodule "glue/gonk/system/bluetooth"]
 	path = glue/gonk/system/bluetooth
 	url = git://android.git.linaro.org/platform/system/bluetooth.git
