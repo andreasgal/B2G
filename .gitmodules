@@ -286,18 +286,6 @@
 [submodule "glue/gonk/packages/providers/ApplicationsProvider"]
 	path = glue/gonk/packages/providers/ApplicationsProvider
 	url = git://android.git.linaro.org/platform/packages/providers/ApplicationsProvider.git
-[submodule "glue/gonk/packages/wallpapers/MagicSmoke"]
-	path = glue/gonk/packages/wallpapers/MagicSmoke
-	url = git://android.git.linaro.org/platform/packages/wallpapers/MagicSmoke.git
-[submodule "glue/gonk/packages/wallpapers/LivePicker"]
-	path = glue/gonk/packages/wallpapers/LivePicker
-	url = git://android.git.linaro.org/platform/packages/wallpapers/LivePicker.git
-[submodule "glue/gonk/packages/wallpapers/Basic"]
-	path = glue/gonk/packages/wallpapers/Basic
-	url = git://android.git.linaro.org/platform/packages/wallpapers/Basic.git
-[submodule "glue/gonk/packages/wallpapers/MusicVisualization"]
-	path = glue/gonk/packages/wallpapers/MusicVisualization
-	url = git://android.git.linaro.org/platform/packages/wallpapers/MusicVisualization.git
 [submodule "glue/gonk/system/bluetooth"]
 	path = glue/gonk/system/bluetooth
 	url = git://android.git.linaro.org/platform/system/bluetooth.git
