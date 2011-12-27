@@ -247,9 +247,6 @@
 [submodule "glue/gonk/external/safe-iop"]
 	path = glue/gonk/external/safe-iop
 	url = git://android.git.linaro.org/platform/external/safe-iop.git
-[submodule "glue/gonk/cts"]
-	path = glue/gonk/cts
-	url = git://android.git.linaro.org/platform/cts.git
 [submodule "glue/gonk/prebuilt"]
 	path = glue/gonk/prebuilt
 	url = git://android.git.linaro.org/platform/prebuilt.git
