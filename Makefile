@@ -219,6 +219,11 @@ gaia-hack: gaia
 	rm -rf $(OUT_DIR)/home
 	mkdir -p $(OUT_DIR)/home
 	cp -r gaia/* $(OUT_DIR)/home
+	# XXX Create a copy of the pre-installed web applications to be
+	# restore them if something went wrong in the profile folder.
+	rm -rf $(OUT_DIR)/home/profile
+	mkdir $(OUT_DIR)/home/profile
+	cp -r gaia/profile $(OUT_DIR)/home/
 
 .PHONY: install-gecko
 	@adb shell mount -o remount,rw /system && \
@@ -228,8 +233,18 @@ gaia-hack: gaia
 # The sad hacks keep piling up...  We can't set this up to be
 # installed as part of the data partition because we can't flash that
 # on the sgs2.
+PROFILE := `adb shell ls -d /data/b2g/mozilla/*.default | tr -d '\r'`
+PROFILE_DATA := gaia/profile
 .PHONY: install-gaia
 install-gaia:
+	@for file in `ls $(PROFILE_DATA)`; \
+	do \
+		data=$${file##*/}; \
+		echo Copying $$data; \
+		adb shell rm -r $(PROFILE)/$$data; \
+		adb push gaia/profile/$$data $(PROFILE)/$$data; \
+	done
+	
 	@for i in `ls gaia`; do adb push gaia/$$i /data/local/$$i; done
 
 .PHONY: image
