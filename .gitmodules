@@ -322,9 +322,6 @@
 [submodule "glue/gonk/libcore"]
 	path = glue/gonk/libcore
 	url = git://android.git.linaro.org/platform/libcore.git
-[submodule "glue/gonk/external/v8"]
-	path = glue/gonk/external/v8
-	url = git://github.com/cgjones/android-v8.git
 [submodule "glue/gonk/external/skia"]
 	path = glue/gonk/external/skia
 	url = git://github.com/cgjones/android-skia.git
