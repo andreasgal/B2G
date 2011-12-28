@@ -6,7 +6,7 @@
 	url = git://github.com/cgjones/samsung-android-kernel.git
 [submodule "glue/gonk/bionic"]
 	path = glue/gonk/bionic
-	url = git://android.git.linaro.org/platform/bionic.git
+	url = git://github.com/mozilla-b2g/platform_bionic.git
 [submodule "glue/gonk/external/esd"]
 	path = glue/gonk/external/esd
 	url = git://android.git.linaro.org/platform/external/esd.git
