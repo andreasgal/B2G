@@ -211,7 +211,6 @@ gecko-install-hack: gecko
 	# Extract the newest tarball in the gecko objdir.
 	( cd $(OUT_DIR) && \
 	  tar xvfz `ls -t $(PWD)/$(GECKO_OBJDIR)/dist/b2g-*.tar.gz | head -n1` )
-	cp $(OUT_DIR)/b2g/libmozutils.so $(OUT_DIR)/lib
 	find glue/gonk/out -iname "*.img" | xargs rm -f
 
 .PHONY: gaia-hack
@@ -227,8 +226,7 @@ gaia-hack: gaia
 
 .PHONY: install-gecko
 	@adb shell mount -o remount,rw /system && \
-	adb push $(OUT_DIR)/b2g /system/b2g && \
-	adb push $(OUT_DIR)/lib/libmozutils.so /system/lib/libmozutils.so
+	adb push $(OUT_DIR)/b2g /system/b2g
 
 # The sad hacks keep piling up...  We can't set this up to be
 # installed as part of the data partition because we can't flash that
