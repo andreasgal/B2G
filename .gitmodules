@@ -255,7 +255,7 @@
 	url = git://android.git.linaro.org/platform/dalvik.git
 [submodule "glue/gonk/system/bluetooth"]
 	path = glue/gonk/system/bluetooth
-	url = git://android.git.linaro.org/platform/system/bluetooth.git
+	url = git://github.com/mozilla-b2g/android_system_bluetooth.git
 [submodule "glue/gonk/system/media"]
 	path = glue/gonk/system/media
 	url = git://android.git.linaro.org/platform/system/media.git
