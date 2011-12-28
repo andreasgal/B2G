@@ -104,4 +104,4 @@ PRODUCT_COPY_FILES += \
 # half of the device-specific product definition file takes care
 # of the aspects that require proprietary drivers that aren't
 # commonly available
-# $(call inherit-product-if-exists, vendor/samsung/galaxys2/galaxys2-vendor.mk)
+$(call inherit-product-if-exists, vendor/toro/maguro/maguro-vendor.mk)
