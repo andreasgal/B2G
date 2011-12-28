@@ -306,7 +306,7 @@
 	url = git://android.git.linaro.org/platform/hardware/ril.git
 [submodule "glue/gonk/development"]
 	path = glue/gonk/development
-	url = git://android.git.linaro.org/platform/development.git
+	url = git://github.com/mozilla-b2g/android-development.git
 [submodule "glue/gonk/ndk"]
 	path = glue/gonk/ndk
 	url = git://android.git.linaro.org/platform/ndk.git
