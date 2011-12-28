@@ -303,7 +303,7 @@
 	url = git://android.git.linaro.org/platform/hardware/broadcom/wlan.git
 [submodule "glue/gonk/hardware/ril"]
 	path = glue/gonk/hardware/ril
-	url = git://android.git.linaro.org/platform/hardware/ril.git
+	url = git://github.com/mozilla-b2g/android-hardware-ril.git
 [submodule "glue/gonk/development"]
 	path = glue/gonk/development
 	url = git://github.com/mozilla-b2g/android-development.git
