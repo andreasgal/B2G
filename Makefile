@@ -218,11 +218,9 @@ gaia-hack: gaia
 	rm -rf $(OUT_DIR)/home
 	mkdir -p $(OUT_DIR)/home
 	cp -r gaia/* $(OUT_DIR)/home
-	# XXX Create a copy of the pre-installed web applications to be
-	# restore them if something went wrong in the profile folder.
-	rm -rf $(OUT_DIR)/home/profile
-	mkdir $(OUT_DIR)/home/profile
-	cp -r gaia/profile $(OUT_DIR)/home/
+	rm -rf $(OUT_DIR)/b2g/defaults/profile
+	mkdir $(OUT_DIR)/b2g/defaults
+	cp -r gaia/profile $(OUT_DIR)/b2g/defaults
 
 .PHONY: install-gecko
 install-gecko: gecko-install-hack
