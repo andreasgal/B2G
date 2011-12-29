@@ -141,7 +141,7 @@
 	url = git://android.git.linaro.org/platform/external/kernel-headers.git
 [submodule "glue/gonk/external/oprofile"]
 	path = glue/gonk/external/oprofile
-	url = git://android.git.linaro.org/platform/external/oprofile.git
+	url = git://github.com/mozilla-b2g/platform_external_oprofile.git
 [submodule "glue/gonk/external/speex"]
 	path = glue/gonk/external/speex
 	url = git://android.git.linaro.org/platform/external/speex.git
