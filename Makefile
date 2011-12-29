@@ -225,6 +225,7 @@ gaia-hack: gaia
 	cp -r gaia/profile $(OUT_DIR)/home/
 
 .PHONY: install-gecko
+install-gecko: gecko-install-hack
 	@adb shell mount -o remount,rw /system && \
 	adb push $(OUT_DIR)/b2g /system/b2g
 
@@ -242,7 +243,6 @@ install-gaia:
 		adb shell rm -r $(PROFILE)/$$data; \
 		adb push gaia/profile/$$data $(PROFILE)/$$data; \
 	done
-	
 	@for i in `ls gaia`; do adb push gaia/$$i /data/local/$$i; done
 
 .PHONY: image
