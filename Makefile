@@ -219,7 +219,7 @@ gaia-hack: gaia
 	mkdir -p $(OUT_DIR)/home
 	cp -r gaia/* $(OUT_DIR)/home
 	rm -rf $(OUT_DIR)/b2g/defaults/profile
-	mkdir $(OUT_DIR)/b2g/defaults
+	mkdir -p $(OUT_DIR)/b2g/defaults
 	cp -r gaia/profile $(OUT_DIR)/b2g/defaults
 
 .PHONY: install-gecko
