@@ -82,6 +82,16 @@ clean-gonk:
 clean-kernel:
 	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) ARCH=arm CROSS_COMPILE=arm-eabi- clean
 
+.PHONY: mrproper
+# NB: this is a VERY DANGEROUS command that will BLOW AWAY ALL
+# outstanding changes you have.  It's mostly intended for "clean room"
+# builds.
+mrproper:
+	git submodule foreach 'git clean -dfx' && \
+	git submodule foreach 'git reset --hard' && \
+	git clean -dfx && \
+	git reset --hard
+
 .PHONY: config-galaxy-s2
 config-galaxy-s2: config-gecko
 	@echo "KERNEL = galaxy-s2" > .config.mk && \
