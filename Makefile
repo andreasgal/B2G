@@ -271,3 +271,17 @@ sync:
 	git pull origin master
 	git submodule sync
 	git submodule update --init
+
+PKG_DIR := package
+
+.PHONY: package
+package:
+	rm -rf $(PKG_DIR)
+	mkdir -p $(PKG_DIR)/qemu/bin
+	cp glue/gonk/out/host/linux-x86/bin/emulator $(PKG_DIR)/qemu/bin
+	cp glue/gonk/out/host/linux-x86/bin/emulator-arm $(PKG_DIR)/qemu/bin
+	cp glue/gonk/out/host/linux-x86/bin/adb $(PKG_DIR)/qemu/bin
+	cp boot/kernel-android-qemu/arch/arm/boot/zImage $(PKG_DIR)/qemu
+	cp -R glue/gonk/out/target/product/generic $(PKG_DIR)/qemu
+	cd $(PKG_DIR) && tar -czvf qemu_package.tar.gz qemu
+
