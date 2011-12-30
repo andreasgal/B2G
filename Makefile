@@ -82,6 +82,16 @@ clean-gonk:
 clean-kernel:
 	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) ARCH=arm CROSS_COMPILE=arm-eabi- clean
 
+.PHONY: mrproper
+# NB: this is a VERY DANGEROUS command that will BLOW AWAY ALL
+# outstanding changes you have.  It's mostly intended for "clean room"
+# builds.
+mrproper:
+	git submodule foreach 'git clean -dfx' && \
+	git submodule foreach 'git reset --hard' && \
+	git clean -dfx && \
+	git reset --hard
+
 .PHONY: config-galaxy-s2
 config-galaxy-s2: config-gecko
 	@echo "KERNEL = galaxy-s2" > .config.mk && \
@@ -212,7 +222,6 @@ gecko-install-hack: gecko
 	# Extract the newest tarball in the gecko objdir.
 	( cd $(OUT_DIR) && \
 	  tar xvfz `ls -t $(PWD)/$(GECKO_OBJDIR)/dist/b2g-*.tar.gz | head -n1` )
-	cp $(OUT_DIR)/b2g/libmozutils.so $(OUT_DIR)/lib
 	find glue/gonk/out -iname "*.img" | xargs rm -f
 
 .PHONY: gaia-hack
@@ -220,16 +229,14 @@ gaia-hack: gaia
 	rm -rf $(OUT_DIR)/home
 	mkdir -p $(OUT_DIR)/home
 	cp -r gaia/* $(OUT_DIR)/home
-	# XXX Create a copy of the pre-installed web applications to be
-	# restore them if something went wrong in the profile folder.
-	rm -rf $(OUT_DIR)/home/profile
-	mkdir $(OUT_DIR)/home/profile
-	cp -r gaia/profile $(OUT_DIR)/home/
+	rm -rf $(OUT_DIR)/b2g/defaults/profile
+	mkdir -p $(OUT_DIR)/b2g/defaults
+	cp -r gaia/profile $(OUT_DIR)/b2g/defaults
 
 .PHONY: install-gecko
+install-gecko: gecko-install-hack
 	@adb shell mount -o remount,rw /system && \
-	adb push $(OUT_DIR)/b2g /system/b2g && \
-	adb push $(OUT_DIR)/lib/libmozutils.so /system/lib/libmozutils.so
+	adb push $(OUT_DIR)/b2g /system/b2g
 
 # The sad hacks keep piling up...  We can't set this up to be
 # installed as part of the data partition because we can't flash that
@@ -245,7 +252,6 @@ install-gaia:
 		adb shell rm -r $(PROFILE)/$$data; \
 		adb push gaia/profile/$$data $(PROFILE)/$$data; \
 	done
-	
 	@for i in `ls gaia`; do adb push gaia/$$i /data/local/$$i; done
 
 .PHONY: image

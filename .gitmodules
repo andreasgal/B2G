@@ -6,7 +6,7 @@
 	url = git://github.com/cgjones/samsung-android-kernel.git
 [submodule "glue/gonk/bionic"]
 	path = glue/gonk/bionic
-	url = git://android.git.linaro.org/platform/bionic.git
+	url = git://github.com/mozilla-b2g/platform_bionic.git
 [submodule "glue/gonk/external/esd"]
 	path = glue/gonk/external/esd
 	url = git://android.git.linaro.org/platform/external/esd.git
@@ -141,7 +141,7 @@
 	url = git://android.git.linaro.org/platform/external/kernel-headers.git
 [submodule "glue/gonk/external/oprofile"]
 	path = glue/gonk/external/oprofile
-	url = git://android.git.linaro.org/platform/external/oprofile.git
+	url = git://github.com/mozilla-b2g/platform_external_oprofile.git
 [submodule "glue/gonk/external/speex"]
 	path = glue/gonk/external/speex
 	url = git://android.git.linaro.org/platform/external/speex.git
@@ -255,7 +255,7 @@
 	url = git://android.git.linaro.org/platform/dalvik.git
 [submodule "glue/gonk/system/bluetooth"]
 	path = glue/gonk/system/bluetooth
-	url = git://android.git.linaro.org/platform/system/bluetooth.git
+	url = git://github.com/mozilla-b2g/android_system_bluetooth.git
 [submodule "glue/gonk/system/media"]
 	path = glue/gonk/system/media
 	url = git://android.git.linaro.org/platform/system/media.git
@@ -303,10 +303,10 @@
 	url = git://android.git.linaro.org/platform/hardware/broadcom/wlan.git
 [submodule "glue/gonk/hardware/ril"]
 	path = glue/gonk/hardware/ril
-	url = git://android.git.linaro.org/platform/hardware/ril.git
+	url = git://github.com/mozilla-b2g/android-hardware-ril.git
 [submodule "glue/gonk/development"]
 	path = glue/gonk/development
-	url = git://android.git.linaro.org/platform/development.git
+	url = git://github.com/mozilla-b2g/android-development.git
 [submodule "glue/gonk/ndk"]
 	path = glue/gonk/ndk
 	url = git://android.git.linaro.org/platform/ndk.git
@@ -322,12 +322,6 @@
 [submodule "glue/gonk/libcore"]
 	path = glue/gonk/libcore
 	url = git://android.git.linaro.org/platform/libcore.git
-[submodule "glue/gonk/external/webkit"]
-	path = glue/gonk/external/webkit
-	url = git://github.com/cgjones/android-webkit.git
-[submodule "glue/gonk/external/v8"]
-	path = glue/gonk/external/v8
-	url = git://github.com/cgjones/android-v8.git
 [submodule "glue/gonk/external/skia"]
 	path = glue/gonk/external/skia
 	url = git://github.com/cgjones/android-skia.git
