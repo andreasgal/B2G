@@ -23,6 +23,8 @@ $B2G.
   be set up correctly and heimdall will only work if you give it
   superuser powers.
 
+* When building B2G for the first time, don't forget to run 'make gonk' first.
+
 * If you're building for the Galaxy S II, you need to install
   "Heimdall" to be able to flash your phone with B2G.  Follow the
   instructions at
@@ -68,6 +70,7 @@ $ adb shell chmod -R 777 /data/system
 $ cd $B2G
 $ make sync
 $ make config-qemu
+$ make gonk
 $ make
 $ ./emu.sh
 
