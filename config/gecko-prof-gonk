@@ -1,4 +1,4 @@
-mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/objdir-prof-android
+mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/objdir-prof-gonk
 
 # XXX our build system doesn't seem to respect toplevel -j ...
 # hard-coding this sucks
