@@ -1,6 +1,7 @@
 # To support gonk's build/envsetup.sh
 SHELL = bash
 
+-include local.mk
 -include .config.mk
 
 .DEFAULT: build
@@ -38,7 +39,7 @@ build: kernel bootimg-hack
 endif
 
 KERNEL_DIR = boot/kernel-android-$(KERNEL)
-GECKO_OBJDIR = $(GECK_PATH)/objdir-prof-gonk
+GECKO_OBJDIR = $(GECKO_PATH)/objdir-prof-gonk
 
 .PHONY: gecko
 # XXX Hard-coded for prof-android target.  It would also be nice if
