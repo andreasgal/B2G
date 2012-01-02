@@ -23,6 +23,8 @@ define GONK_CMD # $(call GONK_CMD,cmd)
 	$(1)
 endef
 
+GECKO_PATH ?= $(abspath gecko)
+
 ANDROID_SDK_PLATFORM ?= android-13
 GECKO_CONFIGURE_ARGS ?=
 WIDGET_BACKEND ?= gonk
@@ -56,16 +58,17 @@ endif
 # XXX Hard-coded for prof-android target.  It would also be nice if
 # client.mk understood the |package| target.
 gecko:
-	@export ANDROID_SDK=$(ANDROID_SDK) && \
+	@export ANDROID_SDK=$(abspath $(ANDROID_SDK)) && \
 	export ANDROID_SDK_PLATFORM=$(ANDROID_SDK_PLATFORM) && \
-	export ANDROID_NDK=$(ANDROID_NDK) && \
+	export ANDROID_NDK=$(abspath $(ANDROID_NDK)) && \
 	export ANDROID_VERSION_CODE=`date +%Y%m%d%H%M%S` && \
-	export MAKE_FLAGS=$(MAKE_FLAGS) && \
+	export MAKE_FLAGS="$(MAKE_FLAGS)" && \
 	export CONFIGURE_ARGS="$(GECKO_CONFIGURE_ARGS)" && \
 	export GONK_PRODUCT="$(GONK)" && \
+	export GONK_PATH="$(GONK_PATH)" && \
 	ulimit -n 4096 && \
-	make -C gecko -f client.mk -s $(MAKE_FLAGS) && \
-	make -C gecko/objdir-prof-android package
+	make -C $(GECKO_PATH) -f client.mk -s $(MAKE_FLAGS) && \
+	make -C $(GECKO_PATH)/objdir-prof-android package
 
 .PHONY: gonk
 gonk: gaia-hack
@@ -90,7 +93,7 @@ clean: clean-gecko clean-gonk clean-kernel
 
 .PHONY: clean-gecko
 clean-gecko:
-	rm -rf gecko/objdir-prof-android
+	rm -rf $(GECKO_PATH)/objdir-prof-android
 
 .PHONY: clean-gonk
 clean-gonk:
@@ -123,11 +126,11 @@ config-maguro: config-gecko-$(WIDGET_BACKEND)
 
 .PHONY: config-gecko-android
 config-gecko-android:
-	@ln -sf ../config/gecko-prof-android gecko/mozconfig
+	@ln -sf $(PWD)/config/gecko-prof-android $(GECKO_PATH)/mozconfig
 
 .PHONY: config-gecko-gonk
 config-gecko-gonk:
-	@ln -sf ../config/gecko-prof-gonk gecko/mozconfig
+	@ln -sf $(PWD)/config/gecko-prof-gonk $(GECKO_PATH)/mozconfig
 
 %.tgz:
 	wget https://dl.google.com/dl/android/aosp/$@
@@ -229,8 +232,8 @@ $(APP_OUT_DIR):
 .PHONY: gecko-android-hack
 gecko-android-hack: gecko
 	mkdir -p $(APP_OUT_DIR)
-	cp -p gecko/objdir-prof-android/dist/b2g-*.apk $(APP_OUT_DIR)/B2G.apk
-	unzip -jo gecko/objdir-prof-android/dist/b2g-*.apk lib/armeabi-v7a/libmozutils.so -d $(OUT_DIR)/lib
+	cp -p $(GEKCO_PATH)/objdir-prof-android/dist/b2g-*.apk $(APP_OUT_DIR)/B2G.apk
+	unzip -jo $(GECKO_PATH)/objdir-prof-android/dist/b2g-*.apk lib/armeabi-v7a/libmozutils.so -d $(OUT_DIR)/lib
 	find glue/gonk/out -iname "*.img" | xargs rm -f
 
 .PHONY: gecko-gonk-hack
@@ -239,7 +242,7 @@ gecko-gonk-hack: gecko
 	mkdir -p $(OUT_DIR)/lib
 	# Extract the newest tarball in the gecko objdir.
 	( cd $(OUT_DIR) && \
-	  tar xvfz `ls -t $(PWD)/gecko/objdir-prof-android/dist/b2g-*.tar.gz | head -n1` )
+	  tar xvfz `ls -t $(GECKO_PATH)/objdir-prof-android/dist/b2g-*.tar.gz | head -n1` )
 	cp $(OUT_DIR)/b2g/libmozutils.so $(OUT_DIR)/lib
 	find glue/gonk/out -iname "*.img" | xargs rm -f
 
@@ -254,7 +257,7 @@ install-gecko: install-gecko-$(WIDGET_BACKEND)
 
 .PHONY: install-gecko-android
 install-gecko-android: gecko
-	@adb install -r gecko/objdir-prof-android/dist/b2g-*.apk && \
+	@adb install -r $(GECKO_PATH)/objdir-prof-android/dist/b2g-*.apk && \
 	adb reboot
 
 .PHONY: install-gecko-gonk

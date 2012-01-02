@@ -5,8 +5,7 @@ mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/objdir-prof-android
 mk_add_options MOZ_MAKE_FLAGS="-s $MAKE_FLAGS"
 
 # XXX need a plan for toolchain and multi-dev-platform support
-topdir="`pwd`/../.."
-gonk="$topdir/glue/gonk"
+gonk="$GONK_PATH"
 sys=`uname -s | tr "[[:upper:]]" "[[:lower:]]"`
 
 # XXX need to figure out how to deal with SDKs ... this sucks.

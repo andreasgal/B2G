@@ -2,11 +2,10 @@ mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/objdir-prof-android
 
 # XXX our build system doesn't seem to respect toplevel -j ...
 # hard-coding this sucks
-mk_add_options MOZ_MAKE_FLAGS="-s -j16"
+mk_add_options MOZ_MAKE_FLAGS="-s $MAKE_FLAGS"
 
 # XXX need a plan for toolchain and multi-dev-platform support
-topdir="`pwd`/../.."
-gonk="$topdir/glue/gonk"
+gonk="$GONK_PATH"
 sys=`uname -s | tr "[[:upper:]]" "[[:lower:]]"`
 
 ac_add_options --target=arm-android-eabi
