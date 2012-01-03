@@ -210,7 +210,6 @@ kernel-%:
 
 OUT_DIR := $(GONK_PATH)/out/target/product/$(GONK)/system
 APP_OUT_DIR := $(OUT_DIR)/app
-PKG_DIR := package
 
 $(APP_OUT_DIR):
 	mkdir -p $(APP_OUT_DIR)
@@ -272,6 +271,8 @@ sync:
 	git pull origin master
 	git submodule sync
 	git submodule update --init
+
+PKG_DIR := package
 
 .PHONY: package
 package:
