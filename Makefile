@@ -1,6 +1,7 @@
 # To support gonk's build/envsetup.sh
 SHELL = bash
 
+-include local.mk
 -include .config.mk
 
 .DEFAULT: build
@@ -23,6 +24,8 @@ define GONK_CMD # $(call GONK_CMD,cmd)
 	$(1)
 endef
 
+GECKO_PATH ?= $(abspath gecko)
+
 ANDROID_SDK_PLATFORM ?= android-13
 GECKO_CONFIGURE_ARGS ?=
 
@@ -36,7 +39,7 @@ build: kernel bootimg-hack
 endif
 
 KERNEL_DIR = boot/kernel-android-$(KERNEL)
-GECKO_OBJDIR = gecko/objdir-prof-gonk
+GECKO_OBJDIR = $(GECKO_PATH)/objdir-prof-gonk
 
 .PHONY: gecko
 # XXX Hard-coded for prof-android target.  It would also be nice if
@@ -45,8 +48,9 @@ gecko:
 	@export MAKE_FLAGS=$(MAKE_FLAGS) && \
 	export CONFIGURE_ARGS="$(GECKO_CONFIGURE_ARGS)" && \
 	export GONK_PRODUCT="$(GONK)" && \
+	export GONK_PATH="$(GONK_PATH)" && \
 	ulimit -n 4096 && \
-	make -C gecko -f client.mk -s $(MAKE_FLAGS) && \
+	make -C $(GECKO_PATH) -f client.mk -s $(MAKE_FLAGS) && \
 	make -C $(GECKO_OBJDIR) package
 
 .PHONY: gonk
@@ -115,7 +119,7 @@ config-maguro: config-gecko
 
 .PHONY: config-gecko
 config-gecko:
-	@ln -sf ../config/gecko-prof-gonk gecko/mozconfig
+	@ln -sf $(PWD)/config/gecko-prof-gonk $(GECKO_PATH)/mozconfig
 
 %.tgz:
 	wget https://dl.google.com/dl/android/aosp/$@
@@ -220,7 +224,7 @@ gecko-install-hack: gecko
 	mkdir -p $(OUT_DIR)/lib
 	# Extract the newest tarball in the gecko objdir.
 	( cd $(OUT_DIR) && \
-	  tar xvfz `ls -t $(PWD)/$(GECKO_OBJDIR)/dist/b2g-*.tar.gz | head -n1` )
+	  tar xvfz `ls -t $(GECKO_OBJDIR)/dist/b2g-*.tar.gz | head -n1` )
 	find glue/gonk/out -iname "*.img" | xargs rm -f
 
 .PHONY: gaia-hack
