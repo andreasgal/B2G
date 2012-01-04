@@ -268,7 +268,7 @@ unlock-bootloader:
 # Kill the b2g process on the device.
 .PHONY: kill-b2g
 kill-b2g:
-	adb shell kill `adb shell ps | grep b2g | sed -e 's/ \+/ /g' | cut -f 2 -d ' '`
+	adb shell killall b2g
 
 .PHONY: sync
 sync:
