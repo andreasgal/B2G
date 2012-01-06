@@ -55,9 +55,6 @@
 [submodule "glue/gonk/external/wpa_supplicant_6"]
 	path = glue/gonk/external/wpa_supplicant_6
 	url = git://android.git.linaro.org/platform/external/wpa_supplicant_6.git
-[submodule "glue/gonk/external/quake"]
-	path = glue/gonk/external/quake
-	url = git://android.git.linaro.org/platform/external/quake.git
 [submodule "glue/gonk/external/srec"]
 	path = glue/gonk/external/srec
 	url = git://android.git.linaro.org/platform/external/srec.git
