@@ -140,6 +140,7 @@ COMMON_LIBS="
 	libexif.so
 	libGLESv1_CM.so
 	libGLESv2.so
+   libgsl.so
         libOmxAacDec.so
         libOmxAacEnc.so
         libOmxAdpcmDec.so
@@ -209,11 +210,29 @@ COMMON_LIBS="
         libril-qc-1.so
         libril-qc-qmi-1.so
         libril-qcril-hook-oem.so
+        liboncrpc.so
+        libdsm.so
+        libqueue.so
+        libdiag.so
+        libauth.so
+        libcm.so
+        libnv.so
+        libpbmlib.so
+        libwms.so
+        libwmsts.so
+        libqmi.so
+        libdsutils.so
+        libqmiservices.so
+        libidl.so
+        libdsi_netctrl.so
+        libnetmgr.so
+        libqdp.so
 	"
 copy_files "$COMMON_LIBS" "system/lib" ""
 
 COMMON_BINS="
 	rild
+	rmt_storage
 	"
 copy_files "$COMMON_BINS" "system/bin" ""
 
