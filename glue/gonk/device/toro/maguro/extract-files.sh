@@ -233,7 +233,11 @@ copy_files "$COMMON_LIBS" "system/lib" ""
 COMMON_BINS="
 	rild
 	rmt_storage
+   hciattach
+   abtfilt
+   hci_qcomm_init
 	"
+
 copy_files "$COMMON_BINS" "system/bin" ""
 
 COMMON_EGL="

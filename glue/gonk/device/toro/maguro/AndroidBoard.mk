@@ -3,23 +3,28 @@ LOCAL_PATH := $(call my-dir)
 
 # files that live under /system/etc/...
 
-#copy_from :=
-#
-#
-#copy_to := $(addprefix $(TARGET_OUT)/,$(copy_from))
-#copy_from := $(addprefix $(LOCAL_PATH)/,$(copy_from))
-#
-#$(copy_to) : PRIVATE_MODULE := system_etcdir
-#$(copy_to) : $(TARGET_OUT)/% : $(LOCAL_PATH)/% | $(ACP)
-#	$(transform-prebuilt-to-target)
-#
-#ALL_PREBUILT += $(copy_to)
+copy_from := \
+   etc/init.qcom.bt.sh \
+   etc/init.qcom.post_boot.sh \
 
+copy_to := $(addprefix $(TARGET_OUT)/,$(copy_from))
+copy_from := $(addprefix $(LOCAL_PATH)/,$(copy_from))
 
+$(copy_to) : PRIVATE_MODULE := system_etcdir
+$(copy_to) : $(TARGET_OUT)/% : $(LOCAL_PATH)/% | $(ACP)
+	$(transform-prebuilt-to-target)
+
+ALL_PREBUILT += $(copy_to)
 
 # files that live under /...
 file := $(TARGET_ROOT_OUT)/init.rc
 $(file) : $(LOCAL_PATH)/rootdir/init.rc | $(ACP)
+	$(transform-prebuilt-to-target)
+ALL_PREBUILT += $(file)
+$(INSTALLED_RAMDISK_TARGET): $(file)
+
+file := $(TARGET_ROOT_OUT)/init.qcom.rc
+$(file) : $(LOCAL_PATH)/rootdir/init.qcom.rc | $(ACP)
 	$(transform-prebuilt-to-target)
 ALL_PREBUILT += $(file)
 $(INSTALLED_RAMDISK_TARGET): $(file)
