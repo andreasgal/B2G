@@ -196,6 +196,14 @@ flash-galaxys2: image
 flash-only-galaxys2:
 	$(FLASH_GALAXYS2_CMD)
 
+.PHONY: flash-maguro
+flash-maguro: image
+	@$(call GONK_CMD,adb reboot bootloader && fastboot flashall -w)
+
+.PHONY: flash-only-maguro
+flash-only-maguro:
+	@$(call GONK_CMD,adb reboot bootloader && fastboot flashall -w)
+
 .PHONY: bootimg-hack
 bootimg-hack: kernel-$(KERNEL)
 
