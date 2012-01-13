@@ -29,6 +29,12 @@ $(file) : $(LOCAL_PATH)/rootdir/init.qcom.rc | $(ACP)
 ALL_PREBUILT += $(file)
 $(INSTALLED_RAMDISK_TARGET): $(file)
 
+file := $(TARGET_ROOT_OUT)/ueventd.rc
+$(file) : $(LOCAL_PATH)/rootdir/ueventd.rc | $(ACP)
+	$(transform-prebuilt-to-target)
+ALL_PREBUILT += $(file)
+$(INSTALLED_RAMDISK_TARGET): $(file)
+
 
 # kernel stuff...
 

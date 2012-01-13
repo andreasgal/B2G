@@ -45,6 +45,7 @@ TARGET_NO_RADIOIMAGE := true
 # Try to use ASHMEM if possible (when non-MDP composition is used)
 TARGET_GRALLOC_USES_ASHMEM := true
 TARGET_PROVIDES_INIT_RC := true
+TARGET_PROVIDES_UEVENTD_RC := true
 TARGET_PROVIDES_RILD := true
 
 TARGET_CPU_ABI  := armeabi-v7a
