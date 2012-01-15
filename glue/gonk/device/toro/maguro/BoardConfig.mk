@@ -22,11 +22,11 @@ ifeq ($(QC_PROP),true)
     BOARD_HAS_QCOM_WLAN := false
     #BOARD_USES_GENERIC_AUDIO := true
     ifeq ($(BOARD_HAS_QCOM_WLAN),true)
-    	BOARD_WPA_SUPPLICANT_DRIVER := WEXT
-    	WPA_SUPPLICANT_VERSION := VER_0_6_X
-    	WIFI_SDIO_IF_DRIVER_MODULE_PATH := "/system/lib/modules/librasdioif.ko"
-    	WIFI_SDIO_IF_DRIVER_MODULE_NAME := "librasdioif"
-    	WIFI_SDIO_IF_DRIVER_MODULE_ARG  := ""
+	BOARD_WPA_SUPPLICANT_DRIVER := WEXT
+	WPA_SUPPLICANT_VERSION := VER_0_6_X
+	WIFI_SDIO_IF_DRIVER_MODULE_PATH := "/system/lib/modules/librasdioif.ko"
+	WIFI_SDIO_IF_DRIVER_MODULE_NAME := "librasdioif"
+	WIFI_SDIO_IF_DRIVER_MODULE_ARG  := ""
     endif
     endif   # !BUILD_TINY_ANDROID
 
@@ -45,15 +45,21 @@ TARGET_NO_RADIOIMAGE := true
 # Try to use ASHMEM if possible (when non-MDP composition is used)
 TARGET_GRALLOC_USES_ASHMEM := true
 TARGET_PROVIDES_INIT_RC := true
+TARGET_PROVIDES_UEVENTD_RC := true
+TARGET_PROVIDES_RILD := true
 
 TARGET_CPU_ABI  := armeabi-v7a
 TARGET_CPU_ABI2 := armeabi
 TARGET_ARCH_VARIANT := armv7-a-neon
 TARGET_BOARD_PLATFORM := msm7k
-TARGET_BOOTLOADER_BOARD_NAME := msm7627a_sku1
+TARGET_BOOTLOADER_BOARD_NAME := MSM7627A_SKU1
 TARGET_AVOID_DRAW_TEXTURE_EXTENSION := true
 TARGET_USES_16BPPSURFACE_FOR_OPAQUE := true
 QCOM_TARGET_PRODUCT := msm7627a_sku1
+
+# Enable temporary stub methods that permit the newer libcamera.so blob
+# to link with the older source
+TARGET_LIBCAMERA_BLOB_SYM_MISMATCH := true
 
 TARGET_CORTEX_CACHE_LINE_32 := true
 BOARD_KERNEL_BASE    := 0x00200000
@@ -98,10 +104,10 @@ ifeq ($(BOARD_USES_ATH_WIFI),true)
    HOSTAPD_VERSION := VER_0_8_ATHEROS
    BOARD_HAS_ATH_WLAN := true
    ifeq ($(BOARD_USES_AR6002),true)
-   	BOARD_WLAN_ATHEROS_SDK := external/ar6002/olca
+	BOARD_WLAN_ATHEROS_SDK := external/ar6002/olca
    endif
    ifeq ($(BOARD_USES_AR6003),true)
-   	BOARD_WLAN_ATHEROS_SDK := system/wlan/atheros/AR6kSDK.build_3.1_RC.560
+	BOARD_WLAN_ATHEROS_SDK := system/wlan/atheros/AR6kSDK.build_3.1_RC.560
    endif
 endif
 # Atheros ---

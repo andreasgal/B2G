@@ -9,6 +9,7 @@ SHELL = bash
 MAKE_FLAGS ?= -j16
 GONK_MAKE_FLAGS ?=
 
+FASTBOOT ?= fastboot
 HEIMDALL ?= heimdall
 TOOLCHAIN_HOST = linux-x86
 TOOLCHAIN_PATH = ./glue/gonk/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3/bin
@@ -51,12 +52,12 @@ gecko:
 	export GONK_PRODUCT="$(GONK)" && \
 	export GONK_PATH="$(GONK_PATH)" && \
 	ulimit -n 4096 && \
-	make -C $(GECKO_PATH) -f client.mk -s $(MAKE_FLAGS) && \
-	make -C $(GECKO_OBJDIR) package
+	$(MAKE) -C $(GECKO_PATH) -f client.mk -s $(MAKE_FLAGS) && \
+	$(MAKE) -C $(GECKO_OBJDIR) package
 
 .PHONY: gonk
 gonk: gaia-hack
-	@$(call GONK_CMD,make $(MAKE_FLAGS) $(GONK_MAKE_FLAGS))
+	@$(call GONK_CMD,$(MAKE) $(MAKE_FLAGS) $(GONK_MAKE_FLAGS))
 ifeq (qemu,$(KERNEL))
 	@cp glue/gonk/system/core/rootdir/init.rc.gonk $(GONK_PATH)/out/target/product/$(GONK)/root/init.rc
 endif
@@ -66,11 +67,11 @@ endif
 # XXX Hard-coded for gonk tool support
 kernel:
 ifeq (galaxy-s2,$(KERNEL))
-	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE="$(CCACHE) arm-eabi-" modules
+	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" $(MAKE) -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE="$(CCACHE) arm-eabi-" modules
 	(rm -rf boot/initramfs && cd boot/clockworkmod_galaxys2_initramfs && git checkout-index -a -f --prefix ../initramfs/)
 	find "$(KERNEL_DIR)" -name "*.ko" | xargs -I MOD cp MOD "$(PWD)/boot/initramfs/lib/modules"
 endif
-	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE="$(CCACHE) arm-eabi-"
+	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" $(MAKE) -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE="$(CCACHE) arm-eabi-"
 
 .PHONY: clean
 clean: clean-gecko clean-gonk clean-kernel
@@ -81,11 +82,11 @@ clean-gecko:
 
 .PHONY: clean-gonk
 clean-gonk:
-	@$(call GONK_CMD,make clean)
+	@$(call GONK_CMD,$(MAKE) clean)
 
 .PHONY: clean-kernel
 clean-kernel:
-	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" make -C $(KERNEL_PATH) ARCH=arm CROSS_COMPILE=arm-eabi- clean
+	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" $(MAKE) -C $(KERNEL_PATH) ARCH=arm CROSS_COMPILE=arm-eabi- clean
 
 .PHONY: mrproper
 # NB: this is a VERY DANGEROUS command that will BLOW AWAY ALL
@@ -144,11 +145,11 @@ config-nexuss4g: blobs-nexuss4g config-gecko
         echo "KERNEL_PATH = ./boot/kernel-android-samsung" >> .config.mk && \
 	echo "GONK = crespo4g" >> .config.mk && \
 	cp -p config/kernel-nexuss4g boot/kernel-android-samsung/.config && \
-	make -C $(CURDIR) nexuss4g-postconfig
+	$(MAKE) -C $(CURDIR) nexuss4g-postconfig
 
 .PHONY: nexuss4g-postconfig
 nexuss4g-postconfig:
-	$(call GONK_CMD,make signapk && vendor/samsung/crespo4g/reassemble-apks.sh)
+	$(call GONK_CMD,$(MAKE) signapk && vendor/samsung/crespo4g/reassemble-apks.sh)
 
 .PHONY: config-qemu
 config-qemu: config-gecko
@@ -157,7 +158,7 @@ config-qemu: config-gecko
 	echo "GONK = generic" >> .config.mk && \
 	echo "GONK_TARGET = generic-eng" >> .config.mk && \
 	echo "GONK_MAKE_FLAGS = TARGET_ARCH_VARIANT=armv7-a" >> .config.mk && \
-	make -C boot/kernel-android-qemu ARCH=arm goldfish_armv7_defconfig && \
+	$(MAKE) -C boot/kernel-android-qemu ARCH=arm goldfish_armv7_defconfig && \
 	( [ -e $(GONK_PATH)/device/qemu ] || \
 		mkdir $(GONK_PATH)/device/qemu ) && \
 	echo OK
@@ -196,6 +197,18 @@ flash-galaxys2: image
 .PHONY: flash-only-galaxys2
 flash-only-galaxys2:
 	$(FLASH_GALAXYS2_CMD)
+
+.PHONY: flash-maguro
+flash-maguro: image flash-only-maguro
+
+.PHONY: flash-only-maguro
+flash-only-maguro:
+	@$(call GONK_CMD, \
+	adb reboot bootloader && \
+	$(FASTBOOT) devices && \
+	$(FASTBOOT) erase userdata && \
+	$(FASTBOOT) flash userdata ./out/target/product/maguro/userdata.img && \
+	$(FASTBOOT) flashall)
 
 .PHONY: bootimg-hack
 bootimg-hack: kernel-$(KERNEL)

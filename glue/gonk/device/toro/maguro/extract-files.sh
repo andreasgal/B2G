@@ -35,7 +35,7 @@ PROPRIETARY_COMMON_DIR=../../../$BASE_PROPRIETARY_COMMON_DIR
 
 mkdir -p $PROPRIETARY_DEVICE_DIR
 
-for NAME in audio cameradat egl firmware hw keychars wifi
+for NAME in audio cameradat egl firmware hw keychars wifi etc
 do
     mkdir -p $PROPRIETARY_COMMON_DIR/$NAME
 done
@@ -136,6 +136,9 @@ COMMON_LIBS="
 	libcamera_client.so
 	libcameraservice.so
 	libcamera.so
+	liboemcamera.so
+	libmmjpeg.so
+	libmmipl.so
 	libEGL.so
 	libexif.so
 	libGLESv1_CM.so
@@ -281,6 +284,12 @@ COMMON_KEYCHARS="
 	"
 copy_files "$COMMON_KEYCHARS" "system/usr/keychars" "keychars"
 
+
+COMMON_ETC="
+        AudioFilter.csv
+	"
+copy_files "$COMMON_ETC" "system/etc" "etc"
+
 COMMON_WIFI="
         hostapd.conf
         wpa_supplicant.conf
@@ -290,13 +299,9 @@ copy_files "$COMMON_WIFI" "system/etc/wifi" "wifi"
 COMMON_AUDIO="
         libaudio.so
         libaudioalsa.so
-        libaudioeffect_jni.so
         libaudioeq.so
-        libaudioflinger.so
         libaudiopolicy.so
-        libmedia.so
-        libmedia_jni.so
-        libmediaplayerservice.so
+        liba2dp.so
 	"
 copy_files "$COMMON_AUDIO" "system/lib" "audio"
 
