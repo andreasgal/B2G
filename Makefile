@@ -30,6 +30,7 @@ ANDROID_SDK_PLATFORM ?= android-13
 GECKO_CONFIGURE_ARGS ?=
 
 CCACHE ?= $(shell which ccache)
+ADB ?= $(abspath glue/gonk/out/host/linux-x86/bin/adb)
 
 .PHONY: build
 build: gecko gecko-install-hack gonk
@@ -175,14 +176,14 @@ flash-only: flash-only-$(GONK)
 
 .PHONY: flash-crespo4g
 flash-crespo4g: image
-	@$(call GONK_CMD,adb reboot bootloader && fastboot flashall -w)
+	@$(call GONK_CMD,$(ADB) reboot bootloader && fastboot flashall -w)
 
 .PHONY: flash-only-crespo4g
 flash-only-crespo4g:
-	@$(call GONK_CMD,adb reboot bootloader && fastboot flashall -w)
+	@$(call GONK_CMD,$(ADB) reboot bootloader && fastboot flashall -w)
 
 define FLASH_GALAXYS2_CMD
-adb reboot download 
+$(ADB) reboot download 
 sleep 20
 $(HEIMDALL) flash --factoryfs $(GONK_PATH)/out/target/product/galaxys2/system.img
 $(FLASH_GALAXYS2_CMD_CHMOD_HACK)
@@ -238,13 +239,13 @@ gaia-hack: gaia
 
 .PHONY: install-gecko
 install-gecko: gecko-install-hack
-	@adb shell mount -o remount,rw /system && \
-	adb push $(OUT_DIR)/b2g /system/b2g
+	@$(ADB) shell mount -o remount,rw /system && \
+	$(ADB) push $(OUT_DIR)/b2g /system/b2g
 
 # The sad hacks keep piling up...  We can't set this up to be
 # installed as part of the data partition because we can't flash that
 # on the sgs2.
-PROFILE := `adb shell ls -d /data/b2g/mozilla/*.default | tr -d '\r'`
+PROFILE := `$(ADB) shell ls -d /data/b2g/mozilla/*.default | tr -d '\r'`
 PROFILE_DATA := gaia/profile
 .PHONY: install-gaia
 install-gaia:
@@ -252,10 +253,10 @@ install-gaia:
 	do \
 		data=$${file##*/}; \
 		echo Copying $$data; \
-		adb shell rm -r $(PROFILE)/$$data; \
-		adb push gaia/profile/$$data $(PROFILE)/$$data; \
+		$(ADB) shell rm -r $(PROFILE)/$$data; \
+		$(ADB) push gaia/profile/$$data $(PROFILE)/$$data; \
 	done
-	@for i in `ls gaia`; do adb push gaia/$$i /data/local/$$i; done
+	@for i in `ls gaia`; do $(ADB) push gaia/$$i /data/local/$$i; done
 
 .PHONY: image
 image: build
@@ -263,12 +264,12 @@ image: build
 
 .PHONY: unlock-bootloader
 unlock-bootloader:
-	@$(call GONK_CMD,adb reboot bootloader && fastboot oem unlock)
+	@$(call GONK_CMD,$(ADB) reboot bootloader && fastboot oem unlock)
 
 # Kill the b2g process on the device.
 .PHONY: kill-b2g
 kill-b2g:
-	adb shell killall b2g
+	$(ADB) shell killall b2g
 
 .PHONY: sync
 sync:
