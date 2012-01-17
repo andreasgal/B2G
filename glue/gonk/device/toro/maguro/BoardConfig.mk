@@ -45,6 +45,7 @@ TARGET_NO_RADIOIMAGE := true
 # Try to use ASHMEM if possible (when non-MDP composition is used)
 TARGET_GRALLOC_USES_ASHMEM := true
 TARGET_PROVIDES_INIT_RC := true
+TARGET_PROVIDES_UEVENTD_RC := true
 TARGET_PROVIDES_RILD := true
 
 TARGET_CPU_ABI  := armeabi-v7a
@@ -55,6 +56,10 @@ TARGET_BOOTLOADER_BOARD_NAME := MSM7627A_SKU1
 TARGET_AVOID_DRAW_TEXTURE_EXTENSION := true
 TARGET_USES_16BPPSURFACE_FOR_OPAQUE := true
 QCOM_TARGET_PRODUCT := msm7627a_sku1
+
+# Enable temporary stub methods that permit the newer libcamera.so blob
+# to link with the older source
+TARGET_LIBCAMERA_BLOB_SYM_MISMATCH := true
 
 TARGET_CORTEX_CACHE_LINE_32 := true
 BOARD_KERNEL_BASE    := 0x00200000

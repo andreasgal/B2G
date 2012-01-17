@@ -304,11 +304,11 @@ on property:persist.service.adb.enable=1
 on property:persist.service.adb.enable=0
     stop adbd
 
-#service servicemanager /system/bin/servicemanager
-#    user system
-#    critical
+service servicemanager /system/bin/servicemanager
+    user system
+    critical
 #    onrestart restart zygote
-#    onrestart restart media
+    onrestart restart media
 
 service vold /system/bin/vold
     socket vold stream 0660 root mount

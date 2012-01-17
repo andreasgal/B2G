@@ -291,7 +291,7 @@
 	url = git://github.com/cgjones/android-frameworks-base.git
 [submodule "glue/gonk/hardware/libhardware_legacy"]
 	path = glue/gonk/hardware/libhardware_legacy
-	url = git://android.git.linaro.org/platform/hardware/libhardware_legacy.git
+	url = git://github.com/mozilla-b2g/android-hardware_legacy.git
 [submodule "glue/gonk/hardware/libhardware"]
 	path = glue/gonk/hardware/libhardware
 	url = git://android.git.linaro.org/platform/hardware/libhardware.git
