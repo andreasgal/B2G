@@ -61,6 +61,9 @@ QCOM_TARGET_PRODUCT := msm7627a_sku1
 # to link with the older source
 TARGET_LIBCAMERA_BLOB_SYM_MISMATCH := true
 
+# Enable newer vtable layout for audio interfaces.
+TARGET_AUDIO_INTERFACE_NEWER_VTABLE := true
+
 TARGET_CORTEX_CACHE_LINE_32 := true
 BOARD_KERNEL_BASE    := 0x00200000
 BOARD_KERNEL_PAGESIZE := 4096
