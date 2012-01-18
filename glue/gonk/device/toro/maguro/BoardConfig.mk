@@ -32,7 +32,7 @@ ifeq ($(QC_PROP),true)
 
 else
 #    BOARD_USES_GENERIC_AUDIO := true
-    USE_CAMERA_STUB := true
+    USE_CAMERA_STUB := false
     BOARD_HAVE_BLUETOOTH := true
 
 endif # QC_PROP
