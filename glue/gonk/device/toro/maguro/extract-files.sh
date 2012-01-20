@@ -239,6 +239,10 @@ COMMON_BINS="
    hciattach
    abtfilt
    hci_qcomm_init
+   wlan_tool
+   wmiconfig
+   wpa_cli
+   wpa_supplicant
 	"
 
 copy_files "$COMMON_BINS" "system/bin" ""
@@ -295,6 +299,24 @@ COMMON_WIFI="
         wpa_supplicant.conf
 	"
 copy_files "$COMMON_WIFI" "system/etc/wifi" "wifi"
+
+COMMON_WIFI_DRIVER="
+        ar6000.ko
+	"
+copy_files "$COMMON_WIFI_DRIVER" "system/wifi" ""
+
+COMMON_WIFI_FIRMWARE="
+        athtcmd_ram.bin
+        athwlan_mobile.bin
+        athwlan_tablet.bin
+        data.patch.hw3_0.bin
+        otp.bin
+        athwlan.bin
+        athwlan_router.bin
+        bdata.SD31.bin
+        device.bin
+	"
+copy_files "$COMMON_WIFI_FIRMWARE" "system/wifi/ath6k/AR6003/hw2.1.1" ""
 
 COMMON_AUDIO="
         libaudio.so

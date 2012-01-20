@@ -34,6 +34,7 @@
 # and is used by people who have access to binary versions of the drivers
 # but not to the original vendor tree. Be sure to update both.
 
+
 PRODUCT_PROPERTY_OVERRIDES := \
     rild.libpath=/system/lib/libril-qc-1.so \
     rild.libargs=-d /dev/smd0 \
@@ -91,6 +92,24 @@ PRODUCT_PROPERTY_OVERRIDES := \
 # PRODUCT_LOCALES expansion must not be a density.
 PRODUCT_LOCALES := hdpi
 
+# Maguro blobs expect the following property values. Sneak them into
+# /build.prop so that the defaults added to /system/build.prop by the
+# build system are ignored (easier than messing around with the core
+# build system at the moment.)
+#
+# TODO: This should eventually be fixed properly by renaming device/
+#       directories...
+#
+ADDITIONAL_DEFAULT_PROPERTIES :=  \
+   ro.product.model=msm7627a_sku1 \
+   ro.product.brand=qcom \
+   ro.product.name=msm7627a_sku1 \
+   ro.product.device=msm7627a_sku1 \
+   ro.product.board=msm7627a_sku1 \
+   ro.build.product=msm7627a_sku1 \
+
+
+
 ifeq ($(TARGET_PREBUILT_KERNEL),)
     LOCAL_KERNEL := device/toro/maguro/kernel
 else
@@ -105,3 +124,4 @@ PRODUCT_COPY_FILES += \
 # of the aspects that require proprietary drivers that aren't
 # commonly available
 $(call inherit-product-if-exists, vendor/toro/maguro/maguro-vendor.mk)
+
