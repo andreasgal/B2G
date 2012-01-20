@@ -1,61 +1,58 @@
-#BUILD_DROIDDOC:= $(BUILD_SYSTEM)/droiddoc-noop.mk
+# The list of modules that should not be built
+REMOVE_MODULES := libclearsilver-jni
+# All modules with one of these classes are also not built.
+REMOVE_CLASSES := APPS JAVA_LIBRARIES
 
-############################################################
-#subdir_makefiles := \
-#	$(shell build/tools/findleaves.py --prune=out --prune=.repo --prune=.git $(subdirs) Android.mk)
+# Make a list of all modules with one of given classes.
 #
-#include $(subdir_makefiles)
-############################################################
+# $(1): a list of classes.
+#
+define make-list-of-all-modules-of-classes
+$(foreach m, $(ALL_MODULES), $(if $(filter $(1), $(ALL_MODULES.$(m).CLASS)), $(m)))
+endef
 
-NO_USER_MODULES := out/host/linux-x86/framework/temp_layoutlib.jar
-ALL_MODULE_TAGS.user := \
-	$(filter-out $(NO_USER_MODULES), $(ALL_MODULE_TAGS.user))
+REMOVE_MODULES := $(REMOVE_MODULES) \
+	$(call make-list-of-all-modules-of-classes, $(REMOVE_CLASSES))
 
-NO_CHECKED_MODULES := \
-	out/host/common/obj/JAVA_LIBRARIES/clearsilver_intermediates/javalib.jar \
-	out/host/common/obj/JAVA_LIBRARIES/layoutlib_create_intermediates/javalib.jar \
-	out/host/common/obj/JAVA_LIBRARIES/temp_layoutlib_intermediates/javalib.jar \
-	out/host/linux-x86/framework/temp_layoutlib.jar \
-	out/host/linux-x86/obj/lib/libclearsilver-jni.so \
-	$(NULL)
+REMOVE_TARGETS :=
 
-REMOVED_MODULES :=
-
+# Remove a given module from tag lists.
+#
+# The given module would be removed from coressonding tag lists.
+# The built targets of the module would be added to REMOVE_TARGETS.
+#
+# $(1): the name of the moulde being removed.
+#
 define remove-module
 $(foreach t,$(ALL_MODULES.$(1).TAGS),
 ALL_MODULE_TAGS.$(t) := $(filter-out $(ALL_MODULES.$(1).INSTALLED), \
-			$(ALL_MODULE_TAGS.$(t))))
-NO_CHECKED_MODULES := \
-	$(NO_CHECKED_MODULES) \
+	$(ALL_MODULE_TAGS.$(t))))
+REMOVE_TARGETS := \
+	$(REMOVE_TARGETS) \
 	$(ALL_MODULES.$(1).BUILT)
 ALL_MODULES.$(1).TAGS :=
 ALL_MODULES.$(1).CHECKED :=
 ALL_MODULES.$(1).BUILT :=
-
-REMOVED_MODULES := $(REMOVED_MODULES) $(1)
 endef
 
-define remove-all-module-of-classes
-$(eval REMOVE_CLASSES := APPS JAVA_LIBRARIES)
+# Remove all modules from tag lists.
+$(foreach m, $(REMOVE_MODULES), \
+	$(eval $(call remove-module,$(m))))
 
-$(foreach m, $(ALL_MODULES), \
-	$(if $(filter $(REMOVE_CLASSES), $(ALL_MODULES.$(m).CLASS)), \
-		$(eval $(call remove-module,$(m)))))
-endef
-
-$(eval $(call remove-all-module-of-classes))
-
+# Remove all modules from the CHECKED list of every module.
 $(foreach mod, $(ALL_MODULES), \
 	$(eval ALL_MODULES.$(mod).CHECKED := \
-		$(filter-out $(NO_CHECKED_MODULES), \
+		$(filter-out $(REMOVE_TARGETS), \
 			$(ALL_MODULES.$(mod).CHECKED))))
 
+# Remove built targets of removed modules from the BUILT list of every module.
 $(foreach mod, $(ALL_MODULES), \
 	$(eval ALL_MODULES.$(mod).BUILT := \
-		$(filter-out $(NO_CHECKED_MODULES), \
+		$(filter-out $(REMOVE_TARGETS), \
 			$(ALL_MODULES.$(mod).BUILT))))
 
+# Remove removed modulest from all products.
 $(foreach p, $(ALL_PRODUCTS), \
 	$(eval PRODUCTS.$(p).PRODUCT_PACKAGES := \
-		$(filter-out $(REMOVED_MODULES), \
+		$(filter-out $(REMOVE_MODULES), \
 			$(PRODUCTS.$(p).PRODUCT_PACKAGES))))
