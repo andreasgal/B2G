@@ -103,6 +103,7 @@ config-galaxy-s2: config-gecko
 	@echo "KERNEL = galaxy-s2" > .config.mk && \
         echo "KERNEL_PATH = ./boot/kernel-android-galaxy-s2" >> .config.mk && \
 	echo "GONK = galaxys2" >> .config.mk && \
+	export PATH=$$PATH:$$(dirname $(ADB)) && \
 	cp -p config/kernel-galaxy-s2 boot/kernel-android-galaxy-s2/.config && \
 	cd $(GONK_PATH)/device/samsung/galaxys2/ && \
 	echo Extracting binary blobs from device, which should be plugged in! ... && \
