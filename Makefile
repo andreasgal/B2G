@@ -31,7 +31,7 @@ ANDROID_SDK_PLATFORM ?= android-13
 GECKO_CONFIGURE_ARGS ?=
 
 CCACHE ?= $(shell which ccache)
-ADB ?= $(abspath glue/gonk/out/host/linux-x86/bin/adb)
+ADB := $(abspath glue/gonk/out/host/linux-x86/bin/adb)
 
 .PHONY: build
 build: gecko gecko-install-hack gonk
