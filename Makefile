@@ -17,11 +17,17 @@ TOOLCHAIN_PATH = ./glue/gonk/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3
 GONK_PATH = $(abspath glue/gonk)
 GONK_TARGET ?= full_$(GONK)-eng
 
+# This path includes tools to simulate JDK tools.  Gonk would check
+# version of JDK.  These fake tools do nothing but print out version
+# number to stop gonk from error.
+FAKE_JDK_PATH ?= $(abspath $(GONK_PATH)/device/gonk-build-hack/fake-jdk-tools)
+
 define GONK_CMD # $(call GONK_CMD,cmd)
 	cd $(GONK_PATH) && \
 	. build/envsetup.sh && \
 	lunch $(GONK_TARGET) && \
 	export USE_CCACHE="yes" && \
+	export PATH=$$PATH:$(FAKE_JDK_PATH) && \
 	$(1)
 endef
 
