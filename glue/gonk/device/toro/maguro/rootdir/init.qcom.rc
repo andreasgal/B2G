@@ -401,3 +401,8 @@ service profiler_daemon /system/bin/profiler_daemon
     user root
     group root
     disabled
+
+service wlan_tool /system/bin/wlan_tool
+    user root
+    group wifi system net_admin inet shell
+    oneshot
