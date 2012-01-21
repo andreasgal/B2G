@@ -312,3 +312,6 @@ package:
 
 $(ADB):
 	@$(call GONK_CMD,make adb)
+
+.PHONY: adb
+adb: $(ADB)
