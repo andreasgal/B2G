@@ -311,5 +311,4 @@ package:
 	cd $(PKG_DIR) && tar -czvf qemu_package.tar.gz qemu
 
 $(ADB):
-	cd glue/gonk; \
-	make adb
+	@$(call GONK_CMD,make adb)
