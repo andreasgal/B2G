@@ -1,3 +1,11 @@
+#
+# PolicyConfig.mk would be included by build/core/main.mk for FULL_BUILD.
+#
+# main.mk will try to include frameworks/policies/base/PolicyConfig.mk
+# if it is there.  PolicyConfig.mk is supposed to do something that
+# must happen after including all module makefiles.
+#
+
 # The list of modules that should not be built
 REMOVE_MODULES := libclearsilver-jni
 # All modules with one of these classes are also not built.
@@ -18,8 +26,10 @@ REMOVE_TARGETS :=
 
 # Remove a given module from tag lists.
 #
-# The given module would be removed from coressonding tag lists.
-# The built targets of the module would be added to REMOVE_TARGETS.
+# The given module is removed from corresponding tag lists.  The built
+# targets of the module are added to REMOVE_TARGETS.  Modules in
+# REMOVE_TARGETS are also removed from CHECKED and BUILT list for
+# every module later.
 #
 # $(1): the name of the moulde being removed.
 #
@@ -39,19 +49,19 @@ endef
 $(foreach m, $(REMOVE_MODULES), \
 	$(eval $(call remove-module,$(m))))
 
-# Remove all modules from the CHECKED list of every module.
+# Remove all modules from the CHECKED list for every module.
 $(foreach mod, $(ALL_MODULES), \
 	$(eval ALL_MODULES.$(mod).CHECKED := \
 		$(filter-out $(REMOVE_TARGETS), \
 			$(ALL_MODULES.$(mod).CHECKED))))
 
-# Remove built targets of removed modules from the BUILT list of every module.
+# Remove built targets of removed modules from the BUILT list for every module.
 $(foreach mod, $(ALL_MODULES), \
 	$(eval ALL_MODULES.$(mod).BUILT := \
 		$(filter-out $(REMOVE_TARGETS), \
 			$(ALL_MODULES.$(mod).BUILT))))
 
-# Remove removed modulest from all products.
+# Remove removed modules from all products.
 $(foreach p, $(ALL_PRODUCTS), \
 	$(eval PRODUCTS.$(p).PRODUCT_PACKAGES := \
 		$(filter-out $(REMOVE_MODULES), \
