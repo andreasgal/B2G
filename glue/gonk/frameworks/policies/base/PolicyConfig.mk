@@ -33,7 +33,7 @@ REMOVE_TARGETS :=
 # REMOVE_TARGETS are also removed from CHECKED and BUILT list for
 # every module later.
 #
-# $(1): the name of the moulde being removed.
+# $(1): the name of the moulde to remove.
 #
 define remove-module
 $(foreach t,$(ALL_MODULES.$(1).TAGS),
