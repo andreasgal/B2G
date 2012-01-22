@@ -4,6 +4,10 @@ $B2G.
 
  Dependencies
 --------------
+* IMPORTANT!!: When building on a VM, be sure to give your VM enough
+  RAM, swap disk space, and general disk space before beginning.
+  Optimally, your VM should have 4GB RAM, 4GB+ swap partition and
+  40GB+ virtual hard disk.
 
 * You need to have adb set up to allow your machine to talk to your
   phone.  Follow the instructions at
@@ -18,6 +22,8 @@ $B2G.
   not "0BB4".  If you use upper-case hex, the USB permissions will not
   be set up correctly and heimdall will only work if you give it
   superuser powers.
+
+* When building B2G for the first time, don't forget to run 'make gonk' first.
 
 * If you're building for the Galaxy S II, you need to install
   "Heimdall" to be able to flash your phone with B2G.  Follow the
@@ -40,19 +46,6 @@ $B2G.
   lib32readline-gplv2-dev is available for Ubuntu 11.10. For Ubuntu 10.10
   lib32readline5-dev seems to work fine.
 
- Additional dependencies when building android backend
--------------------------------------------------------
-
-* Sadly, B2G currently depends on not only the android source, but
-  also the android SDK and NDK.  These dependencies will be removed
-  eventually, but for now you need to install both.  Follow the
-  instructions at
-
-    http://developer.android.com/sdk/installing.html
-    http://developer.android.com/sdk/ndk/index.html
-
-  From here on, this document assumes you installed the SDK to the
-  path $ANDROID_SDK and the NDK to the path $ANDROID_NDK.
 
  Quick start
 -------------
@@ -65,10 +58,6 @@ sure to back up your phone before doing this.
 
 $ cd $B2G
 $ make sync
-$ cat > local.mk << EOF
-ANDROID_SDK="$ANDROID_SDK"
-ANDROID_NDK="$ANDROID_NDK"
-EOF
 $ make config-nexuss4g   # or, make config-galaxy-s2
 $ make flash
 
@@ -81,6 +70,7 @@ $ adb shell chmod -R 777 /data/system
 $ cd $B2G
 $ make sync
 $ make config-qemu
+$ make gonk
 $ make
 $ ./emu.sh
 
@@ -102,23 +92,6 @@ $ make sync
 
 This takes a *long* time, so be patient.  Whenever you want to pull
 from upstream again, just re-run |make sync|.
-
- == [TEMPORARY] Configure local SDK and NDK paths ==
-
-We're using these currently for reasons not worth knowing.
-
-# for android backend
-
-$ cat > local.mk << EOF
-ANDROID_SDK="$ANDROID_SDK"
-ANDROID_NDK="$ANDROID_NDK"
-EOF
-
-# for gonk backend
-
-$ cat > local.mk << EOF
-WIDGET_BACKEND=gonk
-EOF
 
  == Configure repo for your device ==
 
@@ -142,17 +115,20 @@ will function, only more slowly and without access to some sensors.
 
  == Build the code ==
 
-This part is relatively simple
+When building for the first time, first run:
 
-$ make -jN
+$ make gonk
 
-where N is slightly more than the number of cores you have in your
-machine.
+Then simply run:
+
+$ make
 
 This step can take a long time.  Subsequent rebuilds will usually be
 much faster, though.
 
-At this stage, if you're building from the Android emulator, you just
+ == Running on the Android Emulator ==
+
+At this stage, if you're building for the Android emulator, you just
 need to run the provided script and you're done.
 
 $ ./emu.sh
@@ -224,7 +200,9 @@ will be fixed.  BE SURE you don't reboot your phone before running the
 following step.  That is, you should run "make flash" while your phone
 is still in recovery mode.
 
-$ make flash
+NOTE: When flashing with the gonk back end for the first time, flash the kernel first (see "Kernel Flashing" below).
+
+$ make flash-only
 
 If all goes well, you'll see the phone reboot into the bootloader,
 then your host machine will report the progress of files it uploads
@@ -234,16 +212,11 @@ and installs on the device.  After finishing, the device will reboot.
 
 $ adb shell chmod -R 777 /data/system
 
-# temporary hack you may need on the gonk backend, although the Makefile tries
-# to do it for you.
-
-$ adb shell chmod 755 /system/b2g/b2g
-
- == Kernel flashing ==
+ == Kernel Flashing ==
 
 The kernel should also be flashed when using the gonk backend on a SII.
 It only needs to be done once when switching to the gonk backend.
-This will overwrite ClockworkMod.
+This kernel comes with a clockwork mod variant.
 
 GET A DOWNLOAD MODE JIG BEFORE ATTEMPTING THIS!
 The flashing process is known to fail.
@@ -251,6 +224,8 @@ The flashing process is known to fail.
 $ make kernel
 $ adb reboot download
 $ heimdall flash --kernel boot/kernel-android-galaxy-s2/arch/arm/boot/zImage
+
+Note: If during "make kernel" the process seems to stop and shows a colon for user input, it's probably asking you a question. Try hitting enter to continue.
 
  == Install Gaia ==
 
@@ -263,17 +238,5 @@ $ make install-gaia
 If you press the "Home" button on device, the Gaia homescreen will
 reload.
 
-== Troubleshooting ==
-
-If you get a message at the end of the install-gecko process that says:
-# /sbin/sh pm not found
-Then this refers to the android package manager not working properly on the device.
-The reason it's not working is that it doesn't have permissions to write to /data/system.
-To fix:
-1. $ adb push gecko/objdir-prof-android/dist/b2g-9.0a1.en-US.android-arm.apk /data/local/tmp/b2g.apk
-2. $ adb shell
-3. # chmod -R 777 /data/system
-4. # sh /system/bin/pm install -r /data/local/tmp/b2g.apk
-5. # reboot
 
 Happy hacking.
