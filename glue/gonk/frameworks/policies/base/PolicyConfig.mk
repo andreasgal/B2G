@@ -51,7 +51,7 @@ endef
 $(foreach m, $(REMOVE_MODULES), \
 	$(eval $(call remove-module,$(m))))
 
-# Remove all modules from the CHECKED list for every module.
+# Remove built targets from the CHECKED list for every module.
 $(foreach mod, $(ALL_MODULES), \
 	$(eval ALL_MODULES.$(mod).CHECKED := \
 		$(filter-out $(REMOVE_TARGETS), \
