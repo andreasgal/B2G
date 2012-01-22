@@ -2,8 +2,10 @@
 # PolicyConfig.mk would be included by build/core/main.mk for FULL_BUILD.
 #
 # main.mk will try to include frameworks/policies/base/PolicyConfig.mk
-# if it is there.  PolicyConfig.mk is supposed to do something that
-# must happen after including all module makefiles.
+# if it is there.  PolicyConfig.mk is included right after including
+# all module makefiles.  PolicyConfig.mk is supposed to do anything
+# that must happen after including all module makefiles.  See, main.mk
+# for more information.
 #
 
 # The list of modules that should not be built
