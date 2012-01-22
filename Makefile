@@ -29,6 +29,7 @@ GECKO_PATH ?= $(abspath gecko)
 
 ANDROID_SDK_PLATFORM ?= android-13
 GECKO_CONFIGURE_ARGS ?=
+STOP_DEPENDENCY_CHECK ?= false
 
 define SUBMODULES
 	cat .gitmodules |grep path|awk -- '{print $$3;}'
@@ -93,6 +94,7 @@ define DEP_REL_PATH
 $(patsubst ./%,%,$(patsubst /%,%,$(patsubst $(PWD)%,%,$(strip $1))))
 endef
 
+ifeq ($(strip $(STOP_DEPENDENCY_CHECK)),false)
 # Check hash code of sourc files and run commands for necessary.
 #
 # $(1): stamp file (where hash code is kept)
@@ -100,7 +102,7 @@ endef
 # $(3): commands that you want to run if any of source files is updated.
 #
 define DEP_CHECK
-	echo -n "Checking dependency for $2 ..."; \
+	(echo -n "Checking dependency for $2 ..."; \
 	if [ -e "$1" ]; then \
 		LAST_HASH="`cat $1`"; \
 		CUR_HASH=$$($(call DEP_HASH,$2)); \
@@ -113,8 +115,13 @@ define DEP_CHECK
 	_dep_check_pwd=$$PWD; \
 	($3); \
 	cd $$_dep_check_pwd; \
-	$(call DEP_HASH,$2) > $1
+	$(call DEP_HASH,$2) > $1)
 endef
+else # STOP_DEPENDENCY_CHECK
+define DEP_CHECK
+($3)
+endef
+endif # STOP_DEPENDENCY_CHECK
 
 CCACHE ?= $(shell which ccache)
 
