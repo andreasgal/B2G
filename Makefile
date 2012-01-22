@@ -29,6 +29,8 @@ GECKO_PATH ?= $(abspath gecko)
 
 ANDROID_SDK_PLATFORM ?= android-13
 GECKO_CONFIGURE_ARGS ?=
+
+# |make STOP_DEPENDENCY_CHECK=true| to stop dependency checking
 STOP_DEPENDENCY_CHECK ?= false
 
 define SUBMODULES
