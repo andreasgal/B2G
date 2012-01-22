@@ -29,7 +29,7 @@ REMOVE_TARGETS :=
 # Remove a given module from tag lists.
 #
 # The given module is removed from corresponding tag lists.  The built
-# targets of the module are added to REMOVE_TARGETS.  Modules in
+# targets of the module are added to REMOVE_TARGETS.  Targets in
 # REMOVE_TARGETS are also removed from CHECKED and BUILT list for
 # every module later.
 #
