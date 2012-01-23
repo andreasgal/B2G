@@ -238,6 +238,7 @@ COMMON_BINS="
 	rmt_storage
    hciattach
    abtfilt
+   amploader
    hci_qcomm_init
    wlan_tool
    wmiconfig
