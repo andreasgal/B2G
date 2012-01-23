@@ -9,7 +9,7 @@ SHELL = bash
 MAKE_FLAGS ?= -j16
 GONK_MAKE_FLAGS ?=
 
-FASTBOOT ?= fastboot
+FASTBOOT ?= $(abspath glue/gonk/out/host/linux-x86/bin/fastboot)
 HEIMDALL ?= heimdall
 TOOLCHAIN_HOST = linux-x86
 TOOLCHAIN_PATH = ./glue/gonk/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3/bin
