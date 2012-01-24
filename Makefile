@@ -31,7 +31,7 @@ ANDROID_SDK_PLATFORM ?= android-13
 GECKO_CONFIGURE_ARGS ?=
 
 # |make STOP_DEPENDENCY_CHECK=true| to stop dependency checking
-STOP_DEPENDENCY_CHECK ?= false
+STOP_DEPENDENCY_CHECK ?= true
 
 define SUBMODULES
 	cat .gitmodules |grep path|awk -- '{print $$3;}'
