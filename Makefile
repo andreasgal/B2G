@@ -196,7 +196,7 @@ clean-gonk:
 .PHONY: clean-kernel
 clean-kernel:
 	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" $(MAKE) -C $(KERNEL_PATH) ARCH=arm CROSS_COMPILE=arm-eabi- clean
-	@rm $(KERNEL_PATH)/.b2g-build-done
+	@rm -f $(KERNEL_PATH)/.b2g-build-done
 
 .PHONY: mrproper
 # NB: this is a VERY DANGEROUS command that will BLOW AWAY ALL
