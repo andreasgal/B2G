@@ -230,6 +230,11 @@ COMMON_LIBS="
         libdsi_netctrl.so
         libnetmgr.so
         libqdp.so
+        libgps.so
+        libgps.utils.so
+        libcommondefs.so
+        libloc_api-rpc-qc.so
+        librpc.so
 	"
 copy_files "$COMMON_LIBS" "system/lib" ""
 
@@ -238,11 +243,13 @@ COMMON_BINS="
 	rmt_storage
    hciattach
    abtfilt
+   amploader
    hci_qcomm_init
    wlan_tool
    wmiconfig
    wpa_cli
    wpa_supplicant
+   loc_api_app
 	"
 
 copy_files "$COMMON_BINS" "system/bin" ""
@@ -291,6 +298,7 @@ copy_files "$COMMON_KEYCHARS" "system/usr/keychars" "keychars"
 
 COMMON_ETC="
         AudioFilter.csv
+        loc_parameter.ini
 	"
 copy_files "$COMMON_ETC" "system/etc" "etc"
 

@@ -264,7 +264,7 @@ service wpa_supplicant /system/bin/logwrapper /system/bin/wpa_supplicant -Dwext 
     disabled
     oneshot
 
-service dhcpcd_wlan0 /system/bin/dhcpcd -BKLG wlan0
+service dhcpcd_wlan0 /system/bin/dhcpcd -BKL wlan0
     disabled
     oneshot
 
