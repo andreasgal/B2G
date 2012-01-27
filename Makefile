@@ -132,7 +132,7 @@ endef
 endif # STOP_DEPENDENCY_CHECK
 
 CCACHE ?= $(shell which ccache)
-ADB := $(abspath glue/gonk/out/host/linux-x86/bin/adb)
+ADB ?= adb
 
 .PHONY: build
 build: gecko gecko-install-hack gonk
@@ -216,7 +216,7 @@ mrproper:
 	git reset --hard
 
 .PHONY: config-galaxy-s2
-config-galaxy-s2: config-gecko $(ADB)
+config-galaxy-s2: config-gecko
 	@echo "KERNEL = galaxy-s2" > .config.mk && \
         echo "KERNEL_PATH = ./boot/kernel-android-galaxy-s2" >> .config.mk && \
 	echo "GONK = galaxys2" >> .config.mk && \
@@ -294,11 +294,11 @@ flash: flash-$(GONK)
 flash-only: flash-only-$(GONK)
 
 .PHONY: flash-crespo4g
-flash-crespo4g: image $(ADB)
+flash-crespo4g: image
 	@$(call GONK_CMD,$(ADB) reboot bootloader && fastboot flashall -w)
 
 .PHONY: flash-only-crespo4g
-flash-only-crespo4g: $(ADB)
+flash-only-crespo4g:
 	@$(call GONK_CMD,$(ADB) reboot bootloader && fastboot flashall -w)
 
 define FLASH_GALAXYS2_CMD
@@ -309,11 +309,11 @@ $(FLASH_GALAXYS2_CMD_CHMOD_HACK)
 endef
 
 .PHONY: flash-galaxys2
-flash-galaxys2: image $(ADB)
+flash-galaxys2: image
 	$(FLASH_GALAXYS2_CMD)
 
 .PHONY: flash-only-galaxys2
-flash-only-galaxys2: $(ADB)
+flash-only-galaxys2:
 	$(FLASH_GALAXYS2_CMD)
 
 .PHONY: flash-maguro
@@ -370,7 +370,7 @@ gaia-hack: gaia
 	cp -r gaia/profile $(OUT_DIR)/b2g/defaults
 
 .PHONY: install-gecko
-install-gecko: gecko-install-hack $(ADB)
+install-gecko: gecko-install-hack
 	@$(ADB) shell mount -o remount,rw /system && \
 	$(ADB) push $(OUT_DIR)/b2g /system/b2g
 
@@ -380,7 +380,7 @@ install-gecko: gecko-install-hack $(ADB)
 PROFILE := `$(ADB) shell ls -d /data/b2g/mozilla/*.default | tr -d '\r'`
 PROFILE_DATA := gaia/profile
 .PHONY: install-gaia
-install-gaia: $(ADB)
+install-gaia:
 	@for file in `ls $(PROFILE_DATA)`; \
 	do \
 		data=$${file##*/}; \
@@ -395,12 +395,12 @@ image: build
 	@echo XXX stop overwriting the prebuilt nexuss4g kernel
 
 .PHONY: unlock-bootloader
-unlock-bootloader: $(ADB)
+unlock-bootloader:
 	@$(call GONK_CMD,$(ADB) reboot bootloader && fastboot oem unlock)
 
 # Kill the b2g process on the device.
 .PHONY: kill-b2g
-kill-b2g: $(ADB)
+kill-b2g:
 	$(ADB) shell killall b2g
 
 .PHONY: sync
@@ -421,9 +421,3 @@ package:
 	cp boot/kernel-android-qemu/arch/arm/boot/zImage $(PKG_DIR)/qemu
 	cp -R $(GONK_PATH)/out/target/product/generic $(PKG_DIR)/qemu
 	cd $(PKG_DIR) && tar -czvf qemu_package.tar.gz qemu
-
-$(ADB):
-	@$(call GONK_CMD,make adb)
-
-.PHONY: adb
-adb: $(ADB)
