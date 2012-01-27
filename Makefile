@@ -15,7 +15,11 @@ TOOLCHAIN_HOST = linux-x86
 TOOLCHAIN_PATH = ./glue/gonk/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3/bin
 
 GONK_PATH = $(abspath glue/gonk)
+ifdef GONK
 GONK_TARGET ?= full_$(GONK)-eng
+else				# fallback to generic for a clean copy.
+GONK_TARGET ?= generic-eng
+endif
 
 # This path includes tools to simulate JDK tools.  Gonk would check
 # version of JDK.  These fake tools do nothing but print out version
