@@ -15,6 +15,12 @@ TOOLCHAIN_HOST = linux-x86
 TOOLCHAIN_PATH = ./glue/gonk/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3/bin
 
 GONK_PATH = $(abspath glue/gonk)
+
+# We need adb for config-* targets.  Adb is built by building system
+# of gonk that needs a correct product name provided by "GONK_TARGET".
+# But, "GONK_TARGET" is not set properly before running any config-*
+# target since "GONK" is not defined.  We fallback "GONK_TARGET" to
+# generic-eng to build adb for config-* targets.
 ifdef GONK
 GONK_TARGET ?= full_$(GONK)-eng
 else				# fallback to generic for a clean copy.
