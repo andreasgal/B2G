@@ -15,13 +15,29 @@ TOOLCHAIN_HOST = linux-x86
 TOOLCHAIN_PATH = ./glue/gonk/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3/bin
 
 GONK_PATH = $(abspath glue/gonk)
+
+# We need adb for config-* targets.  Adb is built by building system
+# of gonk that needs a correct product name provided by "GONK_TARGET".
+# But, "GONK_TARGET" is not set properly before running any config-*
+# target since "GONK" is not defined.  We fallback "GONK_TARGET" to
+# generic-eng to build adb for config-* targets.
+ifdef GONK
 GONK_TARGET ?= full_$(GONK)-eng
+else				# fallback to generic for a clean copy.
+GONK_TARGET ?= generic-eng
+endif
+
+# This path includes tools to simulate JDK tools.  Gonk would check
+# version of JDK.  These fake tools do nothing but print out version
+# number to stop gonk from error.
+FAKE_JDK_PATH ?= $(abspath $(GONK_PATH)/device/gonk-build-hack/fake-jdk-tools)
 
 define GONK_CMD # $(call GONK_CMD,cmd)
 	cd $(GONK_PATH) && \
 	. build/envsetup.sh && \
 	lunch $(GONK_TARGET) && \
 	export USE_CCACHE="yes" && \
+	export PATH=$$PATH:$(FAKE_JDK_PATH) && \
 	$(1)
 endef
 
@@ -126,6 +142,7 @@ endef
 endif # STOP_DEPENDENCY_CHECK
 
 CCACHE ?= $(shell which ccache)
+ADB := $(abspath glue/gonk/out/host/linux-x86/bin/adb)
 
 .PHONY: build
 build: gecko gecko-install-hack gonk
@@ -196,7 +213,7 @@ clean-gonk:
 .PHONY: clean-kernel
 clean-kernel:
 	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" $(MAKE) -C $(KERNEL_PATH) ARCH=arm CROSS_COMPILE=arm-eabi- clean
-	@rm $(KERNEL_PATH)/.b2g-build-done
+	@rm -f $(KERNEL_PATH)/.b2g-build-done
 
 .PHONY: mrproper
 # NB: this is a VERY DANGEROUS command that will BLOW AWAY ALL
@@ -209,10 +226,11 @@ mrproper:
 	git reset --hard
 
 .PHONY: config-galaxy-s2
-config-galaxy-s2: config-gecko
+config-galaxy-s2: config-gecko $(ADB)
 	@echo "KERNEL = galaxy-s2" > .config.mk && \
         echo "KERNEL_PATH = ./boot/kernel-android-galaxy-s2" >> .config.mk && \
 	echo "GONK = galaxys2" >> .config.mk && \
+	export PATH=$$PATH:$$(dirname $(ADB)) && \
 	cp -p config/kernel-galaxy-s2 boot/kernel-android-galaxy-s2/.config && \
 	cd $(GONK_PATH)/device/samsung/galaxys2/ && \
 	echo Extracting binary blobs from device, which should be plugged in! ... && \
@@ -286,26 +304,26 @@ flash: flash-$(GONK)
 flash-only: flash-only-$(GONK)
 
 .PHONY: flash-crespo4g
-flash-crespo4g: image
-	@$(call GONK_CMD,adb reboot bootloader && fastboot flashall -w)
+flash-crespo4g: image $(ADB)
+	@$(call GONK_CMD,$(ADB) reboot bootloader && fastboot flashall -w)
 
 .PHONY: flash-only-crespo4g
-flash-only-crespo4g:
-	@$(call GONK_CMD,adb reboot bootloader && fastboot flashall -w)
+flash-only-crespo4g: $(ADB)
+	@$(call GONK_CMD,$(ADB) reboot bootloader && fastboot flashall -w)
 
 define FLASH_GALAXYS2_CMD
-adb reboot download 
+$(ADB) reboot download 
 sleep 20
 $(HEIMDALL) flash --factoryfs $(GONK_PATH)/out/target/product/galaxys2/system.img
 $(FLASH_GALAXYS2_CMD_CHMOD_HACK)
 endef
 
 .PHONY: flash-galaxys2
-flash-galaxys2: image
+flash-galaxys2: image $(ADB)
 	$(FLASH_GALAXYS2_CMD)
 
 .PHONY: flash-only-galaxys2
-flash-only-galaxys2:
+flash-only-galaxys2: $(ADB)
 	$(FLASH_GALAXYS2_CMD)
 
 .PHONY: flash-maguro
@@ -362,38 +380,38 @@ gaia-hack: gaia
 	cp -r gaia/profile $(OUT_DIR)/b2g/defaults
 
 .PHONY: install-gecko
-install-gecko: gecko-install-hack
-	@adb shell mount -o remount,rw /system && \
-	adb push $(OUT_DIR)/b2g /system/b2g
+install-gecko: gecko-install-hack $(ADB)
+	@$(ADB) shell mount -o remount,rw /system && \
+	$(ADB) push $(OUT_DIR)/b2g /system/b2g
 
 # The sad hacks keep piling up...  We can't set this up to be
 # installed as part of the data partition because we can't flash that
 # on the sgs2.
-PROFILE := `adb shell ls -d /data/b2g/mozilla/*.default | tr -d '\r'`
+PROFILE := `$(ADB) shell ls -d /data/b2g/mozilla/*.default | tr -d '\r'`
 PROFILE_DATA := gaia/profile
 .PHONY: install-gaia
-install-gaia:
+install-gaia: $(ADB)
 	@for file in `ls $(PROFILE_DATA)`; \
 	do \
 		data=$${file##*/}; \
 		echo Copying $$data; \
-		adb shell rm -r $(PROFILE)/$$data; \
-		adb push gaia/profile/$$data $(PROFILE)/$$data; \
+		$(ADB) shell rm -r $(PROFILE)/$$data; \
+		$(ADB) push gaia/profile/$$data $(PROFILE)/$$data; \
 	done
-	@for i in `ls gaia`; do adb push gaia/$$i /data/local/$$i; done
+	@for i in `ls gaia`; do $(ADB) push gaia/$$i /data/local/$$i; done
 
 .PHONY: image
 image: build
 	@echo XXX stop overwriting the prebuilt nexuss4g kernel
 
 .PHONY: unlock-bootloader
-unlock-bootloader:
-	@$(call GONK_CMD,adb reboot bootloader && fastboot oem unlock)
+unlock-bootloader: $(ADB)
+	@$(call GONK_CMD,$(ADB) reboot bootloader && fastboot oem unlock)
 
 # Kill the b2g process on the device.
 .PHONY: kill-b2g
-kill-b2g:
-	adb shell killall b2g
+kill-b2g: $(ADB)
+	$(ADB) shell killall b2g
 
 .PHONY: sync
 sync:
@@ -414,3 +432,8 @@ package:
 	cp -R $(GONK_PATH)/out/target/product/generic $(PKG_DIR)/qemu
 	cd $(PKG_DIR) && tar -czvf qemu_package.tar.gz qemu
 
+$(ADB):
+	@$(call GONK_CMD,make adb)
+
+.PHONY: adb
+adb: $(ADB)

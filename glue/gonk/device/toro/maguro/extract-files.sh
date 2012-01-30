@@ -139,10 +139,7 @@ COMMON_LIBS="
 	liboemcamera.so
 	libmmjpeg.so
 	libmmipl.so
-	libEGL.so
 	libexif.so
-	libGLESv1_CM.so
-	libGLESv2.so
    libgsl.so
         libOmxAacDec.so
         libOmxAacEnc.so
