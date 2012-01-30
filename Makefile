@@ -105,7 +105,7 @@ mrproper:
 	git reset --hard
 
 .PHONY: config-galaxy-s2
-config-galaxy-s2: config-gecko $(ADB)
+config-galaxy-s2: config-gecko adb-wait
 	@echo "KERNEL = galaxy-s2" > .config.mk && \
         echo "KERNEL_PATH = ./boot/kernel-android-galaxy-s2" >> .config.mk && \
 	echo "GONK = galaxys2" >> .config.mk && \
@@ -183,11 +183,11 @@ flash: flash-$(GONK)
 flash-only: flash-only-$(GONK)
 
 .PHONY: flash-crespo4g
-flash-crespo4g: image $(ADB)
+flash-crespo4g: image adb-wait
 	@$(call GONK_CMD,$(ADB) reboot bootloader && fastboot flashall -w)
 
 .PHONY: flash-only-crespo4g
-flash-only-crespo4g: $(ADB)
+flash-only-crespo4g: adb-wait
 	@$(call GONK_CMD,$(ADB) reboot bootloader && fastboot flashall -w)
 
 define FLASH_GALAXYS2_CMD
@@ -198,11 +198,11 @@ $(FLASH_GALAXYS2_CMD_CHMOD_HACK)
 endef
 
 .PHONY: flash-galaxys2
-flash-galaxys2: image $(ADB)
+flash-galaxys2: image adb-wait
 	$(FLASH_GALAXYS2_CMD)
 
 .PHONY: flash-only-galaxys2
-flash-only-galaxys2: $(ADB)
+flash-only-galaxys2: adb-wait
 	$(FLASH_GALAXYS2_CMD)
 
 .PHONY: flash-maguro
@@ -258,7 +258,7 @@ gaia-hack: gaia
 	cp -r gaia/profile $(OUT_DIR)/b2g/defaults
 
 .PHONY: install-gecko
-install-gecko: gecko-install-hack $(ADB)
+install-gecko: gecko-install-hack adb-wait
 	@$(ADB) shell mount -o remount,rw /system && \
 	$(ADB) push $(OUT_DIR)/b2g /system/b2g
 
@@ -268,7 +268,7 @@ install-gecko: gecko-install-hack $(ADB)
 PROFILE := `$(ADB) shell ls -d /data/b2g/mozilla/*.default | tr -d '\r'`
 PROFILE_DATA := gaia/profile
 .PHONY: install-gaia
-install-gaia: $(ADB)
+install-gaia: adb-wait
 	@for file in `ls $(PROFILE_DATA)`; \
 	do \
 		data=$${file##*/}; \
@@ -283,12 +283,12 @@ image: build
 	@echo XXX stop overwriting the prebuilt nexuss4g kernel
 
 .PHONY: unlock-bootloader
-unlock-bootloader: $(ADB)
+unlock-bootloader: adb-wait
 	@$(call GONK_CMD,$(ADB) reboot bootloader && fastboot oem unlock)
 
 # Kill the b2g process on the device.
 .PHONY: kill-b2g
-kill-b2g: $(ADB)
+kill-b2g: adb-wait
 	$(ADB) shell killall b2g
 
 .PHONY: sync
@@ -315,3 +315,12 @@ $(ADB):
 
 .PHONY: adb
 adb: $(ADB)
+
+# Wait for device to make sure running right version of adb server.
+#
+# Adb will write some noise to stdout while running server of
+# different version.  It make rules that depend on output of adb going
+# wrong.  Wait-for-device before doing anything can prevent it.
+.PHONY: adb-wait
+adb-wait: $(ADB)
+	$(ADB) wait-for-device
