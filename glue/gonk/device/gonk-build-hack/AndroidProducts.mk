@@ -13,7 +13,13 @@ GONK_BUILD_HACK:=$(TOPDIR)device/gonk-build-hack
 #
 BUILD_DROIDDOC:= $(GONK_BUILD_HACK)/droiddoc-noop.mk
 
-# Force make to stop building prerequistes of apicheck.
+# Force make to stop building prerequistes of apicheck.  apicheck
+# invoke a java tool to check API version.  We delete it to prevent
+# from being loaded.
 $(shell rm -f $(TOPDIR)build/core/tasks/apicheck.mk || exit 1)
 $(shell cp $(TOPDIR)device/gonk-build-hack/apicheck.mk-remove-warning.txt \
 	$(TOPDIR)build/core/tasks/apicheck.mk.removed)
+
+# Build system would build OTA-key for recovery image.  It requires a
+# tool wrote in java.  This variable can stop it.
+TARGET_NO_RECOVERY := true
