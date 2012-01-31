@@ -1,0 +1,4 @@
+apicheck.mk are removed for hacking building system by gonk.
+See device/gonk-build-hack/AndroidProducts.mk for more information.
+
+Sinker <thinker@codemud.net>
