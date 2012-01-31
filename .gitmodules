@@ -502,3 +502,6 @@
 [submodule "glue/gonk/rilproxy"]
 	path = glue/gonk/rilproxy
 	url = git://github.com/mozilla-b2g/rilproxy
+[submodule "marionette"]
+	path = marionette
+	url = git://github.com/jonallengriffin/marionette_client.git
