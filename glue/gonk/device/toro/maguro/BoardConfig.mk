@@ -32,7 +32,7 @@ ifeq ($(QC_PROP),true)
 
 else
 #    BOARD_USES_GENERIC_AUDIO := true
-    USE_CAMERA_STUB := true
+    USE_CAMERA_STUB := false
     BOARD_HAVE_BLUETOOTH := true
 
 endif # QC_PROP
@@ -60,6 +60,10 @@ QCOM_TARGET_PRODUCT := msm7627a_sku1
 # Enable temporary stub methods that permit the newer libcamera.so blob
 # to link with the older source
 TARGET_LIBCAMERA_BLOB_SYM_MISMATCH := true
+
+# Enable newer vtable layout for audio interfaces.
+TARGET_AUDIO_INTERFACE_NEWER_VTABLE := true
+COMMON_GLOBAL_CFLAGS += -DENABLE_NEWER_AUDIO_INTERFACE_VTABLE
 
 TARGET_CORTEX_CACHE_LINE_32 := true
 BOARD_KERNEL_BASE    := 0x00200000

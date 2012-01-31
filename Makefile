@@ -9,19 +9,35 @@ SHELL = bash
 MAKE_FLAGS ?= -j16
 GONK_MAKE_FLAGS ?=
 
-FASTBOOT ?= fastboot
+FASTBOOT ?= $(abspath glue/gonk/out/host/linux-x86/bin/fastboot)
 HEIMDALL ?= heimdall
 TOOLCHAIN_HOST = linux-x86
 TOOLCHAIN_PATH = ./glue/gonk/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3/bin
 
 GONK_PATH = $(abspath glue/gonk)
+
+# We need adb for config-* targets.  Adb is built by building system
+# of gonk that needs a correct product name provided by "GONK_TARGET".
+# But, "GONK_TARGET" is not set properly before running any config-*
+# target since "GONK" is not defined.  We fallback "GONK_TARGET" to
+# generic-eng to build adb for config-* targets.
+ifdef GONK
 GONK_TARGET ?= full_$(GONK)-eng
+else				# fallback to generic for a clean copy.
+GONK_TARGET ?= generic-eng
+endif
+
+# This path includes tools to simulate JDK tools.  Gonk would check
+# version of JDK.  These fake tools do nothing but print out version
+# number to stop gonk from error.
+FAKE_JDK_PATH ?= $(abspath $(GONK_PATH)/device/gonk-build-hack/fake-jdk-tools)
 
 define GONK_CMD # $(call GONK_CMD,cmd)
 	cd $(GONK_PATH) && \
 	. build/envsetup.sh && \
 	lunch $(GONK_TARGET) && \
 	export USE_CCACHE="yes" && \
+	export PATH=$$PATH:$(FAKE_JDK_PATH) && \
 	$(1)
 endef
 
@@ -30,8 +46,103 @@ GECKO_PATH ?= $(abspath gecko)
 ANDROID_SDK_PLATFORM ?= android-13
 GECKO_CONFIGURE_ARGS ?=
 
+# |make STOP_DEPENDENCY_CHECK=true| to stop dependency checking
+STOP_DEPENDENCY_CHECK ?= true
+
+define SUBMODULES
+	cat .gitmodules |grep path|awk -- '{print $$3;}'
+endef
+
+define DEP_LIST_GIT_FILES
+git ls-files | xargs -d '\n' stat -c '%n:%Y' --; \
+git ls-files -o -X .gitignore | xargs -d '\n' stat -c '%n:%Y' --
+endef
+
+define DEP_LIST_HG_FILES
+hg locate | xargs -d '\n' stat -c '%n:%Y' --
+endef
+
+define DEP_LIST_FILES
+(if [ -d .git ]; then \
+    $(call DEP_LIST_GIT_FILES); \
+elif [ -d .hg ]; then \
+    $(call DEP_LIST_HG_FILES); \
+fi)
+endef
+
+# Generate hash code for timestamp and filename of source files
+#
+# This function is for modules as subdirectories of given directory.
+# $(1): the name of subdirectory that you want to hash for.
+#
+define DEP_HASH_MODULES
+	(_pwd=$$PWD; \
+	for sdir in $$(($(SUBMODULES))|grep "$(strip $1)"); do \
+		cd $$sdir; \
+		$(call DEP_LIST_FILES); \
+		cd $$_pwd; \
+	done 2> /dev/null | sort | md5sum | awk -- '{print $$1;}')
+endef
+
+# Generate hash code for timestamp and filename of source files
+#
+# This function is for the module at given directory.
+# $(1): the name of subdirectory that you want to hash for.
+#
+define DEP_HASH_MODULE
+	(_pwd=$$PWD; cd $1; \
+	$(call DEP_LIST_FILES) \
+		2> /dev/null | sort | md5sum | awk -- '{print $$1;}'; \
+	cd $$_pwd)
+endef
+
+# Generate hash code for timestamp and filename of source files
+#
+# $(1): the name of subdirectory that you want to hash for.
+#
+define DEP_HASH
+	(if [ -d $(strip $1)/.git -o -d $(strip $1)/.hg ]; then \
+		$(call DEP_HASH_MODULE,$1); \
+	else \
+		$(call DEP_HASH_MODULES,$(call DEP_REL_PATH,$1)); \
+	fi)
+endef
+
+define DEP_REL_PATH
+$(patsubst ./%,%,$(patsubst /%,%,$(patsubst $(PWD)%,%,$(strip $1))))
+endef
+
+ifeq ($(strip $(STOP_DEPENDENCY_CHECK)),false)
+# Check hash code of sourc files and run commands for necessary.
+#
+# $(1): stamp file (where hash code is kept)
+# $(2): sub-directory where the module is
+# $(3): commands that you want to run if any of source files is updated.
+#
+define DEP_CHECK
+	(echo -n "Checking dependency for $2 ..."; \
+	if [ -e "$1" ]; then \
+		LAST_HASH="`cat $1`"; \
+		CUR_HASH=$$($(call DEP_HASH,$2)); \
+		if [ "$$LAST_HASH" = "$$CUR_HASH" ]; then \
+			echo " (skip)"; \
+			exit 0; \
+		fi; \
+	fi; \
+	echo; \
+	_dep_check_pwd=$$PWD; \
+	($3); \
+	cd $$_dep_check_pwd; \
+	$(call DEP_HASH,$2) > $1)
+endef
+else # STOP_DEPENDENCY_CHECK
+define DEP_CHECK
+($3)
+endef
+endif # STOP_DEPENDENCY_CHECK
+
 CCACHE ?= $(shell which ccache)
-ADB ?= $(abspath glue/gonk/out/host/linux-x86/bin/adb)
+ADB := $(abspath glue/gonk/out/host/linux-x86/bin/adb)
 
 .PHONY: build
 build: gecko gecko-install-hack gonk
@@ -43,35 +154,50 @@ endif
 KERNEL_DIR = boot/kernel-android-$(KERNEL)
 GECKO_OBJDIR = $(GECKO_PATH)/objdir-prof-gonk
 
-.PHONY: gecko
-# XXX Hard-coded for prof-android target.  It would also be nice if
-# client.mk understood the |package| target.
-gecko:
-	@export MAKE_FLAGS=$(MAKE_FLAGS) && \
+define GECKO_BUILD_CMD
+	export MAKE_FLAGS=$(MAKE_FLAGS) && \
 	export CONFIGURE_ARGS="$(GECKO_CONFIGURE_ARGS)" && \
 	export GONK_PRODUCT="$(GONK)" && \
 	export GONK_PATH="$(GONK_PATH)" && \
 	ulimit -n 4096 && \
 	$(MAKE) -C $(GECKO_PATH) -f client.mk -s $(MAKE_FLAGS) && \
 	$(MAKE) -C $(GECKO_OBJDIR) package
+endef
+
+.PHONY: gecko
+# XXX Hard-coded for prof-android target.  It would also be nice if
+# client.mk understood the |package| target.
+gecko:
+	@$(call DEP_CHECK,$(GECKO_OBJDIR)/.b2g-build-done,$(GECKO_PATH),\
+	$(call GECKO_BUILD_CMD) \
+	)
 
 .PHONY: gonk
 gonk: gaia-hack
-	@$(call GONK_CMD,$(MAKE) $(MAKE_FLAGS) $(GONK_MAKE_FLAGS))
-ifeq (qemu,$(KERNEL))
-	@cp glue/gonk/system/core/rootdir/init.rc.gonk $(GONK_PATH)/out/target/product/$(GONK)/root/init.rc
-endif
+	@$(call DEP_CHECK,$(GONK_PATH)/out/.b2g-build-done,glue/gonk, \
+	    $(call GONK_CMD,$(MAKE) $(MAKE_FLAGS) $(GONK_MAKE_FLAGS)) ; \
+	    $(if $(filter qemu,$(KERNEL)), \
+		cp $(GONK_PATH)/system/core/rootdir/init.rc.gonk \
+		    $(GONK_PATH)/out/target/product/$(GONK)/root/init.rc))
 
 .PHONY: kernel
 # XXX Hard-coded for nexuss4g target
 # XXX Hard-coded for gonk tool support
 kernel:
-ifeq (galaxy-s2,$(KERNEL))
-	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" $(MAKE) -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE="$(CCACHE) arm-eabi-" modules
-	(rm -rf boot/initramfs && cd boot/clockworkmod_galaxys2_initramfs && git checkout-index -a -f --prefix ../initramfs/)
-	find "$(KERNEL_DIR)" -name "*.ko" | xargs -I MOD cp MOD "$(PWD)/boot/initramfs/lib/modules"
-endif
-	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" $(MAKE) -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm CROSS_COMPILE="$(CCACHE) arm-eabi-"
+	@$(call DEP_CHECK,$(KERNEL_PATH)/.b2g-build-done,$(KERNEL_PATH),\
+	    $(if $(filter galaxy-s2,$(KERNEL)), \
+		PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" \
+		    $(MAKE) -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm \
+		    CROSS_COMPILE="$(CCACHE) arm-eabi-" modules; \
+		(rm -rf boot/initramfs && \
+		    cd boot/clockworkmod_galaxys2_initramfs && \
+		    git checkout-index -a -f --prefix ../initramfs/); \
+		find "$(KERNEL_DIR)" -name "*.ko" | \
+		    xargs -I MOD cp MOD "$(PWD)/boot/initramfs/lib/modules"; \
+	    ) \
+	    PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" \
+		$(MAKE) -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm \
+		CROSS_COMPILE="$(CCACHE) arm-eabi-"; )
 
 .PHONY: clean
 clean: clean-gecko clean-gonk clean-kernel
@@ -87,6 +213,7 @@ clean-gonk:
 .PHONY: clean-kernel
 clean-kernel:
 	@PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" $(MAKE) -C $(KERNEL_PATH) ARCH=arm CROSS_COMPILE=arm-eabi- clean
+	@rm -f $(KERNEL_PATH)/.b2g-build-done
 
 .PHONY: mrproper
 # NB: this is a VERY DANGEROUS command that will BLOW AWAY ALL
@@ -99,10 +226,11 @@ mrproper:
 	git reset --hard
 
 .PHONY: config-galaxy-s2
-config-galaxy-s2: config-gecko
+config-galaxy-s2: config-gecko $(ADB)
 	@echo "KERNEL = galaxy-s2" > .config.mk && \
         echo "KERNEL_PATH = ./boot/kernel-android-galaxy-s2" >> .config.mk && \
 	echo "GONK = galaxys2" >> .config.mk && \
+	export PATH=$$PATH:$$(dirname $(ADB)) && \
 	cp -p config/kernel-galaxy-s2 boot/kernel-android-galaxy-s2/.config && \
 	cd $(GONK_PATH)/device/samsung/galaxys2/ && \
 	echo Extracting binary blobs from device, which should be plugged in! ... && \
@@ -176,11 +304,11 @@ flash: flash-$(GONK)
 flash-only: flash-only-$(GONK)
 
 .PHONY: flash-crespo4g
-flash-crespo4g: image
+flash-crespo4g: image $(ADB)
 	@$(call GONK_CMD,$(ADB) reboot bootloader && fastboot flashall -w)
 
 .PHONY: flash-only-crespo4g
-flash-only-crespo4g:
+flash-only-crespo4g: $(ADB)
 	@$(call GONK_CMD,$(ADB) reboot bootloader && fastboot flashall -w)
 
 define FLASH_GALAXYS2_CMD
@@ -191,11 +319,11 @@ $(FLASH_GALAXYS2_CMD_CHMOD_HACK)
 endef
 
 .PHONY: flash-galaxys2
-flash-galaxys2: image
+flash-galaxys2: image $(ADB)
 	$(FLASH_GALAXYS2_CMD)
 
 .PHONY: flash-only-galaxys2
-flash-only-galaxys2:
+flash-only-galaxys2: $(ADB)
 	$(FLASH_GALAXYS2_CMD)
 
 .PHONY: flash-maguro
@@ -239,7 +367,8 @@ gecko-install-hack: gecko
 	# Extract the newest tarball in the gecko objdir.
 	( cd $(OUT_DIR) && \
 	  tar xvfz `ls -t $(GECKO_OBJDIR)/dist/b2g-*.tar.gz | head -n1` )
-	find glue/gonk/out -iname "*.img" | xargs rm -f
+	find $(GONK_PATH)/out -iname "*.img" | xargs rm -f
+	@$(call GONK_CMD,make $(MAKE_FLAGS) $(GONK_MAKE_FLAGS) systemimage-nodeps)
 
 .PHONY: gaia-hack
 gaia-hack: gaia
@@ -251,7 +380,7 @@ gaia-hack: gaia
 	cp -r gaia/profile $(OUT_DIR)/b2g/defaults
 
 .PHONY: install-gecko
-install-gecko: gecko-install-hack
+install-gecko: gecko-install-hack $(ADB)
 	@$(ADB) shell mount -o remount,rw /system && \
 	$(ADB) push $(OUT_DIR)/b2g /system/b2g
 
@@ -261,7 +390,7 @@ install-gecko: gecko-install-hack
 PROFILE := `$(ADB) shell ls -d /data/b2g/mozilla/*.default | tr -d '\r'`
 PROFILE_DATA := gaia/profile
 .PHONY: install-gaia
-install-gaia:
+install-gaia: $(ADB)
 	@for file in `ls $(PROFILE_DATA)`; \
 	do \
 		data=$${file##*/}; \
@@ -276,12 +405,12 @@ image: build
 	@echo XXX stop overwriting the prebuilt nexuss4g kernel
 
 .PHONY: unlock-bootloader
-unlock-bootloader:
+unlock-bootloader: $(ADB)
 	@$(call GONK_CMD,$(ADB) reboot bootloader && fastboot oem unlock)
 
 # Kill the b2g process on the device.
 .PHONY: kill-b2g
-kill-b2g:
+kill-b2g: $(ADB)
 	$(ADB) shell killall b2g
 
 .PHONY: sync
@@ -296,10 +425,17 @@ PKG_DIR := package
 package:
 	rm -rf $(PKG_DIR)
 	mkdir -p $(PKG_DIR)/qemu/bin
-	cp glue/gonk/out/host/linux-x86/bin/emulator $(PKG_DIR)/qemu/bin
-	cp glue/gonk/out/host/linux-x86/bin/emulator-arm $(PKG_DIR)/qemu/bin
-	cp glue/gonk/out/host/linux-x86/bin/adb $(PKG_DIR)/qemu/bin
+	mkdir -p $(PKG_DIR)/gaia
+	cp $(GONK_PATH)/out/host/linux-x86/bin/emulator $(PKG_DIR)/qemu/bin
+	cp $(GONK_PATH)/out/host/linux-x86/bin/emulator-arm $(PKG_DIR)/qemu/bin
+	cp $(GONK_PATH)/out/host/linux-x86/bin/adb $(PKG_DIR)/qemu/bin
 	cp boot/kernel-android-qemu/arch/arm/boot/zImage $(PKG_DIR)/qemu
-	cp -R glue/gonk/out/target/product/generic $(PKG_DIR)/qemu
-	cd $(PKG_DIR) && tar -czvf qemu_package.tar.gz qemu
+	cp -R $(GONK_PATH)/out/target/product/generic $(PKG_DIR)/qemu
+	cp -R gaia/tests $(PKG_DIR)/gaia
+	cd $(PKG_DIR) && tar -czvf qemu_package.tar.gz qemu gaia
 
+$(ADB):
+	@$(call GONK_CMD,make adb)
+
+.PHONY: adb
+adb: $(ADB)

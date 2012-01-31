@@ -279,7 +279,7 @@
 	url = git://github.com/cgjones/android-device-crespo.git
 [submodule "glue/gonk/sdk"]
 	path = glue/gonk/sdk
-	url = git://github.com/shianyow/android-sdk.git
+	url = git://github.com/mozilla-b2g/android-sdk.git
 [submodule "glue/gonk/frameworks/opt/emoji"]
 	path = glue/gonk/frameworks/opt/emoji
 	url = git://android.git.linaro.org/platform/frameworks/opt/emoji.git
@@ -352,3 +352,7 @@
 [submodule "boot/msm"]
 	path = boot/msm
 	url = git://codeaurora.org/quic/qrd-android/kernel/msm.git
+[submodule "marionette"]
+	path = marionette
+	url = git://github.com/jonallengriffin/marionette_client.git
+
