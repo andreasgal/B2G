@@ -50,20 +50,23 @@ $B2G.
  Quick start
 -------------
 
- == Samsung Galaxy SII / Nexus 4G ==
+ == Samsung Galaxy SII ==
 
-This only works if your bootloader is unlocked.  If it's not, or
-you're not sure, follow the more detailed instructions below.  Make
-sure to back up your phone before doing this.
+Getting a download-mode jig is recommended before attempting this.
 
 $ cd $B2G
 $ make sync
-$ make config-nexuss4g   # or, make config-galaxy-s2
+$ make config-galaxy-s2
+$ make kernel
+$ adb reboot download
+$ heimdall flash --kernel boot/kernel-android-galaxy-s2/arch/arm/boot/zImage
+$ adb reboot recovery
+
+This will reboot your phone into CWM-based recovery.
+Use the volume up and down keys and home key to navigate the menus
+and back up your device.
+
 $ make flash
-
-# temporary hack you may need
-
-$ adb shell chmod -R 777 /data/system
 
  == Android Emulator ==
 
@@ -95,9 +98,6 @@ from upstream again, just re-run |make sync|.
 
  == Configure repo for your device ==
 
- Nexus S 4G: 
-$ make config-nexuss4g
-
  Galaxy S II:
 $ make config-galaxy-s2
 
@@ -108,10 +108,6 @@ This configures submodules appropriately for the given device, and for
 devices with proprietary libraries, will attempt to download and
 install the blobs.  The blobs may ask you to agree to an EULA before
 they will install.
-
-In the case of the Nexus S 4G at least, you don't *need* to install
-the proprietary blobs if you don't want to; if you don't, the device
-will function, only more slowly and without access to some sensors.
 
  == Build the code ==
 
@@ -133,47 +129,26 @@ need to run the provided script and you're done.
 
 $ ./emu.sh
 
- == Unlock your device's bootloader ==
+ == Kernel Flashing / Device Backup [Galaxy S II] ==
 
-This is only needed for the Nexus S 4G.
+The kernel should be flashed when using the gonk backend on a SII.
+It should only be done once or when the kernel is updated.
+This kernel comes with a clockwork mod variant.
 
-The step above builds host tools as well as the device image.  We need
-the host tools to unlock the bootloader.
+GET A DOWNLOAD MODE JIG BEFORE ATTEMPTING THIS!
+The flashing process is known to fail.
 
-WARNING: This next command deletes *ALL* your user data.  Make sure
-you back up beforehand.
-
-$ make unlock-bootloader
-
-If this works, you should see your device reboot into a
-terminal-looking black screen with a large android logo in the middle
-and some small text to the top-left and bottom-left.  Follow the
-on-screen instructions to confirm unlocking the bootloader.  After
-that, your device reboot.
-
- == Back up device ==
-
-WARNING: Only tested with the Galaxy S II.  Instructions will be
-different for other phones.  This backup process is absolutely
-essential for the Galaxy S II because the B2G image is very unstable
-there.
-
-These steps install the "ClockworkMod" recovery image.  Among other
-things, it lets you make full backups of the phone's partitions to the
-sdcard, and restore them.  This is extraordinarily useful.  To install
-ClockworkMod
-
-$ cd /tmp
-$ wget http://cmw.22aaf3.com/c1/recovery/recovery-clockwork-4.0.1.4-galaxys2.tar
-$ tar xvf recovery-clockwork-*.tar
+$ make kernel
 $ adb reboot download
 
 This puts your phone into "download mode", in which it's ready to be
 flashed using the "Odin" protocol.  Your phone should boot into a
 screen that says something like, "Downloading, Do not turn off!".  If
-not, something went wrong.  To actually flash ClockworkMod
+not, something went wrong.  To actually flash the kernel:
 
-$ heimdall flash --kernel zImage
+$ heimdall flash --kernel boot/kernel-android-galaxy-s2/arch/arm/boot/zImage
+
+Note: If during "make kernel" the process seems to stop and shows a colon for user input, it's probably asking you a question. Try hitting enter to continue.
 
 When this finishes, your phone should reboot normally.  If not,
 something went wrong, get help.  Finally, let's back up your phone's
@@ -181,7 +156,7 @@ current image
 
 $ adb reboot recovery
 
-This boots your phone into a screen that says "ClockworkMod Recovery"
+This boots your phone into a screen that says "CWM-based Recovery"
 at the top-left.  Follow the on-screen instructions to make a backup
 image.
 
@@ -190,42 +165,14 @@ image.
 The "image" to be flashed comprises the custom-built kernel and all
 the userspace programs and libraries.
 
-WARNING: This next command deletes *ALL* your user data.  Make sure
-you back up beforehand.  If the image is bad, it can also *BRICK* your
-phone.  Flash at your own risk.
-
-NOTE: For the Galaxy S II, you must first reboot into recovery mode
-(adb reboot recovery), then choose "wipe data/factory reset".  This
-will be fixed.  BE SURE you don't reboot your phone before running the
-following step.  That is, you should run "make flash" while your phone
-is still in recovery mode.
-
-NOTE: When flashing with the gonk back end for the first time, flash the kernel first (see "Kernel Flashing" below).
+WARNING: Make sure you back up before the next command. If the image
+is bad, it can also *BRICK* your phone.  Flash at your own risk.
 
 $ make flash-only
 
 If all goes well, you'll see the phone reboot into the bootloader,
 then your host machine will report the progress of files it uploads
 and installs on the device.  After finishing, the device will reboot.
-
-# temporary hack you may need on the android backend
-
-$ adb shell chmod -R 777 /data/system
-
- == Kernel Flashing ==
-
-The kernel should also be flashed when using the gonk backend on a SII.
-It only needs to be done once when switching to the gonk backend.
-This kernel comes with a clockwork mod variant.
-
-GET A DOWNLOAD MODE JIG BEFORE ATTEMPTING THIS!
-The flashing process is known to fail.
-
-$ make kernel
-$ adb reboot download
-$ heimdall flash --kernel boot/kernel-android-galaxy-s2/arch/arm/boot/zImage
-
-Note: If during "make kernel" the process seems to stop and shows a colon for user input, it's probably asking you a question. Try hitting enter to continue.
 
  == Install Gaia ==
 
