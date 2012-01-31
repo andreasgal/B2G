@@ -352,3 +352,7 @@
 [submodule "boot/msm"]
 	path = boot/msm
 	url = git://codeaurora.org/quic/qrd-android/kernel/msm.git
+[submodule "marionette"]
+	path = marionette
+	url = git://github.com/jonallengriffin/marionette_client.git
+
