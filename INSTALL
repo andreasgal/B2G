@@ -66,6 +66,7 @@ This will reboot your phone into CWM-based recovery.
 Use the volume up and down keys and home key to navigate the menus
 and back up your device.
 
+$ make gonk
 $ make flash
 
  == Android Emulator ==
