@@ -267,6 +267,11 @@ on boot
     chown system system /sys/kernel/ipv4/tcp_rmem_max
     chown root radio /proc/cmdline
 
+# QMUD / QMI keeps its sockets in here
+    mkdir /data/radio
+    chmod 0770 /data/radio
+    chown radio /data/radio
+
 # Define TCP buffer sizes for various networks
 #   ReadMin, ReadInitial, ReadMax, WriteMin, WriteInitial, WriteMax,
     setprop net.tcp.buffersize.default 4096,87380,110208,4096,16384,110208

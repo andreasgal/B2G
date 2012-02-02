@@ -247,6 +247,10 @@ COMMON_BINS="
    wpa_cli
    wpa_supplicant
    loc_api_app
+   bridgemgrd
+   netmgrd
+   qmiproxy
+   qmuxd
 	"
 
 copy_files "$COMMON_BINS" "system/bin" ""

@@ -194,7 +194,6 @@ service dund /system/bin/sdptool add --channel=1 DUN
 service bridgemgrd /system/bin/bridgemgrd
     user radio
     group radio
-    disabled
 
 service port-bridge /system/bin/port-bridge /dev/smd0 /dev/ttyGS0
     user system
@@ -212,15 +211,12 @@ on property:ro.baseband="unknown"
 service qmiproxy /system/bin/qmiproxy
     user radio
     group radio
-    disabled
 
 service qmuxd /system/bin/qmuxd
     user radio
     group radio
-    disabled
 
 service netmgrd /system/bin/netmgrd
-    disabled
 
 service sensors /system/bin/sensors.qcom
     user root
