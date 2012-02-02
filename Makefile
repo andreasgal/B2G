@@ -238,10 +238,11 @@ config-galaxy-s2: config-gecko adb-check-version
 	echo OK
 
 .PHONY: config-maguro
-config-maguro: config-gecko
+config-maguro: config-gecko adb-check-version
 	@echo "KERNEL = msm" > .config.mk && \
         echo "KERNEL_PATH = ./boot/msm" >> .config.mk && \
 	echo "GONK = maguro" >> .config.mk && \
+	export PATH=$$PATH:$$(dirname $(ADB)) && \
 	cd $(GONK_PATH)/device/toro/maguro && \
 	echo Extracting binary blobs from device, which should be plugged in! ... && \
 	./extract-files.sh && \
