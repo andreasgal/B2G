@@ -246,7 +246,7 @@
 	url = git://android.git.linaro.org/platform/external/safe-iop.git
 [submodule "glue/gonk/prebuilt"]
 	path = glue/gonk/prebuilt
-	url = git://android.git.linaro.org/platform/prebuilt.git
+	url = git://github.com/mozilla-b2g/platform_prebuilt.git
 [submodule "glue/gonk/dalvik"]
 	path = glue/gonk/dalvik
 	url = git://android.git.linaro.org/platform/dalvik.git
