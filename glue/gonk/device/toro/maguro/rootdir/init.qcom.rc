@@ -156,7 +156,7 @@ service cnd /system/bin/cnd
 
 service rmt_storage /system/bin/rmt_storage /dev/block/mmcblk0p10 /dev/block/mmcblk0p11 /dev/block/mmcblk0p17
     user root
-#    disabled
+    disabled
 
 on property:ro.emmc=1
     start rmt_storage

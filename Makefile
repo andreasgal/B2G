@@ -248,6 +248,16 @@ config-maguro: config-gecko adb-check-version
 	./extract-files.sh && \
 	echo OK
 
+.PHONY: config-akami
+config-akami: config-gecko
+	@echo "KERNEL = msm" > .config.mk && \
+        echo "KERNEL_PATH = ./boot/msm" >> .config.mk && \
+	echo "GONK = akami" >> .config.mk && \
+	cd $(GONK_PATH)/device/toro/akami && \
+	echo Extracting binary blobs from device, which should be plugged in! ... && \
+	./extract-files.sh && \
+	echo OK
+
 .PHONY: config-gecko
 config-gecko:
 	@ln -sf $(PWD)/config/gecko-prof-gonk $(GECKO_PATH)/mozconfig
@@ -331,12 +341,21 @@ flash-only-galaxys2: adb-check-version
 flash-maguro: image flash-only-maguro
 
 .PHONY: flash-only-maguro
-flash-only-maguro:
+flash-only-maguro: flash-only-toro
+
+.PHONY: flash-akami
+flash-akami: image flash-only-akami
+
+.PHONY: flash-only-akami
+flash-only-akami: flash-only-toro
+
+.PHONY: flash-only-toro
+flash-only-toro:
 	@$(call GONK_CMD, \
 	adb reboot bootloader && \
 	$(FASTBOOT) devices && \
 	$(FASTBOOT) erase userdata && \
-	$(FASTBOOT) flash userdata ./out/target/product/maguro/userdata.img && \
+	$(FASTBOOT) flash userdata ./out/target/product/$(GONK)/userdata.img && \
 	$(FASTBOOT) flashall)
 
 .PHONY: bootimg-hack
@@ -356,6 +375,7 @@ kernel-%:
 	@
 
 OUT_DIR := $(GONK_PATH)/out/target/product/$(GONK)/system
+DATA_OUT_DIR := $(GONK_PATH)/out/target/product/$(GONK)/data
 APP_OUT_DIR := $(OUT_DIR)/app
 
 $(APP_OUT_DIR):
@@ -374,8 +394,17 @@ gecko-install-hack: gecko
 .PHONY: gaia-hack
 gaia-hack: gaia
 	rm -rf $(OUT_DIR)/home
+ifneq (akami,$(GONK))
 	mkdir -p $(OUT_DIR)/home
 	cp -r gaia/* $(OUT_DIR)/home
+else
+	mkdir -p $(OUT_DIR)
+	ln -s /data/home $(OUT_DIR)/home
+	rm -rf $(DATA_OUT_DIR)/home
+	mkdir -p $(DATA_OUT_DIR)/home
+	cp -r gaia/* $(DATA_OUT_DIR)/home
+	mkdir -p $(OUT_DIR)
+endif
 	rm -rf $(OUT_DIR)/b2g/defaults/profile
 	mkdir -p $(OUT_DIR)/b2g/defaults
 	cp -r gaia/profile $(OUT_DIR)/b2g/defaults
