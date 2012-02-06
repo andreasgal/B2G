@@ -261,7 +261,7 @@
 	url = git://android.git.linaro.org/platform/system/netd.git
 [submodule "glue/gonk/system/vold"]
 	path = glue/gonk/system/vold
-	url = git://android.git.linaro.org/platform/system/vold.git
+	url = git://github.com/mozilla-b2g/android-system-vold.git
 [submodule "glue/gonk/system/core"]
 	path = glue/gonk/system/core
 	url = git://github.com/cgjones/android-system-core.git
