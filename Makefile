@@ -394,17 +394,8 @@ gecko-install-hack: gecko
 .PHONY: gaia-hack
 gaia-hack: gaia
 	rm -rf $(OUT_DIR)/home
-ifneq (akami,$(GONK))
 	mkdir -p $(OUT_DIR)/home
 	cp -r gaia/* $(OUT_DIR)/home
-else
-	mkdir -p $(OUT_DIR)
-	ln -s /data/home $(OUT_DIR)/home
-	rm -rf $(DATA_OUT_DIR)/home
-	mkdir -p $(DATA_OUT_DIR)/home
-	cp -r gaia/* $(DATA_OUT_DIR)/home
-	mkdir -p $(OUT_DIR)
-endif
 	rm -rf $(OUT_DIR)/b2g/defaults/profile
 	mkdir -p $(OUT_DIR)/b2g/defaults
 	cp -r gaia/profile $(OUT_DIR)/b2g/defaults
