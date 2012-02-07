@@ -137,8 +137,19 @@ COMMON_LIBS="
 	libcameraservice.so
 	libcamera.so
 	liboemcamera.so
-	libmmjpeg.so
-	libmmipl.so
+        libdivxdrmdecrypt.so
+        libmmparser_divxdrmlib.so
+        libmm-abl.so
+        libmm-adspsvc.so
+        libmm-color-convertor.so
+        libmm-omxcore.so
+        libmmgsdilib.so
+        libmmipl.so
+        libmmjpeg.so
+        libmmosal.so
+        libmmparser.so
+        libmmparser_divxdrmlib.so
+        libmmparser_lite.so
 	libexif.so
    libgsl.so
         libOmxAacDec.so
@@ -164,6 +175,7 @@ COMMON_LIBS="
         libOmxWmaDec.so
         libOmxWmvDec.so
         libOmxrv9Dec.so
+        libstagefrighthw.so
         libOpenSLES.so
         libOpenVG.so
         libQWiFiSoftApCfg.so
@@ -247,6 +259,10 @@ COMMON_BINS="
    wpa_cli
    wpa_supplicant
    loc_api_app
+   bridgemgrd
+   netmgrd
+   qmiproxy
+   qmuxd
 	"
 
 copy_files "$COMMON_BINS" "system/bin" ""
