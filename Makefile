@@ -145,7 +145,8 @@ CCACHE ?= $(shell which ccache)
 ADB := $(abspath glue/gonk/out/host/linux-x86/bin/adb)
 
 .PHONY: build
-build: gecko gecko-install-hack gonk
+build: gecko-install-hack
+	$(MAKE) gonk
 
 ifeq (qemu,$(KERNEL))
 build: kernel bootimg-hack
@@ -389,7 +390,7 @@ gecko-install-hack: gecko
 	( cd $(OUT_DIR) && \
 	  tar xvfz $$(ls -t $(GECKO_OBJDIR)/dist/b2g-*.tar.gz | head -n1) )
 	find $(GONK_PATH)/out -iname "*.img" | xargs rm -f
-	@$(call GONK_CMD,make $(MAKE_FLAGS) $(GONK_MAKE_FLAGS) systemimage-nodeps)
+	@$(call GONK_CMD,$(MAKE) $(MAKE_FLAGS) $(GONK_MAKE_FLAGS) systemimage-nodeps)
 
 .PHONY: gaia-hack
 gaia-hack: gaia
@@ -402,7 +403,12 @@ gaia-hack: gaia
 
 .PHONY: install-gecko
 install-gecko: gecko-install-hack adb-check-version
-	@$(ADB) shell mount -o remount,rw /system && \
+	$(ADB) remount
+	$(ADB) push $(OUT_DIR)/b2g /system/b2g
+
+.PHONY: install-gecko-only
+install-gecko-only:
+	$(ADB) remount
 	$(ADB) push $(OUT_DIR)/b2g /system/b2g
 
 # The sad hacks keep piling up...  We can't set this up to be
@@ -456,7 +462,7 @@ package:
 	cd $(PKG_DIR) && tar -czvf qemu_package.tar.gz qemu gaia
 
 $(ADB):
-	@$(call GONK_CMD,make adb)
+	@$(call GONK_CMD,$(MAKE) adb)
 
 .PHONY: adb
 adb: $(ADB)
