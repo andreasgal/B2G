@@ -482,4 +482,5 @@ adb-check-version: $(ADB)
 
 .PHONY: test
 test:
-	cd marionette/marionette && sh venv_test.sh `which python` --emulator --homedir=$(abspath .) --type=b2g-qemu $(TEST_DIRS)
+	cd marionette/marionette && \
+	sh venv_test.sh `which python` --emulator --homedir=$(abspath .) --type=b2g $(TEST_DIRS)
