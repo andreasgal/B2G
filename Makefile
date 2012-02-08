@@ -16,7 +16,7 @@ TOOLCHAIN_PATH = ./glue/gonk/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3
 
 GONK_PATH = $(abspath glue/gonk)
 
-TEST_DIRS = $(abspath marionette/marionette/tests/unit-tests.ini) $(abspath gecko/testing/marionette/tests)
+TEST_DIRS = $(abspath gaia/tests) $(abspath marionette/marionette/tests/unit-tests.ini)
 
 # We need adb for config-* targets.  Adb is built by building system
 # of gonk that needs a correct product name provided by "GONK_TARGET".
@@ -482,4 +482,4 @@ adb-check-version: $(ADB)
 
 .PHONY: test
 test:
-	cd gecko/testing/marionette && sh setup_test.sh `which python` --emulator --homedir=$(abspath .) --type=b2g-qemu $(TEST_DIRS)
+	cd marionette/marionette && sh venv_test.sh `which python` --emulator --homedir=$(abspath .) --type=b2g-qemu $(TEST_DIRS)
