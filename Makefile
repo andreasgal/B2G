@@ -189,12 +189,12 @@ gonk: gaia-hack
 kernel:
 	@$(call DEP_CHECK,$(KERNEL_PATH)/.b2g-build-done,$(KERNEL_PATH),\
 	    $(if $(filter galaxy-s2,$(KERNEL)), \
-		PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" \
-		    $(MAKE) -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm \
-		    CROSS_COMPILE="$(CCACHE) arm-eabi-" modules; \
 		(rm -rf boot/initramfs && \
 		    cd boot/clockworkmod_galaxys2_initramfs && \
 		    git checkout-index -a -f --prefix ../initramfs/); \
+		PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" \
+		    $(MAKE) -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm \
+		    CROSS_COMPILE="$(CCACHE) arm-eabi-"; \
 		find "$(KERNEL_DIR)" -name "*.ko" | \
 		    xargs -I MOD cp MOD "$(PWD)/boot/initramfs/lib/modules"; \
 	    ) \
