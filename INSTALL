@@ -4,24 +4,16 @@ $B2G.
 
  Dependencies
 --------------
-* IMPORTANT!!: When building on a VM, be sure to give your VM enough
-  RAM, swap disk space, and general disk space before beginning.
-  Optimally, your VM should have 4GB RAM, 4GB+ swap partition and
-  40GB+ virtual hard disk.
+* Linux is required to build. In addition to Linux, 4GB RAM and
+  at least 30GB free disk space is recommended.
 
-* You need to have adb set up to allow your machine to talk to your
-  phone.  Follow the instructions at
+* adb/fastboot/heimdall need to access your phone. On Linux, this
+  requires setting up udev.
 
-    http://developer.android.com/guide/developing/device.html
+  Put this in /etc/udev/rules.d/android.rules :
 
-  Note when setting up udev, you need to specify the identifier for
-  your device's manufacturer in *lower case* hex.  That is,
-
-    ATTR{idVendor}=="0bb4"
-
-  not "0BB4".  If you use upper-case hex, the USB permissions will not
-  be set up correctly and heimdall will only work if you give it
-  superuser powers.
+  SUBSYSTEM=="usb", ATTRS{idVendor}=="04e8", MODE="0666"
+  SUBSYSTEM=="usb", ATTRS{idVendor}=="18d1", MODE="0666"
 
 * When building B2G for the first time, don't forget to run 'make gonk' first.
 
