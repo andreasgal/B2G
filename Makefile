@@ -463,6 +463,55 @@ package:
 	cp -R gaia/tests $(PKG_DIR)/gaia
 	cd $(PKG_DIR) && tar -czvf qemu_package.tar.gz qemu gaia
 
+#
+# Package up everything needed to build mozilla-central with
+# --enable-application=b2g outside of a b2g git clone.
+#
+
+# A linux host is needed (well, it's easiest) to build *Gonk* and
+# hence the libraries needed by the toolchain, but once built, the
+# toolchain itself can be packaged for multiple targets.
+TOOLCHAIN_TARGET ?= linux-x86
+
+# List of all dirs that gecko depends on.  These are relative to
+# GONK_PATH.
+#
+# NB: keep this in sync with gecko/configure.in.
+#
+# XXX: why do we -Ibionic?  There's some dep in there that's not
+# exposed through a more specific -I.  Not loading all of bionic
+# results in a build error :|.
+TOOLCHAIN_DIRS = \
+	bionic \
+	external/stlport/stlport \
+	frameworks/base/include \
+	frameworks/base/native/include \
+	frameworks/base/opengl/include \
+	frameworks/base/services/sensorservice \
+	hardware/libhardware/include \
+	hardware/libhardware_legacy/include \
+	ndk/sources/cxx-stl/system/include \
+	ndk/sources/cxx-stl/stlport/stlport \
+	out/target/product/$(GONK)/obj/lib \
+	prebuilt/ndk/android-ndk-r4/platforms/android-8/arch-arm \
+	prebuilt/$(TOOLCHAIN_TARGET)/toolchain/arm-eabi-4.4.3 \
+	system/core/include
+
+# Toolchain versions are numbered consecutively.
+TOOLCHAIN_VERSION := 0
+TOOLCHAIN_PKG_DIR := gonk-toolchain-$(TOOLCHAIN_VERSION)
+.PHONY: package-toolchain
+package-toolchain: gonk
+	@rm -rf $(TOOLCHAIN_PKG_DIR); \
+	mkdir $(TOOLCHAIN_PKG_DIR); \
+	git rev-parse HEAD > $(TOOLCHAIN_PKG_DIR)/b2g-commit-sha1.txt; \
+	$(foreach d,$(TOOLCHAIN_DIRS),\
+	  mkdir -p $(TOOLCHAIN_PKG_DIR)/$(d); \
+	  cp -r $(GONK_PATH)/$(d)/* $(TOOLCHAIN_PKG_DIR)/$(d); \
+	) \
+	tar -cjvf $(TOOLCHAIN_PKG_DIR).tar.bz2 $(TOOLCHAIN_PKG_DIR); \
+	rm -rf $(TOOLCHAIN_PKG_DIR)
+
 $(ADB):
 	@$(call GONK_CMD,$(MAKE) adb)
 
