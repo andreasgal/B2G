@@ -156,6 +156,7 @@ endif
 
 KERNEL_DIR = boot/kernel-android-$(KERNEL)
 GECKO_OBJDIR = $(GECKO_PATH)/objdir-prof-gonk
+GONK_OBJDIR=$(abspath ./glue/gonk/out/target/product/$(GONK))
 
 define GECKO_BUILD_CMD
 	export MAKE_FLAGS=$(MAKE_FLAGS) && \
@@ -533,3 +534,37 @@ adb-check-version: $(ADB)
 test:
 	cd marionette/marionette && \
 	sh venv_test.sh `which python` --emulator --homedir=$(abspath .) --type=b2g $(TEST_DIRS)
+
+GDB_PORT=22576
+GDBINIT=/tmp/gdbinit
+GDB=$(TOOLCHAIN_PATH)/arm-eabi-gdb
+
+.PHONY: forward-gdb-port
+forward-gdb-port: adb-check-version
+	$(ADB) forward tcp:$(GDB_PORT) tcp:$(GDB_PORT)
+
+.PHONY: kill-gdb-server
+.SECONDEXPANSION:
+GDBSERVER_PID=$(shell adb shell ps | grep "gdbserver" | awk '{ print $$2; }')
+kill-gdb-server:
+	if [ -n "$(GDBSERVER_PID)" ]; then $(ADB) shell kill $(GDBSERVER_PID); fi
+
+.PHONY: attach-gdb-server
+.SECONDEXPANSION:
+B2G_PID=$(shell adb shell ps | grep "b2g" | awk '{ print $$2; }')
+attach-gdb-server: adb-check-version forward-gdb-port kill-gdb-server
+	$(ADB) shell gdbserver :$(GDB_PORT) --attach $(B2G_PID) &
+	sleep 1
+
+.PHONY: gdb-init-file
+.SECONDEXPANSION:
+SYMDIR=$(GONK_OBJDIR)/symbols
+gdb-init-file:
+	echo "set solib-absolute-prefix $(SYMDIR)" > $(GDBINIT)
+	echo "set solib-search-path $(GECKO_OBJDIR)/dist/lib:$(SYMDIR)/system/lib:$(SYMDIR)/system/lib/hw:$(SYMDIR)/system/lib/egl:$(SYMDIR)/system/lib:$(SYMDIR)/system/lib/hw:$(SYMDIR)/system/lib/egl" >> $(GDBINIT)
+	echo "target remote :$(GDB_PORT)" >> $(GDBINIT)
+
+.PHONY: attach-gdb
+.SECONDEXPANSION:
+attach-gdb: attach-gdb-server gdb-init-file
+	$(GDB) -x $(GDBINIT) $(GECKO_OBJDIR)/dist/bin/b2g
