@@ -564,7 +564,7 @@ attach-gdb-server: adb-check-version forward-gdb-port kill-gdb-server
 SYMDIR=$(GONK_OBJDIR)/symbols
 gdb-init-file:
 	echo "set solib-absolute-prefix $(SYMDIR)" > $(GDBINIT)
-	echo "set solib-search-path $(GECKO_OBJDIR)/dist/lib:$(SYMDIR)/system/lib:$(SYMDIR)/system/lib/hw:$(SYMDIR)/system/lib/egl:$(SYMDIR)/system/lib:$(SYMDIR)/system/lib/hw:$(SYMDIR)/system/lib/egl" >> $(GDBINIT)
+	echo "set solib-search-path $(GECKO_OBJDIR)/dist/bin:$(GECKO_OBJDIR)/dist/lib:$(SYMDIR)/system/lib:$(SYMDIR)/system/lib/hw:$(SYMDIR)/system/lib/egl:$(SYMDIR)/system/lib:$(SYMDIR)/system/lib/hw:$(SYMDIR)/system/lib/egl" >> $(GDBINIT)
 	echo "target remote :$(GDB_PORT)" >> $(GDBINIT)
 
 .PHONY: attach-gdb
