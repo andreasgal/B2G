@@ -440,8 +440,10 @@ unlock-bootloader: adb-check-version
 
 # Kill the b2g process on the device.
 .PHONY: kill-b2g
+.SECONDEXPANSION:
+B2G_PID=$(shell adb shell ps | grep "b2g" | awk '{ print $$2; }')
 kill-b2g: adb-check-version
-	$(ADB) shell killall b2g
+	$(ADB) shell kill $(B2G_PID)
 
 .PHONY: sync
 sync:
