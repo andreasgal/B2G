@@ -540,6 +540,7 @@ test:
 GDB_PORT=22576
 GDBINIT=/tmp/gdbinit
 GDB=$(TOOLCHAIN_PATH)/arm-eabi-gdb
+B2G_BIN=/system/b2g/b2g
 
 .PHONY: forward-gdb-port
 forward-gdb-port: adb-check-version
@@ -569,4 +570,26 @@ gdb-init-file:
 .PHONY: attach-gdb
 .SECONDEXPANSION:
 attach-gdb: attach-gdb-server gdb-init-file
+	$(GDB) -x $(GDBINIT) $(GECKO_OBJDIR)/dist/bin/b2g
+
+.PHONY: disable-auto-restart
+disable-auto-restart: adb-check-version kill-b2g
+	$(ADB) remount
+	$(ADB) shell mv $(B2G_BIN) $(B2G_BIN).d
+
+.PHONY: restore-auto-restart
+restore-auto-restart: adb-check-version
+	$(ADB) remount
+	$(ADB) shell mv $(B2G_BIN).d $(B2G_BIN)
+
+.PHONY: run-gdb-server
+.SECONDEXPANSION:
+B2G_PID=$(shell adb shell ps | grep "b2g" | awk '{ print $$2; }')
+run-gdb-server: adb-check-version forward-gdb-port kill-gdb-server disable-auto-restart
+	$(ADB) shell gdbserver :$(GDB_PORT) $(B2G_BIN).d &
+	sleep 1
+
+.PHONY: run-gdb
+.SECONDEXPANSION:
+run-gdb: run-gdb-server gdb-init-file
 	$(GDB) -x $(GDBINIT) $(GECKO_OBJDIR)/dist/bin/b2g
