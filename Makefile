@@ -146,6 +146,8 @@ endif # STOP_DEPENDENCY_CHECK
 CCACHE ?= $(shell which ccache)
 ADB := $(abspath glue/gonk/out/host/linux-x86/bin/adb)
 
+B2G_PID=$(shell adb shell pidof b2g)
+
 .PHONY: build
 build: gecko-install-hack
 	$(MAKE) gonk
@@ -441,7 +443,6 @@ unlock-bootloader: adb-check-version
 # Kill the b2g process on the device.
 .PHONY: kill-b2g
 .SECONDEXPANSION:
-B2G_PID=$(shell adb shell ps | grep "b2g" | awk '{ print $$2; }')
 kill-b2g: adb-check-version
 	$(ADB) shell kill $(B2G_PID)
 
@@ -554,7 +555,6 @@ kill-gdb-server:
 
 .PHONY: attach-gdb-server
 .SECONDEXPANSION:
-B2G_PID=$(shell adb shell ps | grep "b2g" | awk '{ print $$2; }')
 attach-gdb-server: adb-check-version forward-gdb-port kill-gdb-server
 	$(ADB) shell gdbserver :$(GDB_PORT) --attach $(B2G_PID) &
 	sleep 1
@@ -584,7 +584,6 @@ restore-auto-restart: adb-check-version
 
 .PHONY: run-gdb-server
 .SECONDEXPANSION:
-B2G_PID=$(shell adb shell ps | grep "b2g" | awk '{ print $$2; }')
 run-gdb-server: adb-check-version forward-gdb-port kill-gdb-server disable-auto-restart
 	$(ADB) shell gdbserver :$(GDB_PORT) $(B2G_BIN).d &
 	sleep 1
