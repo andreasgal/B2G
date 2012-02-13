@@ -540,7 +540,7 @@ test:
 
 GDB_PORT=22576
 GDBINIT=/tmp/gdbinit
-GDB=$(TOOLCHAIN_PATH)/arm-eabi-gdb
+GDB=$(abspath glue/gonk/prebuilt/linux-x86/tegra-gdb/arm-eabi-gdb)
 B2G_BIN=/system/b2g/b2g
 
 .PHONY: forward-gdb-port
