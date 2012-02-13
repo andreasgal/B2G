@@ -146,6 +146,9 @@ endif # STOP_DEPENDENCY_CHECK
 CCACHE ?= $(shell which ccache)
 ADB := $(abspath glue/gonk/out/host/linux-x86/bin/adb)
 
+B2G_PID=$(shell adb shell pidof b2g)
+GDBSERVER_PID=$(shell adb shell pidof gdbserver)
+
 .PHONY: build
 build: gecko-install-hack
 	$(MAKE) gonk
@@ -441,7 +444,6 @@ unlock-bootloader: adb-check-version
 # Kill the b2g process on the device.
 .PHONY: kill-b2g
 .SECONDEXPANSION:
-B2G_PID=$(shell adb shell ps | grep "b2g" | awk '{ print $$2; }')
 kill-b2g: adb-check-version
 	$(ADB) shell kill $(B2G_PID)
 
@@ -539,7 +541,7 @@ test:
 
 GDB_PORT=22576
 GDBINIT=/tmp/gdbinit
-GDB=$(TOOLCHAIN_PATH)/arm-eabi-gdb
+GDB=$(abspath glue/gonk/prebuilt/linux-x86/tegra-gdb/arm-eabi-gdb)
 B2G_BIN=/system/b2g/b2g
 
 .PHONY: forward-gdb-port
@@ -548,13 +550,11 @@ forward-gdb-port: adb-check-version
 
 .PHONY: kill-gdb-server
 .SECONDEXPANSION:
-GDBSERVER_PID=$(shell adb shell ps | grep "gdbserver" | awk '{ print $$2; }')
 kill-gdb-server:
 	if [ -n "$(GDBSERVER_PID)" ]; then $(ADB) shell kill $(GDBSERVER_PID); fi
 
 .PHONY: attach-gdb-server
 .SECONDEXPANSION:
-B2G_PID=$(shell adb shell ps | grep "b2g" | awk '{ print $$2; }')
 attach-gdb-server: adb-check-version forward-gdb-port kill-gdb-server
 	$(ADB) shell gdbserver :$(GDB_PORT) --attach $(B2G_PID) &
 	sleep 1
@@ -584,7 +584,6 @@ restore-auto-restart: adb-check-version
 
 .PHONY: run-gdb-server
 .SECONDEXPANSION:
-B2G_PID=$(shell adb shell ps | grep "b2g" | awk '{ print $$2; }')
 run-gdb-server: adb-check-version forward-gdb-port kill-gdb-server disable-auto-restart
 	$(ADB) shell gdbserver :$(GDB_PORT) $(B2G_BIN).d &
 	sleep 1
