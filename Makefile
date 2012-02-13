@@ -540,7 +540,7 @@ test:
 	sh venv_test.sh `which python` --emulator --homedir=$(abspath .) --type=b2g $(TEST_DIRS)
 
 GDB_PORT=22576
-GDBINIT=/tmp/gdbinit
+GDBINIT=/tmp/b2g.gdbinit.$(shell whoami)
 GDB=$(abspath glue/gonk/prebuilt/linux-x86/tegra-gdb/arm-eabi-gdb)
 B2G_BIN=/system/b2g/b2g
 
@@ -549,26 +549,22 @@ forward-gdb-port: adb-check-version
 	$(ADB) forward tcp:$(GDB_PORT) tcp:$(GDB_PORT)
 
 .PHONY: kill-gdb-server
-.SECONDEXPANSION:
 kill-gdb-server:
 	if [ -n "$(GDBSERVER_PID)" ]; then $(ADB) shell kill $(GDBSERVER_PID); fi
 
 .PHONY: attach-gdb-server
-.SECONDEXPANSION:
 attach-gdb-server: adb-check-version forward-gdb-port kill-gdb-server
 	$(ADB) shell gdbserver :$(GDB_PORT) --attach $(B2G_PID) &
 	sleep 1
 
 .PHONY: gdb-init-file
-.SECONDEXPANSION:
 SYMDIR=$(GONK_OBJDIR)/symbols
 gdb-init-file:
 	echo "set solib-absolute-prefix $(SYMDIR)" > $(GDBINIT)
-	echo "set solib-search-path $(GECKO_OBJDIR)/dist/bin:$(GECKO_OBJDIR)/dist/lib:$(SYMDIR)/system/lib:$(SYMDIR)/system/lib/hw:$(SYMDIR)/system/lib/egl:$(SYMDIR)/system/lib:$(SYMDIR)/system/lib/hw:$(SYMDIR)/system/lib/egl" >> $(GDBINIT)
+	echo "set solib-search-path $(GECKO_OBJDIR)/dist/bin:$(GECKO_OBJDIR)/dist/lib:$(SYMDIR)/system/lib:$(SYMDIR)/system/lib/hw:$(SYMDIR)/system/lib/egl:$(and $(ANDROIDFS_DIR),$(ANDROIDFS_DIR)/symbols/system/lib:$(ANDROIDFS_DIR)/symbols/system/lib/hw:$(ANDROIDFS_DIR)/symbols/system/lib/egl)" >> $(GDBINIT)
 	echo "target remote :$(GDB_PORT)" >> $(GDBINIT)
 
 .PHONY: attach-gdb
-.SECONDEXPANSION:
 attach-gdb: attach-gdb-server gdb-init-file
 	$(GDB) -x $(GDBINIT) $(GECKO_OBJDIR)/dist/bin/b2g
 
@@ -583,12 +579,10 @@ restore-auto-restart: adb-check-version
 	$(ADB) shell mv $(B2G_BIN).d $(B2G_BIN)
 
 .PHONY: run-gdb-server
-.SECONDEXPANSION:
 run-gdb-server: adb-check-version forward-gdb-port kill-gdb-server disable-auto-restart
 	$(ADB) shell gdbserver :$(GDB_PORT) $(B2G_BIN).d &
 	sleep 1
 
 .PHONY: run-gdb
-.SECONDEXPANSION:
 run-gdb: run-gdb-server gdb-init-file
 	$(GDB) -x $(GDBINIT) $(GECKO_OBJDIR)/dist/bin/b2g
