@@ -147,6 +147,7 @@ CCACHE ?= $(shell which ccache)
 ADB := $(abspath glue/gonk/out/host/linux-x86/bin/adb)
 
 B2G_PID=$(shell adb shell pidof b2g)
+GDBSERVER_PID=$(shell adb shell pidof gdbserver)
 
 .PHONY: build
 build: gecko-install-hack
@@ -549,7 +550,6 @@ forward-gdb-port: adb-check-version
 
 .PHONY: kill-gdb-server
 .SECONDEXPANSION:
-GDBSERVER_PID=$(shell adb shell ps | grep "gdbserver" | awk '{ print $$2; }')
 kill-gdb-server:
 	if [ -n "$(GDBSERVER_PID)" ]; then $(ADB) shell kill $(GDBSERVER_PID); fi
 
