@@ -146,8 +146,8 @@ endif # STOP_DEPENDENCY_CHECK
 CCACHE ?= $(shell which ccache)
 ADB := $(abspath glue/gonk/out/host/linux-x86/bin/adb)
 
-B2G_PID=$(shell adb shell pidof b2g)
-GDBSERVER_PID=$(shell adb shell pidof gdbserver)
+B2G_PID=$(shell $(ADB) shell pidof b2g)
+GDBSERVER_PID=$(shell $(ADB) shell pidof gdbserver)
 
 .PHONY: build
 build: gecko-install-hack
@@ -359,7 +359,7 @@ flash-only-akami: flash-only-toro
 .PHONY: flash-only-toro
 flash-only-toro:
 	@$(call GONK_CMD, \
-	adb reboot bootloader && \
+	$(ADB) reboot bootloader && \
 	$(FASTBOOT) devices && \
 	$(FASTBOOT) erase userdata && \
 	$(FASTBOOT) flash userdata ./out/target/product/$(GONK)/userdata.img && \
