@@ -294,7 +294,7 @@
 	url = git://github.com/mozilla-b2g/android-hardware_legacy.git
 [submodule "glue/gonk/hardware/libhardware"]
 	path = glue/gonk/hardware/libhardware
-	url = git://android.git.linaro.org/platform/hardware/libhardware.git
+	url = git://github.com/mozilla-b2g/android-hardware-libhardware.git
 [submodule "glue/gonk/hardware/broadcom/wlan"]
 	path = glue/gonk/hardware/broadcom/wlan
 	url = git://android.git.linaro.org/platform/hardware/broadcom/wlan.git
