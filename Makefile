@@ -459,14 +459,14 @@ PKG_DIR := package
 package:
 	rm -rf $(PKG_DIR)
 	mkdir -p $(PKG_DIR)/qemu/bin
-	mkdir -p $(PKG_DIR)/$(GAIA_PATH)
+	mkdir -p $(PKG_DIR)/gaia
 	cp $(GONK_PATH)/out/host/linux-x86/bin/emulator $(PKG_DIR)/qemu/bin
 	cp $(GONK_PATH)/out/host/linux-x86/bin/emulator-arm $(PKG_DIR)/qemu/bin
 	cp $(GONK_PATH)/out/host/linux-x86/bin/adb $(PKG_DIR)/qemu/bin
 	cp boot/kernel-android-qemu/arch/arm/boot/zImage $(PKG_DIR)/qemu
 	cp -R $(GONK_PATH)/out/target/product/generic $(PKG_DIR)/qemu
-	cp -R $(GAIA_PATH)/tests $(PKG_DIR)/$(GAIA_PATH)
-	cd $(PKG_DIR) && tar -czvf qemu_package.tar.gz qemu $(GAIA_PATH)
+	cp -R $(GAIA_PATH)/tests $(PKG_DIR)/gaia
+	cd $(PKG_DIR) && tar -czvf qemu_package.tar.gz qemu gaia
 
 #
 # Package up everything needed to build mozilla-central with
