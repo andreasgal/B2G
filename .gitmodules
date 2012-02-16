@@ -247,9 +247,6 @@
 [submodule "glue/gonk/prebuilt"]
 	path = glue/gonk/prebuilt
 	url = git://github.com/mozilla-b2g/platform_prebuilt.git
-[submodule "glue/gonk/dalvik"]
-	path = glue/gonk/dalvik
-	url = git://android.git.linaro.org/platform/dalvik.git
 [submodule "glue/gonk/system/bluetooth"]
 	path = glue/gonk/system/bluetooth
 	url = git://github.com/mozilla-b2g/android_system_bluetooth.git
