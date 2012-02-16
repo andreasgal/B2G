@@ -244,6 +244,7 @@ COMMON_LIBS="
         libcommondefs.so
         libloc_api-rpc-qc.so
         librpc.so
+        libsc-a2xx.so
 	"
 copy_files "$COMMON_LIBS" "system/lib" ""
 
