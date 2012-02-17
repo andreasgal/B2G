@@ -227,10 +227,10 @@ clean-kernel:
 # outstanding changes you have.  It's mostly intended for "clean room"
 # builds.
 mrproper:
-	git submodule foreach 'git clean -dfx' && \
 	git submodule foreach 'git reset --hard' && \
-	git clean -dfx && \
-	git reset --hard
+	git submodule foreach 'git clean -dfx' && \
+	git reset --hard && \
+	git clean -dfx
 
 .PHONY: config-galaxy-s2
 config-galaxy-s2: config-gecko adb-check-version
