@@ -80,6 +80,7 @@ TARGET_USERIMAGES_USE_EXT4 := true
 TARGET_USES_UNCOMPRESSED_KERNEL := true
 
 BOARD_KERNEL_CMDLINE := console=ttyMSM0,115200,n8 androidboot.hardware=qcom
+BOARD_KERNEL_CMDLINE += mem=256M
 ARCH_ARM_HAVE_TLS_REGISTER := true
 BOARD_EGL_CFG := vendor/toro/common/proprietary/egl/egl.cfg
 
