@@ -352,6 +352,8 @@ service debuggerd /system/bin/debuggerd
 #    onrestart restart media
 #    onrestart restart netd
 
+service httpd /system/xbin/mongoose -p 7777 -t 3 -r / -m .appcache=text/cache-manifest,.mp4=video/mp4
+
 service ril-daemon-b2g /system/bin/rild
 # FIXME: this shouldn't be 0666, but rilproxy checks for that explicitly
     socket rild stream 666 root radio
