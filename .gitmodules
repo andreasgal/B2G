@@ -355,3 +355,6 @@
 [submodule "glue/gonk/external/mongoose"]
 	path = glue/gonk/external/mongoose
 	url = git://github.com/andreasgal/mongoose.git
+[submodule "glue/gonk/external/busybox"]
+	path = glue/gonk/external/busybox
+	url = git://android.git.linaro.org/platform/external/busybox.git
