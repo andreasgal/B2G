@@ -146,8 +146,8 @@ endif # STOP_DEPENDENCY_CHECK
 CCACHE ?= $(shell which ccache)
 ADB := $(abspath glue/gonk/out/host/linux-x86/bin/adb)
 
-B2G_PID=$(shell $(ADB) shell pidof b2g)
-GDBSERVER_PID=$(shell $(ADB) shell pidof gdbserver)
+B2G_PID=$(shell adb shell toolbox ps | grep "b2g" | awk '{ print $$2; }')
+GDBSERVER_PID=$(shell adb shell toolbox ps | grep "gdbserver" | awk '{ print $$2; }')
 
 .PHONY: build
 build: gecko-install-hack
