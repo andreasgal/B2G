@@ -255,8 +255,14 @@ config-maguro: config-gecko adb-check-version
 	./extract-files.sh && \
 	echo OK
 
+# Hack!  Upstream boot/msm is RO at the moment and forking isn't
+# a nice alternative at the moment...
+.patches.applied:
+	cd boot/msm && git apply $(abspath glue/patch)/yaffs_vfs.patch
+	touch $@
+
 .PHONY: config-akami
-config-akami: config-gecko
+config-akami: .patches.applied config-gecko
 	@echo "KERNEL = msm" > .config.mk && \
         echo "KERNEL_PATH = ./boot/msm" >> .config.mk && \
 	echo "GONK = akami" >> .config.mk && \
