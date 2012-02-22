@@ -36,7 +36,7 @@ $(KERNEL_OUT):
 	mkdir -p $(KERNEL_OUT)
 
 $(KERNEL_CONFIG): $(KERNEL_OUT)
-	$(MAKE) -C $(KERNELTREE_DIR) O=$(KERNELTREE_DIR_REV)/$(KERNEL_OUT) ARCH=arm CROSS_COMPILE=arm-eabi- $(KERNEL_DEFCONFIG)
+	$(MAKE) -C $(KERNELTREE_DIR) O=$(KERNELTREE_DIR_REV)/$(KERNEL_OUT) ARCH=arm CROSS_COMPILE=arm-eabi- ../../../../../glue/gonk/$(KERNEL_DEFCONFIG)
 
 $(KERNEL_OUT)/piggy : $(TARGET_PREBUILT_INT_KERNEL)
 	$(hide) gunzip -c $(KERNEL_OUT)/arch/arm/boot/compressed/piggy.gzip > $(KERNEL_OUT)/piggy
@@ -59,6 +59,6 @@ kernelconfig: $(KERNEL_OUT) $(KERNEL_CONFIG)
 	     $(MAKE) -C $(KERNELTREE_DIR) O=$(KERNELTREE_DIR_REV)/$(KERNEL_OUT) ARCH=arm CROSS_COMPILE=arm-eabi- menuconfig
 	env KCONFIG_NOTIMESTAMP=true \
 	     $(MAKE) -C $(KERNELTREE_DIR) O=$(KERNELTREE_DIR_REV)/$(KERNEL_OUT) ARCH=arm CROSS_COMPILE=arm-eabi- savedefconfig
-	cp $(KERNELTREE_DIR_REV)/$(KERNEL_OUT)/defconfig $(KERNELTREE_DIR)/arch/arm/configs/$(KERNEL_DEFCONFIG)
+	cp $(KERNELTREE_DIR_REV)/$(KERNEL_OUT)/defconfig $(KERNEL_DEFCONFIG)
 
 endif
