@@ -146,8 +146,8 @@ endif # STOP_DEPENDENCY_CHECK
 CCACHE ?= $(shell which ccache)
 ADB := $(abspath glue/gonk/out/host/linux-x86/bin/adb)
 
-B2G_PID=$(shell adb shell toolbox ps | grep "b2g" | awk '{ print $$2; }')
-GDBSERVER_PID=$(shell adb shell toolbox ps | grep "gdbserver" | awk '{ print $$2; }')
+B2G_PID=$(shell $(ADB) shell toolbox ps | grep "b2g" | awk '{ print $$2; }')
+GDBSERVER_PID=$(shell $(ADB) shell toolbox ps | grep "gdbserver" | awk '{ print $$2; }')
 
 .PHONY: build
 build: gecko-install-hack
@@ -592,3 +592,61 @@ run-gdb-server: adb-check-version forward-gdb-port kill-gdb-server disable-auto-
 .PHONY: run-gdb
 run-gdb: run-gdb-server gdb-init-file
 	$(GDB) -x $(GDBINIT) $(GECKO_OBJDIR)/dist/bin/b2g
+
+PERF_B2G_SYMFS = /tmp/b2g_symfs_$(GONK)
+RECORD_DURATION ?= 10
+
+define PERF_REPORT # $(call PERF_REPORT,flags)
+	$(ADB) shell perf record $(1) -o /data/local/perf.data sleep $(RECORD_DURATION)
+	$(ADB) pull /data/local/perf.data .
+	if [ "$(GONK)" == "galaxys2" ]; then \
+	  perf report --symfs=$(PERF_B2G_SYMFS) --vmlinux=/vmlinux ; \
+	else \
+	  perf report --symfs=$(PERF_B2G_SYMFS) --kallsyms=$(PERF_B2G_SYMFS)/kallsyms ; \
+	fi
+endef
+
+.PHONY: perf-create-symfs
+perf-create-symfs:
+	@if [ ! -d $(PERF_B2G_SYMFS) ]; then \
+	  echo "Creating direcotry $(PERF_B2G_SYMFS) for symbols..." ; \
+	  mkdir $(PERF_B2G_SYMFS) ; \
+	  cp -pr $(GONK_OBJDIR)/system $(PERF_B2G_SYMFS)/system ; \
+	  cp -pr $(GONK_OBJDIR)/symbols/system/. $(PERF_B2G_SYMFS)/system/. ; \
+	  if [ "$(GONK)" == "galaxys2" ]; then \
+	    cp -pr $(KERNEL_DIR)/vmlinux $(PERF_B2G_SYMFS)/. ; \
+	  else \
+	    $(ADB) pull /proc/kallsyms $(PERF_B2G_SYMFS)/. ; \
+	  fi ; \
+	  cp -p $(GECKO_OBJDIR)/dist/lib/*.so $(PERF_B2G_SYMFS)/system/b2g/. ; \
+	  cp -p $(GECKO_OBJDIR)/dist/bin/b2g $(PERF_B2G_SYMFS)/system/b2g/. ; \
+	fi
+
+.PHONY: perf-clean-symfs
+perf-clean-symfs:
+	@echo "Removing directory for symbols..."
+	@rm -rf $(PERF_B2G_SYMFS)
+
+.PHONY: perf-top
+perf-top:
+	$(ADB) shell perf top
+
+.PHONY: perf-top-b2g
+perf-top-b2g:
+	$(ADB) shell perf top -p $(B2G_PID)
+
+.PHONY: perf-report
+perf-report: perf-create-symfs
+	$(call PERF_REPORT,-a)
+	
+.PHONY: perf-report-b2g
+perf-report-b2g: perf-create-symfs
+	$(call PERF_REPORT,-p $(B2G_PID))
+
+.PHONY: perf-report-callgraph
+perf-report-callgraph: perf-create-symfs
+	$(call PERF_REPORT,-a -g)
+
+.PHONY: perf-report-callgraph-b2g
+perf-report-callgraph-b2g: perf-create-symfs
+	$(call PERF_REPORT,-p $(B2G_PID) -g)
