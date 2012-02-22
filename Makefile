@@ -650,3 +650,12 @@ perf-report-callgraph: perf-create-symfs
 .PHONY: perf-report-callgraph-b2g
 perf-report-callgraph-b2g: perf-create-symfs
 	$(call PERF_REPORT,-p $(B2G_PID) -g)
+
+TIMEZONE ?= Europe/Madrid
+
+.PHONY: update-time
+update-time: adb
+	@echo "|make update-time TIMEZONE=<zone>| to set timezone"
+	$(ADB) wait-for-device
+	$(ADB) shell toolbox date `date +%s`
+	$(ADB) shell setprop persist.sys.timezone $(TIMEZONE)
