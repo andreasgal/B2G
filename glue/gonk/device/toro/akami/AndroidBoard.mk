@@ -40,7 +40,7 @@ $(INSTALLED_RAMDISK_TARGET): $(file)
 
 ifeq ($(KERNEL_DEFCONFIG),)
     # TODO:  Use ../../config/msm7627a_sku1-perf_defconfig
-    KERNEL_DEFCONFIG := msm7627a_sku3-perf_defconfig
+    KERNEL_DEFCONFIG := $(LOCAL_PATH)/msm7627a_sku3-perf_defconfig
 endif
 
 

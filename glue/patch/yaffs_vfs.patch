@@ -1,0 +1,13 @@
+diff --git a/fs/yaffs2/yaffs_vfs.c b/fs/yaffs2/yaffs_vfs.c
+index d5b8753..a0f05f1 100644
+--- a/fs/yaffs2/yaffs_vfs.c
++++ b/fs/yaffs2/yaffs_vfs.c
+@@ -859,7 +859,7 @@ static int yaffs_readdir(struct file *f, void *dirent, filldir_t filldir)
+ 	/* If the directory has changed since the open or last call to
+ 	   readdir, rewind to after the 2 canned entries. */
+ 	if (f->f_version != inode->i_version) {
+-		offset = 2;
++		//offset = 2;
+ 		f->f_pos = offset;
+ 		f->f_version = inode->i_version;
+ 	}
