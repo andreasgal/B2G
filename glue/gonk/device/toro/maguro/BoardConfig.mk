@@ -81,6 +81,9 @@ TARGET_USES_UNCOMPRESSED_KERNEL := true
 
 BOARD_KERNEL_CMDLINE := console=ttyMSM0,115200,n8 androidboot.hardware=qcom
 BOARD_KERNEL_CMDLINE += mem=256M
+# The default touch event polling time of 30ms currently causes the FPS while
+# panning to be artificially limited.  Increasing polling to 15ms gives +60 FPS.
+BOARD_KERNEL_CMDLINE += rmi_sensor.polltime=15000000
 ARCH_ARM_HAVE_TLS_REGISTER := true
 BOARD_EGL_CFG := vendor/toro/common/proprietary/egl/egl.cfg
 
