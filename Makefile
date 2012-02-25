@@ -408,7 +408,8 @@ gecko-install-hack: gecko
 gaia-hack: gaia
 	rm -rf $(OUT_DIR)/home
 	mkdir -p $(OUT_DIR)/home
-	cp -r $(GAIA_PATH)/* $(OUT_DIR)/home
+	mkdir -p $(DATA_OUT_DIR)/local
+	cp -r $(GAIA_PATH)/* $(DATA_OUT_DIR)/local
 	rm -rf $(OUT_DIR)/b2g/defaults/profile
 	mkdir -p $(OUT_DIR)/b2g/defaults
 	cp -r $(GAIA_PATH)/profile $(OUT_DIR)/b2g/defaults
@@ -638,7 +639,7 @@ perf-top-b2g:
 .PHONY: perf-report
 perf-report: perf-create-symfs
 	$(call PERF_REPORT,-a)
-	
+
 .PHONY: perf-report-b2g
 perf-report-b2g: perf-create-symfs
 	$(call PERF_REPORT,-p $(B2G_PID))
