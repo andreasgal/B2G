@@ -2,6 +2,7 @@
 SHELL = bash
 
 GIT = git
+HG = hg
 
 -include local.mk
 -include .config.mk
@@ -63,7 +64,7 @@ $(GIT) ls-files -o -X .gitignore | xargs -d '\n' stat -c '%n:%Y' --
 endef
 
 define DEP_LIST_HG_FILES
-hg locate | xargs -d '\n' stat -c '%n:%Y' --
+$(HG) locate | xargs -d '\n' stat -c '%n:%Y' --
 endef
 
 define DEP_LIST_FILES
@@ -229,8 +230,8 @@ clean-kernel:
 # outstanding changes you have.  It's mostly intended for "clean room"
 # builds.
 mrproper:
-	$(GIT) submodule foreach 'git reset --hard' && \
-	$(GIT) submodule foreach 'git clean -dfx' && \
+	$(GIT) submodule foreach '$(GIT) reset --hard' && \
+	$(GIT) submodule foreach '$(GIT) clean -dfx' && \
 	$(GIT) reset --hard && \
 	$(GIT) clean -dfx
 
