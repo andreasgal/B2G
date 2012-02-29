@@ -1,8 +1,8 @@
 # To support gonk's build/envsetup.sh
 SHELL = bash
 
-GIT = git
-HG = hg
+GIT ?= git
+HG ?= hg
 
 -include local.mk
 -include .config.mk
