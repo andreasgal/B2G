@@ -231,9 +231,9 @@ clean-kernel:
 # builds.
 mrproper:
 	$(GIT) submodule foreach '$(GIT) reset --hard' && \
-	$(GIT) submodule foreach '$(GIT) clean -dfx' && \
+	$(GIT) submodule foreach '$(GIT) clean -d -f -x' && \
 	$(GIT) reset --hard && \
-	$(GIT) clean -dfx
+	$(GIT) clean -d -f -x
 
 .PHONY: config-galaxy-s2
 config-galaxy-s2: config-gecko adb-check-version
