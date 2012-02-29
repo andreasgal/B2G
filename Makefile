@@ -652,6 +652,54 @@ perf-report-callgraph: perf-create-symfs
 perf-report-callgraph-b2g: perf-create-symfs
 	$(call PERF_REPORT,-p $(B2G_PID) -g)
 
+
+HOME_DIR = $(shell pwd)
+SYMBOLS_DIR := $(GONK_PATH)/out/target/product/$(GONK)/symbols
+KERNEL_OBJ := $(GONK_PATH)/out/target/product/$(GONK)/obj/KERNEL_OBJ
+.PHONY: op_setup op_start op_stop op_status op_shutdown op_pull op_show
+op_setup:
+	@$(ADB) remount /system	
+	@echo "opcontrol --setup" > opsetup
+	@if [ "$(GONK)" == "galaxys2" ]; then \
+          echo "opcontrol --vmlinux=$(HOME_DIR)/$(KERNEL_DIR)/vmlinux --kernel-range=0x`$(ADB) shell cat /proc/kallsyms | grep ' _text' | cut -c 1-8`,0x`$(ADB) shell cat /proc/kallsyms | grep ' _etext' | cut -c 1-8` --event=CPU_CYCLES" >> opsetup ; \
+	else \
+          echo "opcontrol --vmlinux=$(KERNEL_OBJ)/vmlinux --kernel-range=0x`$(ADB) shell cat /proc/kallsyms | grep ' _text' | cut -c 1-8`,0x`$(ADB) shell cat /proc/kallsyms | grep ' _etext' | cut -c 1-8` --timer" > opsetup; \
+	fi ; 	
+	@$(ADB) push opsetup /system/xbin
+	@$(ADB) shell chmod 755 /system/xbin/opsetup
+	@echo "#! /bin/bash" > oppull
+	@echo "rm -rf oprofile" >> oppull
+	@echo "mkdir oprofile" >> oppull
+	@echo "$(ADB) pull /data/oprofile $(HOME_DIR)/oprofile/" >> oppull
+	@chmod +x oppull
+	@$(ADB) shell opsetup > /dev/null 2>&1 &
+op_start:
+	@echo "Start Profiling ..."
+	@echo -e "You can use \033[31m\"make op_status\"\033[0m to check profiling status, \033[31m\"make op_stop\"\033[0m to stop profiling"
+	@$(ADB) shell opcontrol --start
+op_stop:
+	@echo "Stop Profiling ..."
+	@echo -e "You can use \033[31m\"make op_pull\"\033[0m to pull oprofile samples"
+	@$(ADB) shell opcontrol --stop
+op_status:
+	@$(ADB) shell opcontrol --status
+op_shutdown:
+	@$(ADB) shell opcontrol --shutdown
+op_pull:
+	@echo "Pulling profiling log ..."
+	@echo -e "You can use \033[31m\"make op_show\"\033[0m to list profiling result"
+	@./oppull
+	@cp -pr $(SYMBOLS_DIR) $(HOME_DIR)/oprofile/symbols
+	@cp -pr $(GECKO_OBJDIR)/dist/b2g $(HOME_DIR)/oprofile/symbols
+	@cp -p $(GECKO_OBJDIR)/dist/bin/b2g $(HOME_DIR)/oprofile/symbols/b2g/
+	@cp -p $(GECKO_OBJDIR)/dist/lib/*.so $(HOME_DIR)/oprofile/symbols/b2g/
+op_show:
+	@echo "Processing profiling samples ..." 
+	@echo -e "The profiling result is saved in your \033[31moprofile/oprofile.log\033[0m" 
+	@touch $(HOME_DIR)/oprofile/oprofile.log    
+	@opreport --session-dir=oprofile -p $(HOME_DIR)/oprofile/symbols -l
+	@opreport --session-dir=oprofile -p $(HOME_DIR)/oprofile/symbols -l -o $(HOME_DIR)/oprofile/oprofile.log 2>/dev/null
+
 TIMEZONE ?= Europe/Madrid
 
 .PHONY: update-time
