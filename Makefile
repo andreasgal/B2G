@@ -1,6 +1,8 @@
 # To support gonk's build/envsetup.sh
 SHELL = bash
 
+GIT = git
+
 -include local.mk
 -include .config.mk
 
@@ -56,8 +58,8 @@ define SUBMODULES
 endef
 
 define DEP_LIST_GIT_FILES
-git ls-files | xargs -d '\n' stat -c '%n:%Y' --; \
-git ls-files -o -X .gitignore | xargs -d '\n' stat -c '%n:%Y' --
+$(GIT) ls-files | xargs -d '\n' stat -c '%n:%Y' --; \
+$(GIT) ls-files -o -X .gitignore | xargs -d '\n' stat -c '%n:%Y' --
 endef
 
 define DEP_LIST_HG_FILES
@@ -195,7 +197,7 @@ kernel:
 	    $(if $(filter galaxy-s2,$(KERNEL)), \
 		(rm -rf boot/initramfs && \
 		    cd boot/clockworkmod_galaxys2_initramfs && \
-		    git checkout-index -a -f --prefix ../initramfs/); \
+		    $(GIT) checkout-index -a -f --prefix ../initramfs/); \
 		PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" \
 		    $(MAKE) -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm \
 		    CROSS_COMPILE="$(CCACHE) arm-eabi-"; \
@@ -227,10 +229,10 @@ clean-kernel:
 # outstanding changes you have.  It's mostly intended for "clean room"
 # builds.
 mrproper:
-	git submodule foreach 'git reset --hard' && \
-	git submodule foreach 'git clean -dfx' && \
-	git reset --hard && \
-	git clean -dfx
+	$(GIT) submodule foreach 'git reset --hard' && \
+	$(GIT) submodule foreach 'git clean -dfx' && \
+	$(GIT) reset --hard && \
+	$(GIT) clean -dfx
 
 .PHONY: config-galaxy-s2
 config-galaxy-s2: config-gecko adb-check-version
@@ -258,7 +260,7 @@ config-maguro: config-gecko adb-check-version
 # Hack!  Upstream boot/msm is RO at the moment and forking isn't
 # a nice alternative at the moment...
 .patches.applied:
-	cd boot/msm && git apply $(abspath glue/patch)/yaffs_vfs.patch
+	cd boot/msm && $(GIT) apply $(abspath glue/patch)/yaffs_vfs.patch
 	touch $@
 
 .PHONY: config-akami
@@ -456,9 +458,9 @@ kill-b2g: adb-check-version
 
 .PHONY: sync
 sync:
-	git pull origin master
-	git submodule sync
-	git submodule update --init
+	$(GIT) pull origin master
+	$(GIT) submodule sync
+	$(GIT) submodule update --init
 
 PKG_DIR := package
 
@@ -516,7 +518,7 @@ TOOLCHAIN_PKG_DIR := gonk-toolchain-$(TOOLCHAIN_VERSION)
 package-toolchain: gonk
 	@rm -rf $(TOOLCHAIN_PKG_DIR); \
 	mkdir $(TOOLCHAIN_PKG_DIR); \
-	git rev-parse HEAD > $(TOOLCHAIN_PKG_DIR)/b2g-commit-sha1.txt; \
+	$(GIT) rev-parse HEAD > $(TOOLCHAIN_PKG_DIR)/b2g-commit-sha1.txt; \
 	$(foreach d,$(TOOLCHAIN_DIRS),\
 	  mkdir -p $(TOOLCHAIN_PKG_DIR)/$(d); \
 	  cp -r $(GONK_PATH)/$(d)/* $(TOOLCHAIN_PKG_DIR)/$(d); \
