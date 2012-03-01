@@ -711,3 +711,23 @@ update-time: adb
 	$(ADB) wait-for-device
 	$(ADB) shell toolbox date `date +%s`
 	$(ADB) shell setprop persist.sys.timezone $(TIMEZONE)
+
+VALGRIND_DIR=$(abspath glue/gonk/prebuilt/android-arm/valgrind)
+.PHONY: install-valgrind
+install-valgrind: disable-auto-restart
+	$(ADB) remount
+	$(ADB) push $(VALGRIND_DIR) /data/local/valgrind
+	$(ADB) push $(GONK_OBJDIR)/symbols/system/bin/linker /system/bin/.
+	$(ADB) push $(GONK_OBJDIR)/symbols/system/lib/libc.so /system/lib/.
+	$(ADB) push $(GECKO_OBJDIR)/dist/lib/libxul.so /data/local/.
+	$(ADB) shell rm /system/b2g/libxul.so
+	$(ADB) shell ln -s /data/local/libxul.so /system/b2g/.
+
+.PHONY: uninstall-valgrind
+uninstall-valgrind: restore-auto-restart
+	$(ADB) remount
+	$(ADB) push $(GONK_OBJDIR)/system/bin/linker /system/bin/.
+	$(ADB) push $(GONK_OBJDIR)/system/lib/libc.so /system/lib/.
+	$(ADB) push $(GECKO_OBJDIR)/dist/b2g/libxul.so /system/b2g/.
+	$(ADB) shell rm /data/local/libxul.so
+	$(ADB) shell rm -rf /data/local/valgrind
