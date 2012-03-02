@@ -235,8 +235,11 @@ mrproper:
 	$(GIT) reset --hard && \
 	$(GIT) clean -d -f -x
 
+vendor/apns-conf.xml:
+	wget -O vendor/apns-conf.xml https://raw.github.com/CyanogenMod/android_vendor_cyanogen/gingerbread/prebuilt/common/etc/apns-conf.xml
+
 .PHONY: config-galaxy-s2
-config-galaxy-s2: config-gecko adb-check-version
+config-galaxy-s2: config-gecko adb-check-version vendor/apns-conf.xml
 	@echo "KERNEL = galaxy-s2" > .config.mk && \
         echo "KERNEL_PATH = ./boot/kernel-android-galaxy-s2" >> .config.mk && \
 	echo "GONK = galaxys2" >> .config.mk && \
@@ -248,7 +251,7 @@ config-galaxy-s2: config-gecko adb-check-version
 	echo OK
 
 .PHONY: config-maguro
-config-maguro: config-gecko adb-check-version
+config-maguro: config-gecko adb-check-version vendor/apns-conf.xml
 	@echo "KERNEL = msm" > .config.mk && \
         echo "KERNEL_PATH = ./boot/msm" >> .config.mk && \
 	echo "GONK = maguro" >> .config.mk && \
@@ -265,7 +268,7 @@ config-maguro: config-gecko adb-check-version
 	touch $@
 
 .PHONY: config-akami
-config-akami: .patches.applied config-gecko
+config-akami: .patches.applied config-gecko vendor/apns-conf.xml
 	@echo "KERNEL = msm" > .config.mk && \
         echo "KERNEL_PATH = ./boot/msm" >> .config.mk && \
 	echo "GONK = akami" >> .config.mk && \
