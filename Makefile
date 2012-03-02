@@ -350,6 +350,9 @@ flash: flash-$(GONK)
 .PHONY: flash-only
 flash-only: flash-only-$(GONK)
 
+.PHONY: flash-crespo
+flash-crespo: flash-crespo4g
+
 .PHONY: flash-crespo4g
 flash-crespo4g: image adb-check-version
 	@$(call GONK_CMD,$(ADB) reboot bootloader && fastboot flashall -w)
