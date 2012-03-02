@@ -305,6 +305,7 @@ blobs-nexuss4g: extract-broadcom-crespo4g.sh extract-imgtec-crespo4g.sh extract-
 
 .PHONY: blobs-nexuss
 blobs-nexuss: extract-broadcom-crespo.sh extract-imgtec-crespo.sh extract-nxp-crespo.sh extract-samsung-crespo.sh
+	rm -rf vendor/imgtec/crespo/overlay
 
 .PHONY: config-nexuss4g
 config-nexuss4g: blobs-nexuss4g config-gecko
@@ -312,7 +313,7 @@ config-nexuss4g: blobs-nexuss4g config-gecko
         echo "KERNEL_PATH = ./boot/kernel-android-samsung" >> .config.mk && \
 	echo "GONK = crespo4g" >> .config.mk && \
 	cp -p config/kernel-nexuss4g boot/kernel-android-samsung/.config && \
-	$(MAKE) -C $(CURDIR) nexuss4g-postconfig
+	echo OK
 
 .PHONY: config-nexuss
 config-nexuss: blobs-nexuss config-gecko
@@ -320,15 +321,7 @@ config-nexuss: blobs-nexuss config-gecko
         echo "KERNEL_PATH = ./boot/kernel-android-samsung" >> .config.mk && \
 	echo "GONK = crespo" >> .config.mk && \
 	cp -p config/kernel-nexuss4g boot/kernel-android-samsung/.config && \
-	$(MAKE) -C $(CURDIR) nexuss-postconfig
-
-.PHONY: nexuss4g-postconfig
-nexuss4g-postconfig:
-	$(call GONK_CMD,$(MAKE) signapk && vendor/samsung/crespo4g/reassemble-apks.sh)
-
-.PHONY: nexuss-postconfig
-nexuss-postconfig:
-	$(call GONK_CMD,$(MAKE) signapk && vendor/samsung/crespo/reassemble-apks.sh)
+	echo OK
 
 .PHONY: config-qemu
 config-qemu: config-gecko
