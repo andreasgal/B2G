@@ -324,6 +324,8 @@ blobs-nexuss4g: $(DOWNLOAD_PATH)/extract-broadcom-crespo4g.sh $(DOWNLOAD_PATH)/e
 
 .PHONY: blobs-nexuss
 blobs-nexuss: $(DOWNLOAD_PATH)/extract-broadcom-crespo.sh $(DOWNLOAD_PATH)/extract-imgtec-crespo.sh $(DOWNLOAD_PATH)/extract-nxp-crespo.sh $(DOWNLOAD_PATH)/extract-samsung-crespo.sh
+	mkdir -p $(GONK_PATH)/packages/wallpapers/LivePicker
+	touch $(GONK_PATH)/packages/wallpapers/LivePicker/android.software.live_wallpaper.xml
 
 .PHONY: config-nexuss4g
 config-nexuss4g: blobs-nexuss4g config-gecko $(APNS_CONF)
