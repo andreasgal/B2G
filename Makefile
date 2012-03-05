@@ -319,7 +319,7 @@ config-nexuss: blobs-nexuss config-gecko
 	@echo "KERNEL = samsung" > .config.mk && \
         echo "KERNEL_PATH = ./boot/kernel-android-samsung" >> .config.mk && \
 	echo "GONK = crespo" >> .config.mk && \
-	cp -p config/kernel-nexuss boot/kernel-android-samsung/.config && \
+	cp -p config/kernel-nexuss4g boot/kernel-android-samsung/.config && \
 	$(MAKE) -C $(CURDIR) nexuss-postconfig
 
 .PHONY: nexuss4g-postconfig
