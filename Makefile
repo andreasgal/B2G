@@ -291,8 +291,20 @@ extract-nxp-crespo4g.sh: nxp-crespo4g-$(NEXUS_S_BUILD)-9abcae18.tgz
 extract-samsung-crespo4g.sh: samsung-crespo4g-$(NEXUS_S_BUILD)-9474e48f.tgz
 	tar zxvf $< && ./$@
 
+extract-broadcom-crespo.sh: broadcom-crespo-$(NEXUS_S_BUILD)-fb8eed0c.tgz
+	tar zxvf $< && ./$@
+extract-imgtec-crespo.sh: imgtec-crespo-$(NEXUS_S_BUILD)-f03db3d1.tgz
+	tar zxvf $< && ./$@
+extract-nxp-crespo.sh: nxp-crespo-$(NEXUS_S_BUILD)-bcb793da.tgz
+	tar zxvf $< && ./$@
+extract-samsung-crespo.sh: samsung-crespo-$(NEXUS_S_BUILD)-c6e00e6a.tgz
+	tar zxvf $< && ./$@
+
 .PHONY: blobs-nexuss4g
 blobs-nexuss4g: extract-broadcom-crespo4g.sh extract-imgtec-crespo4g.sh extract-nxp-crespo4g.sh extract-samsung-crespo4g.sh
+
+.PHONY: blobs-nexuss
+blobs-nexuss: extract-broadcom-crespo.sh extract-imgtec-crespo.sh extract-nxp-crespo.sh extract-samsung-crespo.sh
 
 .PHONY: config-nexuss4g
 config-nexuss4g: blobs-nexuss4g config-gecko
@@ -302,9 +314,21 @@ config-nexuss4g: blobs-nexuss4g config-gecko
 	cp -p config/kernel-nexuss4g boot/kernel-android-samsung/.config && \
 	$(MAKE) -C $(CURDIR) nexuss4g-postconfig
 
+.PHONY: config-nexuss
+config-nexuss: blobs-nexuss config-gecko
+	@echo "KERNEL = samsung" > .config.mk && \
+        echo "KERNEL_PATH = ./boot/kernel-android-samsung" >> .config.mk && \
+	echo "GONK = crespo" >> .config.mk && \
+	cp -p config/kernel-nexuss boot/kernel-android-samsung/.config && \
+	$(MAKE) -C $(CURDIR) nexuss-postconfig
+
 .PHONY: nexuss4g-postconfig
 nexuss4g-postconfig:
 	$(call GONK_CMD,$(MAKE) signapk && vendor/samsung/crespo4g/reassemble-apks.sh)
+
+.PHONY: nexuss-postconfig
+nexuss-postconfig:
+	$(call GONK_CMD,$(MAKE) signapk && vendor/samsung/crespo/reassemble-apks.sh)
 
 .PHONY: config-qemu
 config-qemu: config-gecko
