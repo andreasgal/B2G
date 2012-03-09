@@ -7,9 +7,6 @@
 [submodule "glue/gonk/bionic"]
 	path = glue/gonk/bionic
 	url = git://github.com/mozilla-b2g/platform_bionic.git
-[submodule "glue/gonk/external/esd"]
-	path = glue/gonk/external/esd
-	url = git://android.git.linaro.org/platform/external/esd.git
 [submodule "glue/gonk/external/astl"]
 	path = glue/gonk/external/astl
 	url = git://android.git.linaro.org/platform/external/astl.git
