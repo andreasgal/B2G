@@ -94,9 +94,6 @@
 [submodule "glue/gonk/external/freetype"]
 	path = glue/gonk/external/freetype
 	url = git://android.git.linaro.org/platform/external/freetype.git
-[submodule "glue/gonk/external/chromium"]
-	path = glue/gonk/external/chromium
-	url = git://android.git.linaro.org/platform/external/chromium.git
 [submodule "glue/gonk/external/libnfc-nxp"]
 	path = glue/gonk/external/libnfc-nxp
 	url = git://android.git.linaro.org/platform/external/libnfc-nxp.git
