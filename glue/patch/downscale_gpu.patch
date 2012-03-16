@@ -1,0 +1,15 @@
+diff --git a/arch/arm/mach-msm/devices-msm7x27a.c b/arch/arm/mach-msm/devices-msm7x27a.c
+index 672c225..64212f5 100644
+--- a/arch/arm/mach-msm/devices-msm7x27a.c
++++ b/arch/arm/mach-msm/devices-msm7x27a.c
+@@ -622,8 +622,8 @@ static struct kgsl_device_platform_data kgsl_3d0_pdata = {
+ 	.pwr_data = {
+ 		.pwrlevel = {
+ 			{
+-				.gpu_freq = 245760000,
+-				.bus_freq = 200000000,
++				.gpu_freq = 133330000,
++				.bus_freq = 0,
+ 			},
+ 			{
+ 				.gpu_freq = 133330000,

@@ -256,8 +256,16 @@ config-galaxy-s2: config-gecko adb-check-version $(APNS_CONF)
 	./extract-files.sh && \
 	echo OK
 
+# Hack!  Upstream boot/msm is RO at the moment and forking isn't
+# a nice alternative at the moment...
+.patches.applied:
+	cd boot/msm && \
+	$(GIT) apply $(abspath glue/patch)/yaffs_vfs.patch && \
+	$(GIT) apply $(abspath glue/patch)/downscale_gpu.patch
+	touch $@
+
 .PHONY: config-maguro
-config-maguro: config-gecko adb-check-version $(APNS_CONF)
+config-maguro: .patches.applied config-gecko adb-check-version $(APNS_CONF)
 	@echo "KERNEL = msm" > .config.mk && \
         echo "KERNEL_PATH = ./boot/msm" >> .config.mk && \
 	echo "GONK = maguro" >> .config.mk && \
@@ -267,14 +275,8 @@ config-maguro: config-gecko adb-check-version $(APNS_CONF)
 	./extract-files.sh && \
 	echo OK
 
-# Hack!  Upstream boot/msm is RO at the moment and forking isn't
-# a nice alternative at the moment...
-.patches.applied:
-	cd boot/msm && $(GIT) apply $(abspath glue/patch)/yaffs_vfs.patch
-	touch $@
-
 .PHONY: config-akami
-config-akami: .patches.applied config-gecko $(APNS_CONF)
+config-akami: .patches.applied config-gecko adb-check-version $(APNS_CONF)
 	@echo "KERNEL = msm" > .config.mk && \
         echo "KERNEL_PATH = ./boot/msm" >> .config.mk && \
 	echo "GONK = akami" >> .config.mk && \
@@ -711,7 +713,7 @@ op_setup:
 	  $(ADB) shell opcontrol --setup; \
 	  $(ADB) shell opcontrol --vmlinux=$(PWD)/$(KERNEL_DIR)/vmlinux; \
 	  $(ADB) shell opcontrol --kernel-range=0x`$(ADB) shell cat /proc/kallsyms | grep ' _text' | cut -c 1-8`,0x`$(ADB) shell cat /proc/kallsyms | grep ' _etext' | cut -c 1-8`; \
- 	  $(ADB) shell opcontrol --event=CPU_CYCLES & \
+	  $(ADB) shell opcontrol --event=CPU_CYCLES & \
 	else \
 	  $(ADB) shell opcontrol --vmlinux=$(PWD)/$(KERNEL_DIR)/vmlinux; \
 	  $(ADB) shell opcontrol --kernel-range=0x`$(ADB) shell cat /proc/kallsyms | grep ' _text' | cut -c 1-8`,0x`$(ADB) shell cat /proc/kallsyms | grep ' _etext' | cut -c 1-8`;\
