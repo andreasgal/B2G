@@ -297,6 +297,9 @@ DOWNLOAD_PATH=$(GONK_PATH)/download
 
 NEXUS_S_BUILD = grj90
 
+$(DOWNLOAD_PATH)/extract-akm-crespo4g.sh:  $(DOWNLOAD_PATH)/akm-crespo4g-$(NEXUS_S_BUILD)-1bec498a.tgz
+	cd $(DOWNLOAD_PATH) && tar zxvf $< && cd $(GONK_PATH) && $@
+
 $(DOWNLOAD_PATH)/extract-broadcom-crespo4g.sh: $(DOWNLOAD_PATH)/broadcom-crespo4g-$(NEXUS_S_BUILD)-c4ec9a38.tgz
 	cd $(DOWNLOAD_PATH) && tar zxvf $< && cd $(GONK_PATH) && $@
 
@@ -325,7 +328,9 @@ $(DOWNLOAD_PATH)/extract-samsung-crespo.sh: $(DOWNLOAD_PATH)/samsung-crespo-$(NE
 	cd $(DOWNLOAD_PATH) && tar zxvf $< && cd $(GONK_PATH) && $@
 
 .PHONY: blobs-nexuss4g
-blobs-nexuss4g: $(DOWNLOAD_PATH)/extract-broadcom-crespo4g.sh $(DOWNLOAD_PATH)/extract-imgtec-crespo4g.sh $(DOWNLOAD_PATH)/extract-nxp-crespo4g.sh $(DOWNLOAD_PATH)/extract-samsung-crespo4g.sh
+blobs-nexuss4g: $(DOWNLOAD_PATH)/extract-akm-crespo4g.sh $(DOWNLOAD_PATH)/extract-broadcom-crespo4g.sh $(DOWNLOAD_PATH)/extract-imgtec-crespo4g.sh $(DOWNLOAD_PATH)/extract-nxp-crespo4g.sh $(DOWNLOAD_PATH)/extract-samsung-crespo4g.sh
+	mkdir -p $(GONK_PATH)/packages/wallpapers/LivePicker
+	touch $(GONK_PATH)/packages/wallpapers/LivePicker/android.software.live_wallpaper.xml
 
 .PHONY: blobs-nexuss
 blobs-nexuss: $(DOWNLOAD_PATH)/extract-akm-crespo.sh $(DOWNLOAD_PATH)/extract-broadcom-crespo.sh $(DOWNLOAD_PATH)/extract-imgtec-crespo.sh $(DOWNLOAD_PATH)/extract-nxp-crespo.sh $(DOWNLOAD_PATH)/extract-samsung-crespo.sh
