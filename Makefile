@@ -7,19 +7,20 @@ HG ?= hg
 -include local.mk
 -include .config.mk
 
-.DEFAULT: build
+all: build
 
 MAKE_FLAGS ?= -j16
 GONK_MAKE_FLAGS ?=
 
-FASTBOOT ?= $(abspath glue/gonk/out/host/linux-x86/bin/fastboot)
+GONK_BASE ?= glue/gonk
+FASTBOOT ?= $(abspath $(GONK_BASE)/out/host/linux-x86/bin/fastboot)
 HEIMDALL ?= heimdall
 TOOLCHAIN_HOST = linux-x86
-TOOLCHAIN_PATH = ./glue/gonk/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3/bin
+TOOLCHAIN_PATH = ./$(GONK_BASE)/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3/bin
 
 GAIA_PATH ?= $(abspath gaia)
 GECKO_PATH ?= $(abspath gecko)
-GONK_PATH = $(abspath glue/gonk)
+GONK_PATH = $(abspath $(GONK_BASE))
 
 TEST_DIRS = $(abspath $(GAIA_PATH)/tests) $(abspath marionette/marionette/tests/unit-tests.ini)
 
@@ -34,17 +35,29 @@ else				# fallback to generic for a clean copy.
 GONK_TARGET ?= generic-eng
 endif
 
+REPO_PATH := $(abspath repo)
+
+glue/gonk-ics/.repo: $(REPO_PATH)
+	mkdir -p glue/gonk-ics
+	cd glue/gonk-ics && \
+	$(REPO_PATH) init -u git://github.com/mozilla-b2g/gonk-ics-manifest.git
+
+.PHONY: gonk-ics-sync
+gonk-ics-sync: glue/gonk-ics/.repo
+	cd glue/gonk-ics && \
+	$(REPO_PATH) sync
+
 # This path includes tools to simulate JDK tools.  Gonk would check
 # version of JDK.  These fake tools do nothing but print out version
 # number to stop gonk from error.
-FAKE_JDK_PATH ?= $(abspath $(GONK_PATH)/device/gonk-build-hack/fake-jdk-tools)
+FAKE_JDK_PATH ?= $(abspath fake-jdk-tools)
 
 define GONK_CMD # $(call GONK_CMD,cmd)
+	export USE_CCACHE="yes" && \
+	export PATH=$(FAKE_JDK_PATH):$$PATH && \
 	cd $(GONK_PATH) && \
 	. build/envsetup.sh && \
 	lunch $(GONK_TARGET) && \
-	export USE_CCACHE="yes" && \
-	export PATH=$$PATH:$(FAKE_JDK_PATH) && \
 	$(1)
 endef
 
@@ -147,7 +160,7 @@ endef
 endif # STOP_DEPENDENCY_CHECK
 
 CCACHE ?= $(shell which ccache)
-ADB := $(abspath glue/gonk/out/host/linux-x86/bin/adb)
+ADB := $(abspath $(GONK_BASE)/out/host/linux-x86/bin/adb)
 
 B2G_PID=$(shell $(ADB) shell toolbox ps | grep "b2g" | awk '{ print $$2; }')
 GDBSERVER_PID=$(shell $(ADB) shell toolbox ps | grep "gdbserver" | awk '{ print $$2; }')
@@ -162,13 +175,15 @@ endif
 
 KERNEL_DIR = boot/kernel-android-$(KERNEL)
 GECKO_OBJDIR = $(GECKO_PATH)/objdir-prof-gonk
-GONK_OBJDIR=$(abspath ./glue/gonk/out/target/product/$(GONK))
+GONK_OBJDIR=$(abspath ./$(GONK_BASE)/out/target/product/$(GONK))
 
 define GECKO_BUILD_CMD
 	export MAKE_FLAGS=$(MAKE_FLAGS) && \
 	export CONFIGURE_ARGS="$(GECKO_CONFIGURE_ARGS)" && \
 	export GONK_PRODUCT="$(GONK)" && \
 	export GONK_PATH="$(GONK_PATH)" && \
+	export TARGET_TOOLS_PREFIX="$(abspath $(TOOLCHAIN_PATH))" && \
+	export EXTRA_INCLUDE="-include $(abspath Unicode.h)" && \
 	ulimit -n 4096 && \
 	$(MAKE) -C $(GECKO_PATH) -f client.mk -s $(MAKE_FLAGS) && \
 	$(MAKE) -C $(GECKO_OBJDIR) package
@@ -184,7 +199,7 @@ gecko:
 
 .PHONY: gonk
 gonk: gaia-hack
-	@$(call DEP_CHECK,$(GONK_PATH)/out/.b2g-build-done,glue/gonk, \
+	@$(call DEP_CHECK,$(GONK_PATH)/out/.b2g-build-done,$(GONK_BASE), \
 	    $(call GONK_CMD,$(MAKE) $(MAKE_FLAGS) $(GONK_MAKE_FLAGS)) ; \
 	    $(if $(filter qemu,$(KERNEL)), \
 		cp $(GONK_PATH)/system/core/rootdir/init.rc.gonk \
@@ -251,7 +266,7 @@ config-galaxy-s2: config-gecko adb-check-version $(APNS_CONF)
 	echo "GONK = galaxys2" >> .config.mk && \
 	export PATH=$$PATH:$$(dirname $(ADB)) && \
 	cp -p config/kernel-galaxy-s2 boot/kernel-android-galaxy-s2/.config && \
-	cd $(GONK_PATH)/device/samsung/galaxys2/ && \
+	cd glue/gonk/device/samsung/galaxys2/ && \
 	echo Extracting binary blobs from device, which should be plugged in! ... && \
 	./extract-files.sh && \
 	echo OK
@@ -270,7 +285,7 @@ config-maguro: .patches.applied config-gecko adb-check-version $(APNS_CONF)
         echo "KERNEL_PATH = ./boot/msm" >> .config.mk && \
 	echo "GONK = maguro" >> .config.mk && \
 	export PATH=$$PATH:$$(dirname $(ADB)) && \
-	cd $(GONK_PATH)/device/toro/maguro && \
+	cd glue/gonk/device/toro/maguro && \
 	echo Extracting binary blobs from device, which should be plugged in! ... && \
 	./extract-files.sh && \
 	echo OK
@@ -280,7 +295,7 @@ config-akami: .patches.applied config-gecko adb-check-version $(APNS_CONF)
 	@echo "KERNEL = msm" > .config.mk && \
         echo "KERNEL_PATH = ./boot/msm" >> .config.mk && \
 	echo "GONK = akami" >> .config.mk && \
-	cd $(GONK_PATH)/device/toro/akami && \
+	cd glue/gonk/device/toro/akami && \
 	echo Extracting binary blobs from device, which should be plugged in! ... && \
 	./extract-files.sh && \
 	echo OK
@@ -289,53 +304,53 @@ config-akami: .patches.applied config-gecko adb-check-version $(APNS_CONF)
 config-gecko:
 	@ln -sf $(PWD)/config/gecko-prof-gonk $(GECKO_PATH)/mozconfig
 
-DOWNLOAD_PATH=$(GONK_PATH)/download
+define INSTALL_BLOBS
+	mkdir -p download-$1 && \
+	mkdir -p $3 && \
+	cd download-$1 && \
+	for BLOB in $2 ; do \
+	  wget -N https://dl.google.com/dl/android/aosp/$$BLOB && \
+	  tar xvfz $$BLOB ; \
+	done && \
+	for BLOB_SH in extract-*.sh ; do \
+	  BLOB_SH_PATH="$$PWD/$$BLOB_SH" && \
+	  ( cd $3 && $$BLOB_SH_PATH ) ; \
+	done
+endef
 
-%.tgz:
-	mkdir -p $(DOWNLOAD_PATH)
-	cd $(DOWNLOAD_PATH) && wget https://dl.google.com/dl/android/aosp/$(notdir $@)
-
-NEXUS_S_BUILD = grj90
-
-$(DOWNLOAD_PATH)/extract-akm-crespo4g.sh:  $(DOWNLOAD_PATH)/akm-crespo4g-$(NEXUS_S_BUILD)-1bec498a.tgz
-	cd $(DOWNLOAD_PATH) && tar zxvf $< && cd $(GONK_PATH) && $@
-
-$(DOWNLOAD_PATH)/extract-broadcom-crespo4g.sh: $(DOWNLOAD_PATH)/broadcom-crespo4g-$(NEXUS_S_BUILD)-c4ec9a38.tgz
-	cd $(DOWNLOAD_PATH) && tar zxvf $< && cd $(GONK_PATH) && $@
-
-$(DOWNLOAD_PATH)/extract-imgtec-crespo4g.sh: $(DOWNLOAD_PATH)/imgtec-crespo4g-$(NEXUS_S_BUILD)-a8e2ce86.tgz
-	cd $(DOWNLOAD_PATH) && tar zxvf $< && cd $(GONK_PATH) && $@
-
-$(DOWNLOAD_PATH)/extract-nxp-crespo4g.sh: $(DOWNLOAD_PATH)/nxp-crespo4g-$(NEXUS_S_BUILD)-9abcae18.tgz
-	cd $(DOWNLOAD_PATH) && tar zxvf $< && cd $(GONK_PATH) && $@
-
-$(DOWNLOAD_PATH)/extract-samsung-crespo4g.sh: $(DOWNLOAD_PATH)/samsung-crespo4g-$(NEXUS_S_BUILD)-9474e48f.tgz
-	cd $(DOWNLOAD_PATH) && tar zxvf $< && cd $(GONK_PATH) && $@
-
-$(DOWNLOAD_PATH)/extract-akm-crespo.sh: $(DOWNLOAD_PATH)/akm-crespo-$(NEXUS_S_BUILD)-5367f21c.tgz
-	cd $(DOWNLOAD_PATH) && tar zxvf $< && cd $(GONK_PATH) && $@
-
-$(DOWNLOAD_PATH)/extract-broadcom-crespo.sh: $(DOWNLOAD_PATH)/broadcom-crespo-$(NEXUS_S_BUILD)-fb8eed0c.tgz
-	cd $(DOWNLOAD_PATH) && tar zxvf $< && cd $(GONK_PATH) && $@
-
-$(DOWNLOAD_PATH)/extract-imgtec-crespo.sh: $(DOWNLOAD_PATH)/imgtec-crespo-$(NEXUS_S_BUILD)-f03db3d1.tgz
-	cd $(DOWNLOAD_PATH) && tar zxvf $< && cd $(GONK_PATH) && $@ && rm -rf $(GONK_PATH)/vendor/imgtec/crespo/overlay
-
-$(DOWNLOAD_PATH)/extract-nxp-crespo.sh: $(DOWNLOAD_PATH)/nxp-crespo-$(NEXUS_S_BUILD)-bcb793da.tgz
-	cd $(DOWNLOAD_PATH) && tar zxvf $< && cd $(GONK_PATH) && $@
-
-$(DOWNLOAD_PATH)/extract-samsung-crespo.sh: $(DOWNLOAD_PATH)/samsung-crespo-$(NEXUS_S_BUILD)-c6e00e6a.tgz
-	cd $(DOWNLOAD_PATH) && tar zxvf $< && cd $(GONK_PATH) && $@
-
-.PHONY: blobs-nexuss4g
-blobs-nexuss4g: $(DOWNLOAD_PATH)/extract-akm-crespo4g.sh $(DOWNLOAD_PATH)/extract-broadcom-crespo4g.sh $(DOWNLOAD_PATH)/extract-imgtec-crespo4g.sh $(DOWNLOAD_PATH)/extract-nxp-crespo4g.sh $(DOWNLOAD_PATH)/extract-samsung-crespo4g.sh
-	mkdir -p $(GONK_PATH)/packages/wallpapers/LivePicker
-	touch $(GONK_PATH)/packages/wallpapers/LivePicker/android.software.live_wallpaper.xml
+NEXUSS_BLOBS := akm-crespo-grj90-5367f21c.tgz \
+                broadcom-crespo-grj90-fb8eed0c.tgz \
+                imgtec-crespo-grj90-f03db3d1.tgz \
+                nxp-crespo-grj90-bcb793da.tgz \
+                samsung-crespo-grj90-c6e00e6a.tgz
 
 .PHONY: blobs-nexuss
-blobs-nexuss: $(DOWNLOAD_PATH)/extract-akm-crespo.sh $(DOWNLOAD_PATH)/extract-broadcom-crespo.sh $(DOWNLOAD_PATH)/extract-imgtec-crespo.sh $(DOWNLOAD_PATH)/extract-nxp-crespo.sh $(DOWNLOAD_PATH)/extract-samsung-crespo.sh
+blobs-nexuss:
+	$(call INSTALL_BLOBS,nexuss,$(NEXUSS_BLOBS),$(abspath glue/gonk))
 	mkdir -p $(GONK_PATH)/packages/wallpapers/LivePicker
 	touch $(GONK_PATH)/packages/wallpapers/LivePicker/android.software.live_wallpaper.xml
+
+NEXUSS4G_BLOBS := akm-crespo4g-grj90-1bec498a.tgz \
+                  broadcom-crespo4g-grj90-c4ec9a38.tgz \
+                  imgtec-crespo4g-grj90-a8e2ce86.tgz \
+                  nxp-crespo4g-grj90-9abcae18.tgz \
+                  samsung-crespo4g-grj90-9474e48f.tgz
+
+.PHONY: blobs-nexuss4g
+blobs-nexuss4g:
+	$(call INSTALL_BLOBS,nexuss4g,$(NEXUSS4G_BLOBS),$(abspath glue/gonk))
+	mkdir -p $(GONK_PATH)/packages/wallpapers/LivePicker
+	touch $(GONK_PATH)/packages/wallpapers/LivePicker/android.software.live_wallpaper.xml
+
+NEXUSS_ICS_BLOBS := akm-crespo-iml74k-48d943ee.tgz \
+                    broadcom-crespo-iml74k-4b0a7e2a.tgz \
+                    imgtec-crespo-iml74k-33420a2f.tgz \
+                    nxp-crespo-iml74k-9f2a89d1.tgz \
+                    samsung-crespo-iml74k-0dbf413c.tgz
+
+.PHONY: blobs-nexuss-ics
+blobs-nexuss-ics:
+	$(call INSTALL_BLOBS,nexuss-ics,$(NEXUSS_ICS_BLOBS),$(abspath glue/gonk-ics))
 
 .PHONY: config-nexuss4g
 config-nexuss4g: blobs-nexuss4g config-gecko $(APNS_CONF)
@@ -351,6 +366,14 @@ config-nexuss: blobs-nexuss config-gecko $(APNS_CONF)
         echo "KERNEL_PATH = ./boot/kernel-android-samsung" >> .config.mk && \
 	echo "GONK = crespo" >> .config.mk && \
 	cp -p config/kernel-nexuss4g boot/kernel-android-samsung/.config && \
+	echo OK
+
+.PHONY: config-nexuss-ics
+config-nexuss-ics: blobs-nexuss-ics gonk-ics-sync config-gecko
+	@echo "KERNEL = samsung" > .config.mk && \
+        echo "KERNEL_PATH = ./boot/kernel-android-samsung" >> .config.mk && \
+	echo "GONK = crespo" >> .config.mk && \
+	echo "GONK_BASE = glue/gonk-ics" >> .config.mk && \
 	echo OK
 
 .PHONY: config-qemu
@@ -604,7 +627,7 @@ test:
 
 GDB_PORT=22576
 GDBINIT=/tmp/b2g.gdbinit.$(shell whoami)
-GDB=$(abspath glue/gonk/prebuilt/linux-x86/tegra-gdb/arm-eabi-gdb)
+GDB=$(abspath $(GONK_BASE)/prebuilt/linux-x86/tegra-gdb/arm-eabi-gdb)
 B2G_BIN=/system/b2g/b2g
 
 .PHONY: forward-gdb-port
@@ -762,7 +785,7 @@ update-time: adb
 	$(ADB) shell toolbox date `date +%s`
 	$(ADB) shell setprop persist.sys.timezone $(TIMEZONE)
 
-VALGRIND_DIR=$(abspath glue/gonk/prebuilt/android-arm/valgrind)
+VALGRIND_DIR=$(abspath $(GONK_BASE)/prebuilt/android-arm/valgrind)
 .PHONY: install-valgrind
 install-valgrind: disable-auto-restart
 	$(ADB) remount
