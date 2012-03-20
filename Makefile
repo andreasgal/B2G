@@ -468,13 +468,14 @@ kernel-%:
 OUT_DIR := $(GONK_PATH)/out/target/product/$(GONK)/system
 DATA_OUT_DIR := $(GONK_PATH)/out/target/product/$(GONK)/data
 APP_OUT_DIR := $(OUT_DIR)/app
+GECKO_OUT_DIR := $(OUT_DIR)/b2g
 
 $(APP_OUT_DIR):
 	mkdir -p $(APP_OUT_DIR)
 
 .PHONY: gecko-install-hack
 gecko-install-hack: gecko
-	rm -rf $(OUT_DIR)/b2g
+	rm -rf $(GECKO_OUT_DIR)
 	mkdir -p $(OUT_DIR)/lib
 	# Extract the newest tarball in the gecko objdir.
 	( cd $(OUT_DIR) && \
@@ -488,19 +489,19 @@ gaia-hack: gaia
 	mkdir -p $(OUT_DIR)/home
 	mkdir -p $(DATA_OUT_DIR)/local
 	cp -r $(GAIA_PATH)/* $(DATA_OUT_DIR)/local
-	rm -rf $(OUT_DIR)/b2g/defaults/profile
-	mkdir -p $(OUT_DIR)/b2g/defaults
-	cp -r $(GAIA_PATH)/profile $(OUT_DIR)/b2g/defaults
+	rm -rf $(GECKO_OUT_DIR)/defaults/profile
+	mkdir -p $(GECKO_OUT_DIR)/defaults
+	cp -r $(GAIA_PATH)/profile $(GECKO_OUT_DIR)/defaults
 
 .PHONY: install-gecko
 install-gecko: gecko-install-hack adb-check-version
 	$(ADB) remount
-	$(ADB) push $(OUT_DIR)/b2g /system/b2g
+	$(ADB) push $(GECKO_OUT_DIR) /system/b2g
 
 .PHONY: install-gecko-only
 install-gecko-only:
 	$(ADB) remount
-	$(ADB) push $(OUT_DIR)/b2g /system/b2g
+	$(ADB) push $(GECKO_OUT_DIR) /system/b2g
 
 # The sad hacks keep piling up...  We can't set this up to be
 # installed as part of the data partition because we can't flash that
@@ -552,6 +553,15 @@ package:
 	cp -R $(GONK_PATH)/out/target/product/generic $(PKG_DIR)/qemu
 	cp -R $(GAIA_PATH)/tests $(PKG_DIR)/gaia
 	cd $(PKG_DIR) && tar -czvf qemu_package.tar.gz qemu gaia
+
+UPDATE_PACKAGE_TARGET ?= b2g-gecko-update.mar
+MAR ?= $(GECKO_OBJDIR)/dist/host/bin/mar
+MAKE_FULL_UPDATE ?= $(GECKO_PATH)/tools/update-packaging/make_full_update.sh
+.PHONY: gecko-full-update
+gecko-update-full: gecko
+	MAR=$(MAR) $(MAKE_FULL_UPDATE) $(UPDATE_PACKAGE_TARGET) $(GECKO_OUT_DIR)
+	sha512sum $(UPDATE_PACKAGE_TARGET)
+	ls -l $(UPDATE_PACKAGE_TARGET)
 
 #
 # Package up everything needed to build mozilla-central with
