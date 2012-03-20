@@ -375,7 +375,7 @@ config-nexuss-ics: blobs-nexuss-ics gonk-ics-sync config-gecko
 	echo "GONK = crespo" >> .config.mk && \
 	echo "GONK_BASE = glue/gonk-ics" >> .config.mk && \
 	echo "TOOLCHAIN_PATH = ./toolchains/arm-linux-androideabi-4.6.3/linux-x86/bin/arm-linux-androideabi-" >> .config.mk && \
-	echo "EXTRA_INCLUDE = -include \"$(abspath Unicode.h)\"" >> .config.mk && \
+	echo "EXTRA_INCLUDE = -include $(abspath Unicode.h)" >> .config.mk && \
 	echo OK
 
 .PHONY: config-qemu
