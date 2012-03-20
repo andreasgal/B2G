@@ -16,7 +16,7 @@ GONK_BASE ?= glue/gonk
 FASTBOOT ?= $(abspath $(GONK_BASE)/out/host/linux-x86/bin/fastboot)
 HEIMDALL ?= heimdall
 TOOLCHAIN_HOST = linux-x86
-TOOLCHAIN_PATH = $(GONK_BASE)/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3/bin
+TOOLCHAIN_PATH ?= $(GONK_BASE)/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3/bin
 
 GAIA_PATH ?= $(abspath gaia)
 GECKO_PATH ?= $(abspath gecko)
@@ -183,7 +183,7 @@ define GECKO_BUILD_CMD
 	export GONK_PRODUCT="$(GONK)" && \
 	export GONK_PATH="$(GONK_PATH)" && \
 	export TARGET_TOOLS_PREFIX="$(abspath $(TOOLCHAIN_PATH))" && \
-	export EXTRA_INCLUDE="-include $(abspath Unicode.h)" && \
+	export EXTRA_INCLUDE="$(EXTRA_INCLUDE)" && \
 	ulimit -n 4096 && \
 	$(MAKE) -C $(GECKO_PATH) -f client.mk -s $(MAKE_FLAGS) && \
 	$(MAKE) -C $(GECKO_OBJDIR) package
@@ -374,6 +374,8 @@ config-nexuss-ics: blobs-nexuss-ics gonk-ics-sync config-gecko
         echo "KERNEL_PATH = ./boot/kernel-android-samsung" >> .config.mk && \
 	echo "GONK = crespo" >> .config.mk && \
 	echo "GONK_BASE = glue/gonk-ics" >> .config.mk && \
+	echo "TOOLCHAIN_PATH = ./toolchains/arm-linux-androideabi-4.6.3/linux-x86/bin/arm-linux-androideabi-" >> .config.mk && \
+	echo "EXTRA_INCLUDE = -include \"$(abspath Unicode.h)\"" >> .config.mk && \
 	echo OK
 
 .PHONY: config-qemu
@@ -627,7 +629,7 @@ test:
 
 GDB_PORT=22576
 GDBINIT=/tmp/b2g.gdbinit.$(shell whoami)
-GDB=$(abspath $(GONK_BASE)/prebuilt/linux-x86/tegra-gdb/arm-eabi-gdb)
+GDB=$(abspath toolchains/arm-linux-androideabi-4.6.3/linux-x86/bin/arm-linux-androideabi-gdb)
 B2G_BIN=/system/b2g/b2g
 
 .PHONY: forward-gdb-port
@@ -666,7 +668,7 @@ restore-auto-restart: adb-check-version
 
 .PHONY: run-gdb-server
 run-gdb-server: adb-check-version forward-gdb-port kill-gdb-server disable-auto-restart
-	$(ADB) shell gdbserver :$(GDB_PORT) $(B2G_BIN).d &
+	$(ADB) shell LD_LIBRARY_PATH=/system/b2g gdbserver :$(GDB_PORT) $(B2G_BIN).d &
 	sleep 1
 
 .PHONY: run-gdb
