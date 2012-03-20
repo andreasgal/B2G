@@ -195,6 +195,8 @@ endef
 # client.mk understood the |package| target.
 gecko:
 	@$(call DEP_CHECK,$(GECKO_OBJDIR)/.b2g-build-done,$(GECKO_PATH),\
+	$(call GECKO_BUILD_CMD) \
+	)
 
 .PHONY: gonk
 gonk: gaia-hack
