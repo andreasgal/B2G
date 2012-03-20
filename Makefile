@@ -195,8 +195,6 @@ endef
 # client.mk understood the |package| target.
 gecko:
 	@$(call DEP_CHECK,$(GECKO_OBJDIR)/.b2g-build-done,$(GECKO_PATH),\
-	$(call GECKO_BUILD_CMD) \
-	)
 
 .PHONY: gonk
 gonk: gaia-hack
@@ -311,7 +309,10 @@ define INSTALL_BLOBS
 	done && \
 	for BLOB_SH in extract-*.sh ; do \
 	  BLOB_SH_PATH="$$PWD/$$BLOB_SH" && \
-	  ( cd $3 && $$BLOB_SH_PATH ) ; \
+	  VENDOR=`echo $$BLOB_SH | sed -e "s/extract-\([a-zA-Z]*\).*$$/\1/"` && \
+	  if [ ! -e $3/vendor/$$VENDOR ]; then \
+	    ( cd $3 && $$BLOB_SH_PATH ) ; \
+	  fi ; \
 	done
 endef
 
