@@ -183,6 +183,7 @@ define GECKO_BUILD_CMD
 	export GONK_PRODUCT="$(GONK)" && \
 	export GONK_PATH="$(GONK_PATH)" && \
 	export TARGET_TOOLS_PREFIX="$(abspath $(TOOLCHAIN_PATH))" && \
+	export MOZCONFIG="$(PWD)/config/gecko-prof-gonk" && \
 	export EXTRA_INCLUDE='$(EXTRA_INCLUDE)' && \
 	ulimit -n 4096 && \
 	$(MAKE) -C $(GECKO_PATH) -f client.mk -s $(MAKE_FLAGS) && \
@@ -260,7 +261,7 @@ $(APNS_CONF): $(VENDOR_DIR)
 	wget -O $(APNS_CONF) https://raw.github.com/CyanogenMod/android_vendor_cyanogen/gingerbread/prebuilt/common/etc/apns-conf.xml
 
 .PHONY: config-galaxy-s2
-config-galaxy-s2: config-gecko adb-check-version $(APNS_CONF)
+config-galaxy-s2: adb-check-version $(APNS_CONF)
 	@echo "KERNEL = galaxy-s2" > .config.mk && \
         echo "KERNEL_PATH = ./boot/kernel-android-galaxy-s2" >> .config.mk && \
 	echo "GONK = galaxys2" >> .config.mk && \
@@ -280,7 +281,7 @@ config-galaxy-s2: config-gecko adb-check-version $(APNS_CONF)
 	touch $@
 
 .PHONY: config-maguro
-config-maguro: .patches.applied config-gecko adb-check-version $(APNS_CONF)
+config-maguro: .patches.applied adb-check-version $(APNS_CONF)
 	@echo "KERNEL = msm" > .config.mk && \
         echo "KERNEL_PATH = ./boot/msm" >> .config.mk && \
 	echo "GONK = maguro" >> .config.mk && \
@@ -291,7 +292,7 @@ config-maguro: .patches.applied config-gecko adb-check-version $(APNS_CONF)
 	echo OK
 
 .PHONY: config-akami
-config-akami: .patches.applied config-gecko adb-check-version $(APNS_CONF)
+config-akami: .patches.applied adb-check-version $(APNS_CONF)
 	@echo "KERNEL = msm" > .config.mk && \
         echo "KERNEL_PATH = ./boot/msm" >> .config.mk && \
 	echo "GONK = akami" >> .config.mk && \
@@ -299,10 +300,6 @@ config-akami: .patches.applied config-gecko adb-check-version $(APNS_CONF)
 	echo Extracting binary blobs from device, which should be plugged in! ... && \
 	./extract-files.sh && \
 	echo OK
-
-.PHONY: config-gecko
-config-gecko:
-	@ln -sf $(PWD)/config/gecko-prof-gonk $(GECKO_PATH)/mozconfig
 
 define INSTALL_BLOBS
 	mkdir -p download-$1 && \
@@ -353,7 +350,7 @@ blobs-nexuss-ics:
 	$(call INSTALL_BLOBS,nexuss-ics,$(NEXUSS_ICS_BLOBS),$(abspath glue/gonk-ics))
 
 .PHONY: config-nexuss4g
-config-nexuss4g: blobs-nexuss4g config-gecko $(APNS_CONF)
+config-nexuss4g: blobs-nexuss4g $(APNS_CONF)
 	@echo "KERNEL = samsung" > .config.mk && \
         echo "KERNEL_PATH = ./boot/kernel-android-samsung" >> .config.mk && \
 	echo "GONK = crespo4g" >> .config.mk && \
@@ -361,7 +358,7 @@ config-nexuss4g: blobs-nexuss4g config-gecko $(APNS_CONF)
 	echo OK
 
 .PHONY: config-nexuss
-config-nexuss: blobs-nexuss config-gecko $(APNS_CONF)
+config-nexuss: blobs-nexuss $(APNS_CONF)
 	@echo "KERNEL = samsung" > .config.mk && \
         echo "KERNEL_PATH = ./boot/kernel-android-samsung" >> .config.mk && \
 	echo "GONK = crespo" >> .config.mk && \
@@ -369,7 +366,7 @@ config-nexuss: blobs-nexuss config-gecko $(APNS_CONF)
 	echo OK
 
 .PHONY: config-nexuss-ics
-config-nexuss-ics: blobs-nexuss-ics gonk-ics-sync config-gecko
+config-nexuss-ics: blobs-nexuss-ics gonk-ics-sync
 	@echo "KERNEL = samsung" > .config.mk && \
         echo "KERNEL_PATH = ./boot/kernel-android-samsung" >> .config.mk && \
 	echo "GONK = crespo" >> .config.mk && \
@@ -379,7 +376,7 @@ config-nexuss-ics: blobs-nexuss-ics gonk-ics-sync config-gecko
 	echo OK
 
 .PHONY: config-qemu
-config-qemu: config-gecko
+config-qemu:
 	@echo "KERNEL = qemu" > .config.mk && \
         echo "KERNEL_PATH = ./boot/kernel-android-qemu" >> .config.mk && \
 	echo "GONK = generic" >> .config.mk && \
