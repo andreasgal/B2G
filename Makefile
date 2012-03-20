@@ -183,7 +183,7 @@ define GECKO_BUILD_CMD
 	export GONK_PRODUCT="$(GONK)" && \
 	export GONK_PATH="$(GONK_PATH)" && \
 	export TARGET_TOOLS_PREFIX="$(abspath $(TOOLCHAIN_PATH))" && \
-	export EXTRA_INCLUDE="$(EXTRA_INCLUDE)" && \
+	export EXTRA_INCLUDE='$(EXTRA_INCLUDE)' && \
 	ulimit -n 4096 && \
 	$(MAKE) -C $(GECKO_PATH) -f client.mk -s $(MAKE_FLAGS) && \
 	$(MAKE) -C $(GECKO_OBJDIR) package
