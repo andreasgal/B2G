@@ -394,13 +394,13 @@ config-qemu:
 # XXX Using target-specific targets for the time being.  fastboot is
 # great, but the sgs2 doesn't support it.  Eventually we should find a
 # lowest-common-denominator solution.
-flash: flash-$(GONK)
+flash: update-time flash-$(GONK)
 
 # flash-only targets are the same as flash targets, except that they don't
 # depend on building the image.
 
 .PHONY: flash-only
-flash-only: flash-only-$(GONK)
+flash-only: update-time flash-only-$(GONK)
 
 .PHONY: flash-crespo
 flash-crespo: flash-crespo4g
@@ -788,7 +788,7 @@ op_show:
 	@opreport --session-dir=oprofile -p $(PWD)/oprofile/symbols -l
 	@opreport --session-dir=oprofile -p $(PWD)/oprofile/symbols -l -o $(PWD)/oprofile/oprofile.log 2>/dev/null
 
-TIMEZONE ?= Europe/Madrid
+TIMEZONE ?= $(shell date +%Z%:::z|tr +- -+)
 
 .PHONY: update-time
 update-time: adb
