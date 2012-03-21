@@ -119,3 +119,19 @@ endif
 # Atheros ---
 
 #TARGET_RECOVERY_UPDATER_LIBS += librecovery_updater_qcom
+
+# Maguro blobs expect the following property values. Sneak them into
+# /build.prop so that the defaults added to /system/build.prop by the
+# build system are ignored (easier than messing around with the core
+# build system at the moment.)
+#
+# TODO: This should eventually be fixed properly by renaming device/
+#       directories...
+#
+ADDITIONAL_DEFAULT_PROPERTIES :=  \
+   ro.product.model=msm7627a_sku1 \
+   ro.product.brand=qcom \
+   ro.product.name=msm7627a_sku1 \
+   ro.product.device=msm7627a_sku1 \
+   ro.product.board=msm7627a_sku1 \
+   ro.build.product=msm7627a_sku1 \
