@@ -494,7 +494,6 @@ gaia-hack: gaia
 	cp -r $(GAIA_PATH)/* $(DATA_OUT_DIR)/local
 	rm -rf $(GECKO_OUT_DIR)/defaults/profile
 	mkdir -p $(GECKO_OUT_DIR)/defaults
-	cp -r $(GAIA_PATH)/profile $(GECKO_OUT_DIR)/defaults
 
 .PHONY: install-gecko
 install-gecko: gecko-install-hack adb-check-version
