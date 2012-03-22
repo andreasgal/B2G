@@ -310,11 +310,11 @@ define INSTALL_BLOBS
 	  tar xvfz $$BLOB ; \
 	done && \
 	for BLOB_SH in extract-*.sh ; do \
+		PATH=$(FAKE_JDK_PATH):$$PATH && \
 	  BLOB_SH_PATH="$$PWD/$$BLOB_SH" && \
 	  VENDOR=`echo $$BLOB_SH | sed -e "s/extract-\([a-zA-Z]*\).*$$/\1/"` && \
-	  if [ ! -e $3/vendor/$$VENDOR ]; then \
-	    ( cd $3 && $$BLOB_SH_PATH ) ; \
-	  fi ; \
+		( cd $3 && \
+		yes I ACCEPT | $$BLOB_SH_PATH ) ;\
 	done
 endef
 
