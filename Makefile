@@ -512,7 +512,7 @@ install-gecko-only:
 PROFILE := $$($(ADB) shell ls -d /data/b2g/mozilla/*.default | tr -d '\r')
 PROFILE_DATA := $(GAIA_PATH)/profile
 .PHONY: install-gaia
-install-gaia: adb-check-version
+install-gaia: adb-check-version copy-manifests
 	@for file in $$(ls $(PROFILE_DATA)); \
 	do \
 		data=$${file##*/}; \
@@ -521,6 +521,23 @@ install-gaia: adb-check-version
 		$(ADB) push $(GAIA_PATH)/profile/$$data $(PROFILE)/$$data; \
 	done
 	@for i in $$(ls $(GAIA_PATH)); do $(ADB) push $(GAIA_PATH)/$$i /data/local/$$i; done
+
+# Copy the app manifest files to the profile dir where the
+# mozApps API can find them. This target is invoked automatically when you
+# run make install-gaia. For desktop b2g, however, you must run 
+# make copy-manifests after any new apps or added or after manifests change
+# For desktop usage, you must create a symbolic link from your
+# profile directory to $GAIA/profile/webapps
+copy-manifests:
+	@mkdir -p $(GAIA_PATH)/profile/webapps
+	@cp $(GAIA_PATH)/apps/webapps.json $(GAIA_PATH)/profile/webapps
+	@cd $(GAIA_PATH)/apps; \
+	for d in `find * -type d -maxdepth 0` ;\
+	do \
+		mkdir -p ../profile/webapps/$$d; \
+		cp $$d/manifest.json ../profile/webapps/$$d  ;\
+	done
+
 
 .PHONY: image
 image: build
