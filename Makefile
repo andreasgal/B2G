@@ -177,6 +177,14 @@ KERNEL_DIR = boot/kernel-android-$(KERNEL)
 GECKO_OBJDIR = $(GECKO_PATH)/objdir-prof-gonk
 GONK_OBJDIR=$(abspath $(GONK_BASE)/out/target/product/$(GONK))
 
+# host gecko build for xpcshell
+GECKO_HOST_OBJDIR = $(GECKO_PATH)/objdir-prof-host
+XPCSHELL = $(GECKO_HOST_OBJDIR)/dist/bin/xpcshell
+
+$(XPCSHELL):
+	mkdir -p $(GECKO_HOST_OBJDIR)
+	cd $(GECKO_HOST_OBJDIR) && ../configure --enable-application=xulrunner --target=i686-linux --disable-gtk --disable-omx-plugin --disable-crashreporter --disable-necko-wifi && make $(MAKE_FLAGS)
+
 define GECKO_BUILD_CMD
 	export MAKE_FLAGS=$(MAKE_FLAGS) && \
 	export CONFIGURE_ARGS="$(GECKO_CONFIGURE_ARGS)" && \
@@ -508,35 +516,9 @@ install-gecko-only:
 # The sad hacks keep piling up...  We can't set this up to be
 # installed as part of the data partition because we can't flash that
 # on the sgs2.
-PROFILE := $$($(ADB) shell ls -d /data/b2g/mozilla/*.default | tr -d '\r')
-PROFILE_DATA := $(GAIA_PATH)/profile
 .PHONY: install-gaia
-install-gaia: adb-check-version copy-manifests
-	@for file in $$(ls $(PROFILE_DATA)); \
-	do \
-		data=$${file##*/}; \
-		echo Copying $$data; \
-		$(ADB) shell rm -r $(PROFILE)/$$data; \
-		$(ADB) push $(GAIA_PATH)/profile/$$data $(PROFILE)/$$data; \
-	done
-	@for i in $$(ls $(GAIA_PATH)); do $(ADB) push $(GAIA_PATH)/$$i /data/local/$$i; done
-
-# Copy the app manifest files to the profile dir where the
-# mozApps API can find them. This target is invoked automatically when you
-# run make install-gaia. For desktop b2g, however, you must run 
-# make copy-manifests after any new apps or added or after manifests change
-# For desktop usage, you must create a symbolic link from your
-# profile directory to $GAIA/profile/webapps
-copy-manifests:
-	@mkdir -p $(GAIA_PATH)/profile/webapps
-	@cp $(GAIA_PATH)/apps/webapps.json $(GAIA_PATH)/profile/webapps
-	@cd $(GAIA_PATH)/apps; \
-	for d in `find * -type d -maxdepth 0` ;\
-	do \
-		mkdir -p ../profile/webapps/$$d; \
-		cp $$d/manifest.json ../profile/webapps/$$d  ;\
-	done
-
+install-gaia: adb-check-version $(XPCSHELL)
+	cd gaia && MOZ_OBJDIR=../gecko/objdir-prof-host/dist/bin/ make install-gaia
 
 .PHONY: image
 image: build
