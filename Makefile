@@ -489,6 +489,7 @@ gecko-install-hack: gecko
 .PHONY: gaia
 gaia:
 	$(MAKE) -C $(GAIA_PATH) gaia
+	rm -rf $(DATA_OUT_DIR)/local
 	mkdir -p $(DATA_OUT_DIR)/local
 	cp -r $(GAIA_PATH)/profile/* $(DATA_OUT_DIR)/local
 
