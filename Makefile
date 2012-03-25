@@ -177,14 +177,6 @@ KERNEL_DIR = boot/kernel-android-$(KERNEL)
 GECKO_OBJDIR = $(GECKO_PATH)/objdir-prof-gonk
 GONK_OBJDIR=$(abspath $(GONK_BASE)/out/target/product/$(GONK))
 
-# host gecko build for xpcshell
-GECKO_HOST_OBJDIR = $(GECKO_PATH)/objdir-prof-host
-XPCSHELL = $(GECKO_HOST_OBJDIR)/dist/bin/xpcshell
-
-$(XPCSHELL):
-	mkdir -p $(GECKO_HOST_OBJDIR)
-	cd $(GECKO_HOST_OBJDIR) && ../configure --enable-application=xulrunner --target=i686-linux --disable-gtk --disable-omx-plugin --disable-crashreporter --disable-necko-wifi && make $(MAKE_FLAGS)
-
 define GECKO_BUILD_CMD
 	export MAKE_FLAGS=$(MAKE_FLAGS) && \
 	export CONFIGURE_ARGS="$(GECKO_CONFIGURE_ARGS)" && \
@@ -207,7 +199,7 @@ gecko:
 	)
 
 .PHONY: gonk
-gonk: gaia-hack
+gonk: gaia
 	@$(call DEP_CHECK,$(GONK_PATH)/out/.b2g-build-done,$(GONK_BASE), \
 	    $(call GONK_CMD,$(MAKE) $(MAKE_FLAGS) $(GONK_MAKE_FLAGS)) ; \
 	    $(if $(filter qemu,$(KERNEL)), \
@@ -417,12 +409,10 @@ flash-crespo: flash-crespo4g
 flash-only-crespo: flash-only-crespo4g
 
 .PHONY: flash-crespo4g
-flash-crespo4g: image adb-check-version
-	@$(call GONK_CMD,$(ADB) reboot bootloader && fastboot flashall -w)
+flash-crespo4g: image adb-check-version flash-only-fastboot
 
 .PHONY: flash-only-crespo4g
-flash-only-crespo4g: adb-check-version
-	@$(call GONK_CMD,$(ADB) reboot bootloader && fastboot flashall -w)
+flash-only-crespo4g: adb-check-version flash-only-fastboot
 
 define FLASH_GALAXYS2_CMD
 $(ADB) reboot download 
@@ -443,19 +433,21 @@ flash-only-galaxys2: adb-check-version
 flash-maguro: image flash-only-maguro
 
 .PHONY: flash-only-maguro
-flash-only-maguro: flash-only-toro
+flash-only-maguro: flash-only-fastboot
 
 .PHONY: flash-akami
 flash-akami: image flash-only-akami
 
 .PHONY: flash-only-akami
-flash-only-akami: flash-only-toro
+flash-only-akami: flash-only-fastboot
 
-.PHONY: flash-only-toro
-flash-only-toro:
+# Flash devices that use the fastboot protocol.
+.PHONY: flash-only-fastboot
+flash-only-fastboot:
 	@$(call GONK_CMD, \
 	$(ADB) reboot bootloader && \
 	$(FASTBOOT) devices && \
+	$(FASTBOOT) erase cache && \
 	$(FASTBOOT) erase userdata && \
 	$(FASTBOOT) flash userdata ./out/target/product/$(GONK)/userdata.img && \
 	$(FASTBOOT) flashall)
@@ -494,14 +486,11 @@ gecko-install-hack: gecko
 	find $(GONK_PATH)/out -name "system.img" | xargs rm -f
 	@$(call GONK_CMD,$(MAKE) $(MAKE_FLAGS) $(GONK_MAKE_FLAGS) systemimage-nodeps)
 
-.PHONY: gaia-hack
-gaia-hack: gaia
-	rm -rf $(OUT_DIR)/home
-	mkdir -p $(OUT_DIR)/home
+.PHONY: gaia
+gaia:
+	$(MAKE) -C $(GAIA_PATH) gaia
 	mkdir -p $(DATA_OUT_DIR)/local
 	cp -r $(GAIA_PATH)/profile/* $(DATA_OUT_DIR)/local
-	rm -rf $(GECKO_OUT_DIR)/defaults/profile
-	mkdir -p $(GECKO_OUT_DIR)/defaults
 
 .PHONY: install-gecko
 install-gecko: gecko-install-hack adb-check-version
@@ -517,8 +506,8 @@ install-gecko-only:
 # installed as part of the data partition because we can't flash that
 # on the sgs2.
 .PHONY: install-gaia
-install-gaia: adb-check-version $(XPCSHELL)
-	cd gaia && MOZ_OBJDIR=../gecko/objdir-prof-host/dist/bin/ make install-gaia
+install-gaia: adb-check-version
+	$(MAKE) -C $(GAIA_PATH) install-gaia
 
 .PHONY: image
 image: build
