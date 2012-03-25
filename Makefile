@@ -499,7 +499,7 @@ gaia-hack: gaia
 	rm -rf $(OUT_DIR)/home
 	mkdir -p $(OUT_DIR)/home
 	mkdir -p $(DATA_OUT_DIR)/local
-	cp -r $(GAIA_PATH)/* $(DATA_OUT_DIR)/local
+	cp -r $(GAIA_PATH)/profile/* $(DATA_OUT_DIR)/local
 	rm -rf $(GECKO_OUT_DIR)/defaults/profile
 	mkdir -p $(GECKO_OUT_DIR)/defaults
 
