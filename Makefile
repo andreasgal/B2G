@@ -400,7 +400,7 @@ flash: update-time flash-$(GONK)
 # depend on building the image.
 
 .PHONY: flash-only
-flash-only: update-time flash-only-$(GONK)
+flash-only: flash-only-$(GONK) update-time
 
 .PHONY: flash-crespo
 flash-crespo: flash-crespo4g
