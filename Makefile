@@ -16,7 +16,8 @@ GONK_BASE ?= glue/gonk
 FASTBOOT ?= $(abspath $(GONK_BASE)/out/host/linux-x86/bin/fastboot)
 HEIMDALL ?= heimdall
 TOOLCHAIN_HOST = linux-x86
-TOOLCHAIN_PATH ?= $(GONK_BASE)/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3/bin
+TOOLCHAIN_PATH ?= $(GONK_BASE)/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3/bin/arm-eabi-
+KERNEL_TOOLCHAIN_PATH ?= $(GONK_BASE)/prebuilt/$(TOOLCHAIN_HOST)/toolchain/arm-eabi-4.4.3/bin
 
 GAIA_PATH ?= $(abspath gaia)
 GECKO_PATH ?= $(abspath gecko)
@@ -215,13 +216,13 @@ kernel:
 		(rm -rf boot/initramfs && \
 		    cd boot/clockworkmod_galaxys2_initramfs && \
 		    $(GIT) checkout-index -a -f --prefix ../initramfs/); \
-		PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" \
+		PATH="$$PATH:$(abspath $(KERNEL_TOOLCHAIN_PATH))" \
 		    $(MAKE) -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm \
 		    CROSS_COMPILE="$(CCACHE) arm-eabi-"; \
 		find "$(KERNEL_DIR)" -name "*.ko" | \
 		    xargs -I MOD cp MOD "$(PWD)/boot/initramfs/lib/modules"; \
 	    ) \
-	    PATH="$$PATH:$(abspath $(TOOLCHAIN_PATH))" \
+	    PATH="$$PATH:$(abspath $(KERNEL_TOOLCHAIN_PATH))" \
 		$(MAKE) -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm \
 		CROSS_COMPILE="$(CCACHE) arm-eabi-"; )
 
