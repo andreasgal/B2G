@@ -374,7 +374,7 @@ config-nexuss-ics: blobs-nexuss-ics gonk-ics-sync
         echo "KERNEL_PATH = ./boot/kernel-android-samsung" >> .config.mk && \
 	echo "GONK = crespo" >> .config.mk && \
 	echo "GONK_BASE = glue/gonk-ics" >> .config.mk && \
-	echo "TOOLCHAIN_PATH = ./toolchains/arm-linux-androideabi-4.6.3/linux-x86/bin/arm-linux-androideabi-" >> .config.mk && \
+	echo "TOOLCHAIN_PATH = ./toolchains/arm-linux-androideabi-4.4.x/bin/arm-linux-androideabi-" >> .config.mk && \
 	echo "EXTRA_INCLUDE = -include $(abspath Unicode.h)" >> .config.mk && \
 	echo OK
 
