@@ -345,7 +345,7 @@
 	url = git://codeaurora.org/quic/qrd-android/kernel/msm.git
 [submodule "marionette"]
 	path = marionette
-	url = git://github.com/marionette/marionette_client.git
+	url = git://github.com/mozilla/marionette_client.git
 [submodule "glue/gonk/external/busybox"]
 	path = glue/gonk/external/busybox
 	url = git://android.git.linaro.org/platform/external/busybox.git
