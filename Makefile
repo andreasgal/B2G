@@ -319,18 +319,6 @@ define INSTALL_BLOBS
 	done
 endef
 
-NEXUSS_BLOBS := akm-crespo-grj90-5367f21c.tgz \
-                broadcom-crespo-grj90-fb8eed0c.tgz \
-                imgtec-crespo-grj90-f03db3d1.tgz \
-                nxp-crespo-grj90-bcb793da.tgz \
-                samsung-crespo-grj90-c6e00e6a.tgz
-
-.PHONY: blobs-nexuss
-blobs-nexuss:
-	$(call INSTALL_BLOBS,nexuss,$(NEXUSS_BLOBS),$(abspath glue/gonk))
-	mkdir -p $(GONK_PATH)/packages/wallpapers/LivePicker
-	touch $(GONK_PATH)/packages/wallpapers/LivePicker/android.software.live_wallpaper.xml
-
 NEXUSS4G_BLOBS := akm-crespo4g-grj90-1bec498a.tgz \
                   broadcom-crespo4g-grj90-c4ec9a38.tgz \
                   imgtec-crespo4g-grj90-a8e2ce86.tgz \
@@ -353,6 +341,13 @@ NEXUSS_ICS_BLOBS := akm-crespo-iml74k-48d943ee.tgz \
 blobs-nexuss-ics:
 	$(call INSTALL_BLOBS,nexuss-ics,$(NEXUSS_ICS_BLOBS),$(abspath glue/gonk-ics))
 
+GALAXY_NEXUS_BLOBS := broadcom-maguro-imm76d-4ee51a8d.tgz \
+                      imgtec-maguro-imm76d-0f59ea74.tgz \
+                      samsung-maguro-imm76d-d16591cf.tgz
+.PHONY: blobs-galaxy-nexus
+blobs-galaxy-nexus:
+	$(call INSTALL_BLOBS,galaxy-nexus,$(GALAXY_NEXUS_BLOBS),$(abspath glue/gonk-ics))
+
 .PHONY: config-nexuss4g
 config-nexuss4g: blobs-nexuss4g $(APNS_CONF)
 	@echo "KERNEL = samsung" > .config.mk && \
@@ -361,19 +356,21 @@ config-nexuss4g: blobs-nexuss4g $(APNS_CONF)
 	cp -p config/kernel-nexuss4g boot/kernel-android-samsung/.config && \
 	echo OK
 
-.PHONY: config-nexuss
-config-nexuss: blobs-nexuss $(APNS_CONF)
-	@echo "KERNEL = samsung" > .config.mk && \
-        echo "KERNEL_PATH = ./boot/kernel-android-samsung" >> .config.mk && \
-	echo "GONK = crespo" >> .config.mk && \
-	cp -p config/kernel-nexuss4g boot/kernel-android-samsung/.config && \
-	echo OK
-
 .PHONY: config-nexuss-ics
 config-nexuss-ics: blobs-nexuss-ics gonk-ics-sync
 	@echo "KERNEL = samsung" > .config.mk && \
         echo "KERNEL_PATH = ./boot/kernel-android-samsung" >> .config.mk && \
 	echo "GONK = crespo" >> .config.mk && \
+	echo "GONK_BASE = glue/gonk-ics" >> .config.mk && \
+	echo "TOOLCHAIN_PATH = ./toolchains/arm-linux-androideabi-4.4.x/bin/arm-linux-androideabi-" >> .config.mk && \
+	echo "EXTRA_INCLUDE = -include $(abspath Unicode.h)" >> .config.mk && \
+	echo OK
+
+.PHONY: config-galaxy-nexus
+config-galaxy-nexus: blobs-galaxy-nexus gonk-ics-sync
+	@echo "KERNEL = samsung" > .config.mk && \
+        echo "KERNEL_PATH = ./boot/kernel-android-samsung" >> .config.mk && \
+	echo "GONK = maguro" >> .config.mk && \
 	echo "GONK_BASE = glue/gonk-ics" >> .config.mk && \
 	echo "TOOLCHAIN_PATH = ./toolchains/arm-linux-androideabi-4.4.x/bin/arm-linux-androideabi-" >> .config.mk && \
 	echo "EXTRA_INCLUDE = -include $(abspath Unicode.h)" >> .config.mk && \
