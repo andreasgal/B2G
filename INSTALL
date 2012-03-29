@@ -61,6 +61,41 @@ and back up your device.
 $ make gonk
 $ make flash
 
+ == Fastboot Phones ==
+
+This includes the Nexus S, maguro, akami, and Galaxy Nexus.
+
+Flashing a recovery image and backing up your phone is recommended
+before trying flashing B2G.
+
+$ cd $B2G
+$ make sync
+
+Pick an appropriate configure command for your phone:
+--
+# Nexus S. Flash your phone to ICS first
+$ make config-nexuss-ics
+
+# Maguro
+$ make config-maguro
+
+# Akami
+$ make config-akami
+
+# Galaxy Nexus
+$ make config-galaxy-nexus
+--
+
+# Build
+$ make gonk
+$ make
+
+# Unlock your bootloader if you haven't already
+$ make unlock-bootloader
+
+# Make sure your phone is booted up normally before flashing
+$ make flash-only
+
  == Android Emulator ==
 
 $ cd $B2G
