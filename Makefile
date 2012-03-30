@@ -167,11 +167,11 @@ B2G_PID=$(shell $(ADB) shell toolbox ps | grep "b2g" | awk '{ print $$2; }')
 GDBSERVER_PID=$(shell $(ADB) shell toolbox ps | grep "gdbserver" | awk '{ print $$2; }')
 
 .PHONY: build
-build: gecko-install-hack
+build: gecko-install-hack gaia
 	$(MAKE) gonk
 
 ifeq (qemu,$(KERNEL))
-build: kernel bootimg-hack
+build: kernel bootimg-hack gaia
 endif
 
 KERNEL_DIR = boot/kernel-android-$(KERNEL)
@@ -200,7 +200,7 @@ gecko:
 	)
 
 .PHONY: gonk
-gonk: gaia
+gonk:
 	@$(call DEP_CHECK,$(GONK_PATH)/out/.b2g-build-done,$(GONK_BASE), \
 	    $(call GONK_CMD,$(MAKE) $(MAKE_FLAGS) $(GONK_MAKE_FLAGS)) ; \
 	    $(if $(filter qemu,$(KERNEL)), \
@@ -392,7 +392,7 @@ config-qemu:
 # XXX Using target-specific targets for the time being.  fastboot is
 # great, but the sgs2 doesn't support it.  Eventually we should find a
 # lowest-common-denominator solution.
-flash: update-time flash-$(GONK)
+flash: flash-$(GONK) update-time
 
 # flash-only targets are the same as flash targets, except that they don't
 # depend on building the image.
