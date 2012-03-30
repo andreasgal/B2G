@@ -352,3 +352,6 @@
 [submodule "toolchains"]
 	path = toolchains
 	url = git://github.com/mozilla-b2g/b2g-toolchains.git
+[submodule "automation/b2gautomation"]
+	path = automation/b2gautomation
+	url = git://github.com/jonallengriffin/b2gautomation.git
