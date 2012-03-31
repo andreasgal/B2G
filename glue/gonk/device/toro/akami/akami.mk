@@ -101,6 +101,8 @@ endif
 PRODUCT_COPY_FILES += \
     $(LOCAL_KERNEL):kernel
 
+PRODUCT_COPY_FILES += device/toro/akami/ft5x0x_ts.idc:system/usr/idc/ft5x0x_ts.idc
+
 # See comment at the top of this file. This is where the other
 # half of the device-specific product definition file takes care
 # of the aspects that require proprietary drivers that aren't
