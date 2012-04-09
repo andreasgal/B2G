@@ -388,6 +388,18 @@ config-qemu:
 		mkdir $(GONK_PATH)/device/qemu ) && \
 	echo OK
 
+.PHONY: config-qemu-ics
+config-qemu-ics: gonk-ics-sync
+	@echo "KERNEL = qemu-ics" > .config.mk && \
+        echo "KERNEL_PATH = ./boot/kernel-android-qemu" >> .config.mk && \
+	echo "GONK = generic" >> .config.mk && \
+	echo "GONK_BASE = glue/gonk-ics" >> .config.mk && \
+	echo "TOOLCHAIN_PATH = ./toolchains/arm-linux-androideabi-4.4.x/bin/arm-linux-androideabi-" >> .config.mk && \
+	echo "EXTRA_INCLUDE = -include $(abspath Unicode.h)" >> .config.mk && \
+	echo "GONK_TARGET = generic-eng" >> .config.mk && \
+	echo "GONK_MAKE_FLAGS = TARGET_ARCH_VARIANT=armv7-a" >> .config.mk && \
+	echo OK
+
 .PHONY: flash
 # XXX Using target-specific targets for the time being.  fastboot is
 # great, but the sgs2 doesn't support it.  Eventually we should find a
