@@ -652,7 +652,7 @@ SYMDIR=$(GONK_OBJDIR)/symbols
 gdb-init-file:
 	echo "set solib-absolute-prefix $(SYMDIR)" > $(GDBINIT)
 	echo "set solib-search-path $(GECKO_OBJDIR)/dist/bin:$(GECKO_OBJDIR)/dist/lib:$(SYMDIR)/system/lib:$(SYMDIR)/system/lib/hw:$(SYMDIR)/system/lib/egl:$(and $(ANDROIDFS_DIR),$(ANDROIDFS_DIR)/symbols/system/lib:$(ANDROIDFS_DIR)/symbols/system/lib/hw:$(ANDROIDFS_DIR)/symbols/system/lib/egl)" >> $(GDBINIT)
-	echo "target remote :$(GDB_PORT)" >> $(GDBINIT)
+	echo "target extended-remote :$(GDB_PORT)" >> $(GDBINIT)
 
 .PHONY: attach-gdb
 attach-gdb: attach-gdb-server gdb-init-file
@@ -660,17 +660,15 @@ attach-gdb: attach-gdb-server gdb-init-file
 
 .PHONY: disable-auto-restart
 disable-auto-restart: adb-check-version kill-b2g
-	$(ADB) remount
-	$(ADB) shell mv $(B2G_BIN) $(B2G_BIN).d
+	$(ADB) shell stop b2g
 
 .PHONY: restore-auto-restart
 restore-auto-restart: adb-check-version
-	$(ADB) remount
-	$(ADB) shell mv $(B2G_BIN).d $(B2G_BIN)
+	$(ADB) shell start b2g
 
 .PHONY: run-gdb-server
 run-gdb-server: adb-check-version forward-gdb-port kill-gdb-server disable-auto-restart
-	$(ADB) shell LD_LIBRARY_PATH=/system/b2g gdbserver :$(GDB_PORT) $(B2G_BIN).d &
+	$(ADB) shell LD_LIBRARY_PATH=/system/b2g gdbserver --multi :$(GDB_PORT) $(B2G_BIN) &
 	sleep 1
 
 .PHONY: run-gdb
