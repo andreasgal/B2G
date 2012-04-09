@@ -481,6 +481,12 @@ gecko-install-hack: gecko
 	# Extract the newest tarball in the gecko objdir.
 	( cd $(OUT_DIR) && \
 	  tar xvfz $$(ls -t $(GECKO_OBJDIR)/dist/b2g-*.tar.gz | head -n1) )
+ifneq ($(GONK_BASE),glue/gonk)
+	( cd $(OUT_DIR) && \
+	  mv b2g/b2g b2g/updater bin && \
+	  ln -s ../bin/b2g b2g/b2g && \
+	  ln -s ../bin/updater b2g/updater )
+endif
 	find $(GONK_PATH)/out -name "system.img" | xargs rm -f
 	@$(call GONK_CMD,$(MAKE) $(MAKE_FLAGS) $(GONK_MAKE_FLAGS) systemimage-nodeps)
 
