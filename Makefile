@@ -55,7 +55,8 @@ FAKE_JDK_PATH ?= $(abspath fake-jdk-tools)
 
 define GONK_CMD # $(call GONK_CMD,cmd)
 	export USE_CCACHE="yes" && \
-	export PATH=$(FAKE_JDK_PATH):$$PATH && \
+	export JAVA_HOME=$(FAKE_JDK_PATH) && \
+	export PATH=$(FAKE_JDK_PATH)/bin:$$PATH && \
 	cd $(GONK_PATH) && \
 	. build/envsetup.sh && \
 	lunch $(GONK_TARGET) && \
