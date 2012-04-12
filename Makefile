@@ -168,15 +168,27 @@ B2G_PID=$(shell $(ADB) shell toolbox ps | grep "b2g" | awk '{ print $$2; }')
 GDBSERVER_PID=$(shell $(ADB) shell toolbox ps | grep "gdbserver" | awk '{ print $$2; }')
 
 .PHONY: build
+ifeq (glue/gonk,$(GONK_BASE))
 build: gecko-install-hack gaia
 	$(MAKE) gonk
+else
+build: gaia
+	$(MAKE) gonk
+endif
 
 ifeq (qemu,$(KERNEL))
 build: kernel bootimg-hack gaia
 endif
 
 KERNEL_DIR = boot/kernel-android-$(KERNEL)
+ifeq (glue/gonk,$(GONK_BASE))
 GECKO_OBJDIR = $(GECKO_PATH)/objdir-prof-gonk
+MOZCONFIG = $(abspath config/gecko-prof-gonk)
+else
+GECKO_OBJDIR = objdir-gecko
+MOZCONFIG = $(abspath glue/gonk-ics/gonk-misc/default-gecko-config)
+endif
+
 GONK_OBJDIR=$(abspath $(GONK_BASE)/out/target/product/$(GONK))
 
 define GECKO_BUILD_CMD
@@ -185,8 +197,9 @@ define GECKO_BUILD_CMD
 	export GONK_PRODUCT="$(GONK)" && \
 	export GONK_PATH="$(GONK_PATH)" && \
 	export TARGET_TOOLS_PREFIX="$(abspath $(TOOLCHAIN_PATH))" && \
-	export MOZCONFIG="$(PWD)/config/gecko-prof-gonk" && \
+	export MOZCONFIG="$(MOZCONFIG)" && \
 	export EXTRA_INCLUDE='$(EXTRA_INCLUDE)' && \
+	export GECKO_OBJDIR="$(abspath objdir-gecko)" && \
 	ulimit -n 4096 && \
 	$(MAKE) -C $(GECKO_PATH) -f client.mk -s $(MAKE_FLAGS) && \
 	$(MAKE) -C $(GECKO_OBJDIR) package
@@ -203,7 +216,10 @@ gecko:
 .PHONY: gonk
 gonk:
 	@$(call DEP_CHECK,$(GONK_PATH)/out/.b2g-build-done,$(GONK_BASE), \
-	    $(call GONK_CMD,$(MAKE) $(MAKE_FLAGS) $(GONK_MAKE_FLAGS) CONFIG_ESD=no ) ; \
+	    $(call GONK_CMD,$(MAKE) $(MAKE_FLAGS) $(GONK_MAKE_FLAGS) \
+	           CONFIG_ESD=no \
+	           GECKO_PATH="$(abspath gecko)" \
+	           GECKO_OBJDIR="$(abspath objdir-gecko)" ) ; \
 	    $(if $(filter qemu,$(KERNEL)), \
 		cp $(GONK_PATH)/system/core/rootdir/init.rc.gonk \
 		    $(GONK_PATH)/out/target/product/$(GONK)/root/init.rc))
@@ -482,26 +498,22 @@ kernel-%:
 OUT_DIR := $(GONK_PATH)/out/target/product/$(GONK)/system
 DATA_OUT_DIR := $(GONK_PATH)/out/target/product/$(GONK)/data
 APP_OUT_DIR := $(OUT_DIR)/app
-GECKO_OUT_DIR := $(OUT_DIR)/b2g
+GECKO_OUT_DIR := $(GECKO_OBJDIR)/dist/b2g
 
 $(APP_OUT_DIR):
 	mkdir -p $(APP_OUT_DIR)
 
 .PHONY: gecko-install-hack
 gecko-install-hack: gecko
+ifeq ($(GONK_BASE),glue/gonk)
 	rm -rf $(GECKO_OUT_DIR)
-	mkdir -p $(OUT_DIR)/lib
+	mkdir -p $(OUT_DIR)
 	# Extract the newest tarball in the gecko objdir.
 	( cd $(OUT_DIR) && \
 	  tar xvfz $$(ls -t $(GECKO_OBJDIR)/dist/b2g-*.tar.gz | head -n1) )
-ifneq ($(GONK_BASE),glue/gonk)
-	( cd $(OUT_DIR) && \
-	  mv b2g/b2g b2g/updater bin && \
-	  ln -s ../bin/b2g b2g/b2g && \
-	  ln -s ../bin/updater b2g/updater )
-endif
 	find $(GONK_PATH)/out -name "system.img" | xargs rm -f
 	@$(call GONK_CMD,$(MAKE) $(MAKE_FLAGS) $(GONK_MAKE_FLAGS) systemimage-nodeps)
+endif
 
 .PHONY: gaia
 gaia:
