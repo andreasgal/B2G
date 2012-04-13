@@ -521,7 +521,7 @@ $(APP_OUT_DIR):
 .PHONY: gecko-install-hack
 gecko-install-hack: gecko
 ifeq ($(GONK_BASE),glue/gonk)
-	rm -rf $(GECKO_OUT_DIR)
+	rm -rf $(OUT_DIR)/b2g
 	mkdir -p $(OUT_DIR)
 	# Extract the newest tarball in the gecko objdir.
 	( cd $(OUT_DIR) && \
