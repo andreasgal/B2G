@@ -225,9 +225,10 @@ gonk:
 		    $(GONK_PATH)/out/target/product/$(GONK)/root/init.rc))
 
 .PHONY: kernel
-# XXX Hard-coded for nexuss4g target
-# XXX Hard-coded for gonk tool support
-kernel:
+kernel: kernel-$(KERNEL)
+
+.PHONY: kernel-galaxy-s2
+kernel-galaxy-s2:
 	@$(call DEP_CHECK,$(KERNEL_PATH)/.b2g-build-done,$(KERNEL_PATH),\
 	    $(if $(filter galaxy-s2,$(KERNEL)), \
 		(rm -rf boot/initramfs && \
@@ -242,6 +243,21 @@ kernel:
 	    PATH="$$PATH:$(abspath $(KERNEL_TOOLCHAIN_PATH))" \
 		$(MAKE) -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm \
 		CROSS_COMPILE="$(CCACHE) arm-eabi-"; )
+
+kernel-galaxy-s2-ics:
+	PATH="$$PATH:$(abspath $(KERNEL_TOOLCHAIN_PATH))" \
+	$(MAKE) -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm \
+	CROSS_COMPILE="$(CCACHE) arm-eabi-" USE_SEC_FIPS_MODE=true CONFIG_INITRAMFS_SOURCE="$(PWD)/boot/initramfs" ; \
+	find "$(KERNEL_DIR)" -name dhd.ko -o -name j4fs.ko -o -name scsi_wait_scan.ko -o -name Si4709_driver.ko | \
+	    xargs -I MOD cp MOD "$(PWD)/boot/initramfs/lib/modules" ; \
+	CROSS_COMPILE="$(CCACHE) arm-eabi-" USE_SEC_FIPS_MODE=true CONFIG_INITRAMFS_SOURCE="$(PWD)/boot/initramfs"
+
+kernel-qemu:
+	PATH="$$PATH:$(abspath $(KERNEL_TOOLCHAIN_PATH))" \
+	    $(MAKE) -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm \
+	    CROSS_COMPILE="$(CCACHE) arm-eabi-"; )
+	cp -p boot/kernel-android-qemu/arch/arm/boot/zImage \
+		$(GONK_PATH)/device/qemu/kernel
 
 .PHONY: clean
 clean: clean-gecko clean-gonk clean-kernel
@@ -286,6 +302,18 @@ config-galaxy-s2: adb-check-version $(APNS_CONF)
 	export PATH=$$PATH:$$(dirname $(ADB)) && \
 	cp -p config/kernel-galaxy-s2 boot/kernel-android-galaxy-s2/.config && \
 	cd glue/gonk/device/samsung/galaxys2/ && \
+	echo Extracting binary blobs from device, which should be plugged in! ... && \
+	./extract-files.sh && \
+	echo OK
+
+.PHONY: config-galaxy-s2-ics
+config-galaxy-s2-ics:
+	@echo "KERNEL = galaxy-s2-ics" > .config.mk && \
+	echo "KERNEL_PATH = ./boot/kernel-android-galaxy-s2-ics" >> .config.mk && \
+	echo "GONK = galaxys2" >> .config.mk && \
+	echo "GONK_BASE = glue/gonk-ics" >> .config.mk && \
+	export PATH=$$PATH:$$(dirname $(ADB)) && \
+	cd glue/gonk-ics/device/samsung/galaxys2/ && \
 	echo Extracting binary blobs from device, which should be plugged in! ... && \
 	./extract-files.sh && \
 	echo OK
@@ -481,19 +509,6 @@ flash-only-fastboot:
 
 .PHONY: bootimg-hack
 bootimg-hack: kernel-$(KERNEL)
-
-.PHONY: kernel-samsung
-kernel-samsung:
-	cp -p boot/kernel-android-samsung/arch/arm/boot/zImage $(GONK_PATH)/device/samsung/crespo/kernel && \
-	cp -p boot/kernel-android-samsung/drivers/net/wireless/bcm4329/bcm4329.ko $(GONK_PATH)/device/samsung/crespo/bcm4329.ko
-
-.PHONY: kernel-qemu
-kernel-qemu:
-	cp -p boot/kernel-android-qemu/arch/arm/boot/zImage \
-		$(GONK_PATH)/device/qemu/kernel
-
-kernel-%:
-	@
 
 OUT_DIR := $(GONK_PATH)/out/target/product/$(GONK)/system
 DATA_OUT_DIR := $(GONK_PATH)/out/target/product/$(GONK)/data
