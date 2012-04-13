@@ -355,3 +355,9 @@
 [submodule "automation/b2gautomation"]
 	path = automation/b2gautomation
 	url = git://github.com/jonallengriffin/b2gautomation.git
+[submodule "boot/initramfs-galaxy-s2-ics"]
+	path = boot/initramfs-galaxy-s2-ics
+	url = git://github.com/mozilla-b2g/initramfs-galaxy-s2-ics
+[submodule "boot/kernel-android-galaxy-s2-ics"]
+	path = boot/kernel-android-galaxy-s2-ics
+	url = git://github.com/mozilla-b2g/kernel-android-galaxy-s2-ics.git
