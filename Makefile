@@ -255,7 +255,7 @@ kernel-galaxy-s2-ics:
 kernel-qemu:
 	PATH="$$PATH:$(abspath $(KERNEL_TOOLCHAIN_PATH))" \
 	    $(MAKE) -C $(KERNEL_PATH) $(MAKE_FLAGS) ARCH=arm \
-	    CROSS_COMPILE="$(CCACHE) arm-eabi-"; )
+	    CROSS_COMPILE="$(CCACHE) arm-eabi-"
 	cp -p boot/kernel-android-qemu/arch/arm/boot/zImage \
 		$(GONK_PATH)/device/qemu/kernel
 
