@@ -14,3 +14,6 @@
 
 # Basic Parameters
 touch.deviceType = touchScreen
+
+keyboard.layout = qwerty
+keyboard.characterMap = qwerty
