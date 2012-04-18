@@ -313,7 +313,7 @@ config-galaxy-s2: adb-check-version $(APNS_CONF)
 	echo OK
 
 .PHONY: config-galaxy-s2-ics
-config-galaxy-s2-ics: gonk-ics-sync
+config-galaxy-s2-ics: gonk-ics-sync adb-check-version
 	@echo "KERNEL = galaxy-s2-ics" > .config.mk && \
 	echo "KERNEL_PATH = ./boot/kernel-android-galaxy-s2-ics" >> .config.mk && \
 	echo "GONK = galaxys2" >> .config.mk && \
