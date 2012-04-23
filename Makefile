@@ -842,7 +842,7 @@ install-valgrind: disable-auto-restart
 	$(ADB) push $(GONK_OBJDIR)/symbols/system/lib/libc.so /system/lib/.
 	$(ADB) push $(GECKO_OBJDIR)/dist/lib/libxul.so /data/local/.
 	$(ADB) shell rm /system/b2g/libxul.so
-	$(ADB) shell ln -s /data/local/libxul.so /system/b2g/.
+	$(ADB) shell ln -s /data/local/libxul.so /system/b2g/libxul.so
 
 .PHONY: uninstall-valgrind
 uninstall-valgrind: restore-auto-restart
