@@ -562,7 +562,7 @@ install-gaia: adb-check-version
 
 .PHONY: install-gaia-latest
 install-gaia-latest: adb-check-version
-	cd $(GAIA_PATH) && $(GIT) pull origin master
+	cd $(GAIA_PATH) && $(GIT) checkout master && $(GIT) pull origin master
 	$(MAKE) -C $(GAIA_PATH) install-gaia
 
 .PHONY: image
