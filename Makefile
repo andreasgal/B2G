@@ -476,8 +476,8 @@ flash-crespo4g: image adb-check-version flash-only-fastboot
 flash-only-crespo4g: adb-check-version flash-only-fastboot
 
 define FLASH_GALAXYS2_CMD
-$(ADB) reboot download 
-sleep 20
+@echo "Rebooting into download mode..." && $(ADB) reboot download && sleep 20 || \
+       echo "Perhaps the device is already in download mode?"
 $(HEIMDALL) flash --factoryfs $(GONK_PATH)/out/target/product/galaxys2/system.img
 $(FLASH_GALAXYS2_CMD_CHMOD_HACK)
 endef
