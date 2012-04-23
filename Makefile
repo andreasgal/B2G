@@ -560,6 +560,11 @@ install-gecko-only:
 install-gaia: adb-check-version
 	$(MAKE) -C $(GAIA_PATH) install-gaia
 
+.PHONY: install-gaia-latest
+install-gaia-latest: adb-check-version
+	cd $(GAIA_PATH) && $(GIT) pull origin master
+	$(MAKE) -C $(GAIA_PATH) install-gaia
+
 .PHONY: image
 image: build
 	@echo XXX stop overwriting the prebuilt nexuss4g kernel
