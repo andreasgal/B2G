@@ -631,6 +631,7 @@ TOOLCHAIN_DIRS = \
 	frameworks/base/services/sensorservice \
 	hardware/libhardware/include \
 	hardware/libhardware_legacy/include \
+	ndk/sources/android/cpufeatures \
 	ndk/sources/cxx-stl/system/include \
 	ndk/sources/cxx-stl/stlport/stlport \
 	out/target/product/$(GONK)/obj/lib \
