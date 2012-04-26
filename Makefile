@@ -252,12 +252,12 @@ kernel-galaxy-s2-ics:
 	export CROSS_COMPILE="$(CCACHE) $(abspath $(KERNEL_TOOLCHAIN_PATH))/arm-eabi-" && \
 	export USE_SEC_FIPS_MODE=true && \
 	$(MAKE) -C $(KERNEL_PATH) $(MAKE_FLAGS) u1_defconfig && \
-	$(MAKE) -C $(KERNEL_PATH) $(MAKE_FLAGS) CROSS_COMPILE="$$CROSS_COMPILE" CONFIG_INITRAMFS_SOURCE="$(PWD)/boot/initramfs" && \
+	$(MAKE) -C $(KERNEL_PATH) $(MAKE_FLAGS) CROSS_COMPILE="$$CROSS_COMPILE" CONFIG_INITRAMFS_SOURCE="$(PWD)/boot/initramfs" CONFIG_INITRAMFS_ROOT_UID=squash CONFIG_INITRAMFS_ROOT_GID=squash && \
 	mkdir -p boot/initramfs/lib/modules && \
 	find "$(KERNEL_DIR)" -name dhd.ko -o -name j4fs.ko -o -name scsi_wait_scan.ko -o -name Si4709_driver.ko | \
 	    xargs -I MOD cp MOD "$(PWD)/boot/initramfs/lib/modules" && \
 	chmod -R g-w $(PWD)/boot/initramfs && \
-	$(MAKE) -C $(KERNEL_PATH) $(MAKE_FLAGS) CROSS_COMPILE="$$CROSS_COMPILE" CONFIG_INITRAMFS_SOURCE="$(PWD)/boot/initramfs"
+	$(MAKE) -C $(KERNEL_PATH) $(MAKE_FLAGS) CROSS_COMPILE="$$CROSS_COMPILE" CONFIG_INITRAMFS_SOURCE="$(PWD)/boot/initramfs" CONFIG_INITRAMFS_ROOT_UID=squash CONFIG_INITRAMFS_ROOT_GID=squash
 
 kernel-qemu:
 	PATH="$$PATH:$(abspath $(KERNEL_TOOLCHAIN_PATH))" \
