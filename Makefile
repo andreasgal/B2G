@@ -626,6 +626,7 @@ TOOLCHAIN_TARGET ?= linux-x86
 TOOLCHAIN_DIRS = \
 	bionic \
 	external/stlport/stlport \
+	external/dbus \
 	frameworks/base/include \
 	frameworks/base/native/include \
 	frameworks/base/opengl/include \
@@ -640,8 +641,9 @@ TOOLCHAIN_DIRS = \
 	prebuilt/$(TOOLCHAIN_TARGET)/toolchain/arm-eabi-4.4.3 \
 	system/core/include
 
-# Toolchain versions are numbered consecutively.
-TOOLCHAIN_VERSION := 0
+# Toolchain versions are numbered consecutively. Toolchain version
+# should be bumped whenever a new toolchain is generated
+TOOLCHAIN_VERSION := 1
 TOOLCHAIN_PKG_DIR := gonk-toolchain-$(TOOLCHAIN_VERSION)
 .PHONY: package-toolchain
 package-toolchain: gonk
