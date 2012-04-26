@@ -256,6 +256,7 @@ kernel-galaxy-s2-ics:
 	mkdir -p boot/initramfs/lib/modules && \
 	find "$(KERNEL_DIR)" -name dhd.ko -o -name j4fs.ko -o -name scsi_wait_scan.ko -o -name Si4709_driver.ko | \
 	    xargs -I MOD cp MOD "$(PWD)/boot/initramfs/lib/modules" && \
+	chmod -R g-w $(PWD)/boot/initramfs && \
 	$(MAKE) -C $(KERNEL_PATH) $(MAKE_FLAGS) CROSS_COMPILE="$$CROSS_COMPILE" CONFIG_INITRAMFS_SOURCE="$(PWD)/boot/initramfs"
 
 kernel-qemu:
