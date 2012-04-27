@@ -185,7 +185,7 @@ ifeq (glue/gonk,$(GONK_BASE))
 GECKO_OBJDIR = $(GECKO_PATH)/objdir-prof-gonk
 MOZCONFIG = $(abspath config/gecko-prof-gonk)
 else
-GECKO_OBJDIR = objdir-gecko
+GECKO_OBJDIR = $(abspath objdir-gecko)
 MOZCONFIG = $(abspath glue/gonk-ics/gonk-misc/default-gecko-config)
 endif
 
@@ -199,7 +199,7 @@ define GECKO_BUILD_CMD
 	export TARGET_TOOLS_PREFIX="$(abspath $(TOOLCHAIN_PATH))" && \
 	export MOZCONFIG="$(MOZCONFIG)" && \
 	export EXTRA_INCLUDE='$(EXTRA_INCLUDE)' && \
-	export GECKO_OBJDIR="$(abspath objdir-gecko)" && \
+	export GECKO_OBJDIR="$(GECKO_OBJDIR)" && \
 	ulimit -n 4096 && \
 	$(MAKE) -C $(GECKO_PATH) -f client.mk -s $(MAKE_FLAGS) && \
 	$(MAKE) -C $(GECKO_OBJDIR) package
@@ -218,8 +218,8 @@ gonk:
 	@$(call DEP_CHECK,$(GONK_PATH)/out/.b2g-build-done,$(GONK_BASE), \
 	    $(call GONK_CMD,$(MAKE) $(MAKE_FLAGS) $(GONK_MAKE_FLAGS) \
 	           CONFIG_ESD=no \
-	           GECKO_PATH="$(abspath gecko)" \
-	           GECKO_OBJDIR="$(abspath objdir-gecko)" ) ; \
+	           GECKO_PATH=$(GECKO_PATH) \
+	           GECKO_OBJDIR=$(GECKO_OBJDIR) ) ;\
 	    $(if $(filter qemu,$(KERNEL)), \
 		cp $(GONK_PATH)/system/core/rootdir/init.rc.gonk \
 		    $(GONK_PATH)/out/target/product/$(GONK)/root/init.rc))
