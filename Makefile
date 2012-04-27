@@ -596,6 +596,21 @@ package:
 	cp -R $(GAIA_PATH)/tests $(PKG_DIR)/gaia
 	cd $(PKG_DIR) && tar -czvf qemu_package.tar.gz qemu gaia
 
+.PHONY: package-qemu-ics
+package-qemu-ics:
+	rm -rf $(PKG_DIR)
+	mkdir -p $(PKG_DIR)/qemu/bin
+	mkdir -p $(PKG_DIR)/gaia
+	cp package-emu-ics.sh $(PKG_DIR)
+	cp $(GONK_PATH)/out/host/linux-x86/bin/emulator $(PKG_DIR)/qemu/bin
+	cp $(GONK_PATH)/out/host/linux-x86/bin/emulator-arm $(PKG_DIR)/qemu/bin
+	cp $(GONK_PATH)/out/host/linux-x86/bin/adb $(PKG_DIR)/qemu/bin
+	cp $(GONK_PATH)/prebuilts/qemu-kernel/arm/kernel-qemu-armv7 $(PKG_DIR)/qemu
+	cp -R $(GONK_PATH)/development/tools/emulator/skins $(PKG_DIR)/qemu
+	cp -R $(GONK_PATH)/out/target/product/generic $(PKG_DIR)/qemu
+	cp -R $(GAIA_PATH)/tests $(PKG_DIR)/gaia
+	cd $(PKG_DIR) && tar -czvf qemu_package.tar.gz qemu gaia
+
 UPDATE_PACKAGE_TARGET ?= b2g-gecko-update.mar
 MAR ?= $(GECKO_OBJDIR)/dist/host/bin/mar
 MAKE_FULL_UPDATE ?= $(GECKO_PATH)/tools/update-packaging/make_full_update.sh
