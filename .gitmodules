@@ -144,7 +144,7 @@
 	url = git://android.git.linaro.org/platform/external/expat.git
 [submodule "glue/gonk/external/dbus"]
 	path = glue/gonk/external/dbus
-	url = git://github.com/qdot/platform_external_dbus.git
+	url = git://github.com/mozilla-b2g/platform_external_dbus.git
 [submodule "glue/gonk/external/protobuf"]
 	path = glue/gonk/external/protobuf
 	url = git://android.git.linaro.org/platform/external/protobuf.git
