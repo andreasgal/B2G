@@ -185,7 +185,7 @@ ifeq (glue/gonk,$(GONK_BASE))
 GECKO_OBJDIR ?= $(GECKO_PATH)/objdir-prof-gonk
 MOZCONFIG = $(abspath config/gecko-prof-gonk)
 else
-GECKO_OBJDIR ?= $(GECKO_PATH)/objdir-prof-gonk
+GECKO_OBJDIR ?= $(abspath objdir-gecko)
 MOZCONFIG = $(abspath glue/gonk-ics/gonk-misc/default-gecko-config)
 endif
 
