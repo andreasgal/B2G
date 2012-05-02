@@ -306,6 +306,8 @@ config-galaxy-s2: adb-check-version $(APNS_CONF)
 	@echo "KERNEL = galaxy-s2" > .config.mk && \
         echo "KERNEL_PATH = ./boot/kernel-android-galaxy-s2" >> .config.mk && \
 	echo "GONK = galaxys2" >> .config.mk && \
+	echo "GONK_BASE = glue/gonk" >> .config.mk && \
+	echo "RELEASETOOLS = device/samsung/galaxys2/releasetools" >> .config.mk && \
 	export PATH=$$PATH:$$(dirname $(ADB)) && \
 	cp -p config/kernel-galaxy-s2 boot/kernel-android-galaxy-s2/.config && \
 	cd glue/gonk/device/samsung/galaxys2/ && \
@@ -319,6 +321,7 @@ config-galaxy-s2-ics: gonk-ics-sync adb-check-version
 	echo "KERNEL_PATH = ./boot/kernel-android-galaxy-s2-ics" >> .config.mk && \
 	echo "GONK = galaxys2" >> .config.mk && \
 	echo "GONK_BASE = glue/gonk-ics" >> .config.mk && \
+	echo "RELEASETOOLS = device/samsung/galaxys2/releasetools" >> .config.mk && \
 	export PATH=$$PATH:$$(dirname $(ADB)) && \
 	cd glue/gonk-ics/device/samsung/galaxys2/ && \
 	echo Extracting binary blobs from device, which should be plugged in! ... && \
@@ -615,6 +618,27 @@ package-qemu-ics:
 	cp -R $(GONK_PATH)/out/target/product/generic $(PKG_DIR)/qemu
 	cp -R $(GAIA_PATH)/tests $(PKG_DIR)/gaia
 	cd $(PKG_DIR) && tar -czvf qemu_package.tar.gz qemu gaia
+
+# Create a flashable zip for ClockworkMod-Recovery
+TARGET_OUT := $(GONK_PATH)/out/target/product/$(GONK)
+OTA_TARGET_PACKAGE := update-b2g-$(shell date +%Y%m%d)-$(GONK).zip
+.PHONY: otapackage
+otapackage:
+ifdef RELEASETOOLS
+	@echo Package OTAPACKAGE: $(OTA_TARGET_PACKAGE)
+	@rm -rf $(TARGET_OUT)/otapackage
+	@mkdir -p $(TARGET_OUT)/otapackage/system
+	@mkdir -p $(TARGET_OUT)/otapackage/META-INF/com/google/android
+	@cp -R $(TARGET_OUT)/system/* $(TARGET_OUT)/otapackage/system/
+	@cp $(GONK_PATH)/$(RELEASETOOLS)/update-binary $(TARGET_OUT)/otapackage/META-INF/com/google/android/update-binary
+	@cp $(GONK_PATH)/$(RELEASETOOLS)/updater-script $(TARGET_OUT)/otapackage/META-INF/com/google/android/updater-script
+	@echo Zipping package...
+	@cd $(TARGET_OUT)/otapackage && zip -rq $(TARGET_OUT)/$(OTA_TARGET_PACKAGE) ./
+	@echo Package complete: $(OTA_TARGET_PACKAGE)
+	@cd $(TARGET_OUT) && md5sum $(OTA_TARGET_PACKAGE)
+else
+	@echo Path to updater-script not defined. Aborting.
+endif
 
 UPDATE_PACKAGE_TARGET ?= b2g-gecko-update.mar
 MAR ?= $(GECKO_OBJDIR)/dist/host/bin/mar
