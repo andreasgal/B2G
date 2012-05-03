@@ -562,12 +562,12 @@ install-gecko-only:
 # on the sgs2.
 .PHONY: install-gaia
 install-gaia: adb-check-version
-	$(MAKE) -C $(GAIA_PATH) install-gaia
+	ADB=$(ADB) $(MAKE) -C $(GAIA_PATH) install-gaia
 
 .PHONY: install-gaia-latest
 install-gaia-latest: adb-check-version
 	cd $(GAIA_PATH) && $(GIT) checkout master && $(GIT) pull origin master
-	$(MAKE) -C $(GAIA_PATH) install-gaia
+	ADB=$(ADB) $(MAKE) -C $(GAIA_PATH) install-gaia
 
 .PHONY: image
 image: build
