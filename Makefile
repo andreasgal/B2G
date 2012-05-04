@@ -23,7 +23,7 @@ GAIA_PATH ?= $(abspath gaia)
 GECKO_PATH ?= $(abspath gecko)
 GONK_PATH = $(abspath $(GONK_BASE))
 
-TEST_DIRS = $(abspath $(GECKO_PATH)/testing/marionette/client/marionette/tests/unit-tests.ini)
+TEST_DIRS = $(GECKO_PATH)/testing/marionette/client/marionette/tests/unit-tests.ini
 
 # We need adb for config-* targets.  Adb is built by building system
 # of gonk that needs a correct product name provided by "GONK_TARGET".
