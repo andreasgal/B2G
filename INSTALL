@@ -33,7 +33,7 @@ $B2G.
     # sudo apt-get install ia32-libs gcc-multilib g++-multilib bison \
       flex gperf lib32z1-dev lib32ncurses5-dev lib32ncursesw5-dev \
       libidl-dev lib32gomp1 autoconf2.13 ccache libx11-dev \
-      lib32readline-gplv2-dev
+      lib32readline-gplv2-dev lib32tinfo-dev
 
   lib32readline-gplv2-dev is available for Ubuntu 11.10. For Ubuntu 10.10
   lib32readline5-dev seems to work fine.
