@@ -333,7 +333,7 @@
 	url = git://github.com/cgjones/android_device_samsung_c1-common.git
 [submodule "gaia"]
 	path = gaia
-	url = git://github.com/andreasgal/gaia.git
+	url = git://github.com/mozilla-b2g/gaia.git
 [submodule "boot/clockworkmod_galaxys2_initramfs"]
 	path = boot/clockworkmod_galaxys2_initramfs
 	url = git://github.com/michaelwu/clockworkmod_galaxys2_initramfs.git
