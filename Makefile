@@ -851,8 +851,11 @@ op_stop:
 	@echo "Stop Profiling ..."
 	@echo -e "You can use \033[31m\"make op_pull\"\033[0m to pull oprofile samples"
 	@$(ADB) shell opcontrol --stop
+	@$(ADB) shell opcontrol --dump
 op_status:
 	@$(ADB) shell opcontrol --status
+op_reset:
+	@$(ADB) shell opcontrol --reset
 op_shutdown:
 	@$(ADB) shell opcontrol --shutdown
 op_pull:
