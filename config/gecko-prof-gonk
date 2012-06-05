@@ -21,6 +21,17 @@ ac_add_options --enable-profiling
 ac_add_options --with-ccache
 ac_add_options --enable-marionette
 
+# The way we use jemalloc with bionic causes two heaps to be created,
+# and external-to-gecko dso's end up using the bionic malloc.  This is
+# a never-ending source of mismatched allocator pain.  Until we figure
+# out a way to fully replace malloc/free (possibly by integrating
+# jemalloc into bionic), just use bionic malloc.
+ac_add_options --disable-jemalloc
+
+if [ "$HOST_OS" != "linux" ]; then
+ac_add_options --disable-crashreporter
+fi
+
 ac_add_options --enable-updater
 #ac_add_options --enable-update-channel=nightly
 ac_add_options --enable-update-packaging
